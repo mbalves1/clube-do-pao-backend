@@ -1,0 +1,28 @@
+{
+	"name": "clube-do-pao",
+	"version": "1.0.0",
+	"description": "Backend Node.js com Clean Architecture",
+	"main": "dist/main/server.js",
+	"type": "commonjs",
+	"scripts": {
+		"dev": "ts-node-dev --respawn --transpile-only src/main/server.ts",
+		"build": "tsc",
+		"start": "node dist/main/server.js",
+		"prisma:generate": "prisma generate"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@prisma/client": "^5.11.0",
+		"@supabase/supabase-js": "^2.105.1",
+		"express": "^5.2.1"
+	},
+	"devDependencies": {
+		"@types/express": "^5.0.6",
+		"@types/node": "^25.6.0",
+		"prisma": "^5.11.0",
+		"ts-node-dev": "^2.0.0",
+		"typescript": "^6.0.3"
+	}
+}
