@@ -10,7 +10,7 @@ export class UserController {
 
 	async list(req: Request, res: Response): Promise<Response> {
 		try {
-			const user = await this.createUserUseCase.execute(req.body);
+			const user = await this.getUserUseCase.execute(req.body);
 			return res.status(201).json(user);
 		} catch (error) {
 			return res.status(400).json({
