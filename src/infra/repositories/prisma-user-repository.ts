@@ -35,4 +35,14 @@ export class PrismaUserRepository implements UserRepository {
 			createdAt: found.createdAt,
 		};
 	}
+
+	async find(): Promise<any | null> {
+		const found = await prisma.user.findMany();
+
+		if (!found) {
+			return null;
+		}
+
+		return found;
+	}
 }
