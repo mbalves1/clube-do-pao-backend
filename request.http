@@ -13,3 +13,28 @@ Content-Type: application/json
 GET  http://localhost:3333/api/users
 Content-Type: application/json
 
+###
+POST http://localhost:3333/api/users
+Content-Type: application/json
+
+{
+  "name": "Vanessa",
+  "email": "vanessa@email.com",
+  "password": "123456"
+}
+
+###
+PATCH http://localhost:3333/api/users/c8c038f4-e349-4698-8a52-b8d2cd0d549b
+Content-Type: application/json
+
+{
+  "name": "Murilo b",
+  "phone": "44998909877",
+  "city": "Santos",
+  "zipCode": "01001000",
+  "street": "Rua das Flores",
+  "number": "123",
+  "district": "Centro",
+  "city": "São Paulo",
+  "state": "SP"
+}

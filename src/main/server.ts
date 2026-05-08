@@ -1,12 +1,15 @@
 import express from 'express';
 import { makeRoutes } from '../infra/http/routes';
 import { prisma } from '../infra/database/prisma-client';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from '../infra/http/swagger';
 import { makeUserController } from './factories/user-controller-factory';
 
 const app = express();
 const port = process.env.PORT || 3333;
 
 app.use(express.json());
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api', makeRoutes(makeUserController()));
 
