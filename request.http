@@ -29,7 +29,7 @@ Content-Type: application/json
 
 {
   "name": "Murilo b",
-  "phone": "44998909877",
+  "phone": 44998909877,
   "city": "Santos",
   "zipCode": "01001000",
   "street": "Rua das Flores",
