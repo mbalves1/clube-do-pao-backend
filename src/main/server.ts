@@ -1,21 +1,14 @@
 import express from 'express';
-import { CreateUserUseCase } from '../core/usecases/create-user';
-import { PrismaUserRepository } from '../infra/repositories/prisma-user-repository';
-import { UserController } from '../infra/controllers/user-controller';
 import { makeRoutes } from '../infra/http/routes';
 import { prisma } from '../infra/database/prisma-client';
-import { GetUserUseCase } from '../core/usecases/list-user';
+import { makeUserController } from './factories/user-controller-factory';
 
 const app = express();
 const port = process.env.PORT || 3333;
 
 app.use(express.json());
 
-const userRepository = new PrismaUserRepository();
-const createUserUseCase = new CreateUserUseCase(userRepository);
-const getUserUseCase = new GetUserUseCase(userRepository);
-const userController = new UserController(createUserUseCase, getUserUseCase);
-app.use('/api', makeRoutes(userController));
+app.use('/api', makeRoutes(makeUserController()));
 
 app.use(
 	(

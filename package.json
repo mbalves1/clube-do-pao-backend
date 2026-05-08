@@ -8,7 +8,8 @@
 		"dev": "ts-node-dev --respawn --transpile-only src/main/server.ts",
 		"build": "tsc",
 		"start": "node dist/main/server.js",
-		"prisma:generate": "prisma generate"
+		"prisma:generate": "prisma generate",
+		"prisma:format": "prisma format"
 	},
 	"keywords": [],
 	"author": "",

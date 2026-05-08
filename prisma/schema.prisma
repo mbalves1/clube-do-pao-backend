@@ -4,11 +4,62 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id                String              @id @default(uuid())
+  name              String
+  email             String              @unique
+  phone             String?
+  zipCode           String?
+  street            String?
+  number            String?
+  district          String?
+  city              String?
+  state             String?
+  favoriteBakeries  FavoriteBakery[]
+  appointments      Appointment[]
+  createdAt         DateTime            @default(now())
+}
+
+model Bakery {
+  id                String              @id @default(uuid())
+  name              String
+  cnpj              String
+  email             String              @unique
+  phone             String
+  whatsapp          String
+  serviceStartAt    String
+  serviceEndAt      String
+  favorites         FavoriteBakery[]
+  appointments      Appointment[]
+  createdAt         DateTime            @default(now())
+
+  @@map("bakeries")
+}
+
+model FavoriteBakery {
+  id                String              @id @default(uuid())
+  userId            String
+  bakeryId          String
+  user              User                @relation(fields: [userId], references: [id])
+  bakery            Bakery              @relation(fields: [bakeryId], references: [id])
+  createdAt         DateTime            @default(now())
+
+  @@unique([userId, bakeryId])
+}
+
+model Appointment {
+  id                String              @id @default(uuid())
+  userId            String
+  bakeryId          String
+  user              User                @relation(fields: [userId], references: [id])
+  bakery            Bakery              @relation(fields: [bakeryId], references: [id])
+  serviceDate       DateTime
+  serviceStartAt    String
+  serviceEndAt      String
+  status            String              @default("pending")
+  notes             String?
+  createdAt         DateTime            @default(now())
 }
