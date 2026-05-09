@@ -9,7 +9,10 @@
 		"build": "tsc",
 		"start": "node dist/main/server.js",
 		"prisma:generate": "prisma generate",
-		"prisma:format": "prisma format"
+		"prisma:format": "prisma format",
+		"docker:up": "docker compose up --build",
+		"docker:down": "docker compose down",
+		"setup": "npm run docker:up && wait-on tcp:5432 && npx prisma migrate dev"
 	},
 	"keywords": [],
 	"author": "",
@@ -30,6 +33,7 @@
 		"@types/swagger-ui-express": "^4.1.8",
 		"prisma": "^5.11.0",
 		"ts-node-dev": "^2.0.0",
-		"typescript": "^6.0.3"
+		"typescript": "^6.0.3",
+		"wait-on": "^9.0.5"
 	}
 }

@@ -84,3 +84,87 @@ npm run build
 ```bash
 npm start
 ```
+
+### Prisma
+
+Gerar Prisma Client:
+
+```bash
+npm run prisma:generate
+```
+
+Formatar schema Prisma:
+
+```bash
+npm run prisma:format
+```
+
+Executar migrations:
+
+```bash
+npm run prisma:migrate
+```
+
+Sincronizar schema sem migration:
+
+```bash
+npm run prisma:push
+```
+
+Abrir Prisma Studio:
+
+```bash
+npm run prisma:studio
+```
+
+### Docker
+
+Subir containers:
+
+```bash
+npm run docker:up
+```
+
+Parar containers:
+
+```bash
+npm run docker:down
+```
+
+### Setup inicial
+
+Executa o ambiente completo pela primeira vez:
+
+```bash
+npm run setup
+```
+
+Esse comando:
+
+- sobe os containers
+- inicia o PostgreSQL
+- executa as migrations do Prisma
+
+## Estrutura do banco
+
+O projeto utiliza Prisma ORM com PostgreSQL para gerenciamento de:
+
+- usuarios
+- padarias
+- favoritos
+- agendamentos
+
+## Executando o projeto
+
+### Primeira execucao
+
+```bash
+npm install
+npm run setup
+```
+
+### Execucoes seguintes
+
+```bash
+npm run docker:up
+```
