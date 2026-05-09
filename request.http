@@ -38,3 +38,26 @@ Content-Type: application/json
   "city": "São Paulo",
   "state": "SP"
 }
+
+
+==============================================
+Bakery
+==============================================
+
+###
+GET  http://localhost:3333/api/bakery
+Content-Type: application/json
+
+###
+POST http://localhost:3333/api/bakery
+Content-Type: application/json
+
+{
+  "name": "Padaria Central",
+  "cnpj": "12345678000199",
+  "email": "padaria@email.com",
+  "phone": "11999999999",
+  "whatsapp": "11999999999",
+  "serviceStartAt": "08:00",
+  "serviceEndAt": "18:00"
+}

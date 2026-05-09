@@ -1,5 +1,4 @@
-import { User } from '../entities/user';
-import { UserRepository } from '../ports/user-repository';
+import { UserRepository } from '../../ports/user-repository';
 
 export type CreateUserDTO = {
 	name: string;

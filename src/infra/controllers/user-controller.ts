@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { CreateUserUseCase } from '../../core/usecases/create-user';
-import { GetUserUseCase } from '../../core/usecases/list-user';
-import { UpdateUserUseCase } from '../../core/usecases/update-user';
+import { CreateUserUseCase } from '../../core/usecases/user/create-user';
+import { GetUserUseCase } from '../../core/usecases/user/list-user';
+import { UpdateUserUseCase } from '../../core/usecases/user/update-user';
 import {
 	createUserSchema,
 	updateUserSchema,

@@ -1,5 +1,5 @@
-import { User } from '../entities/user';
-import { UserRepository } from '../ports/user-repository';
+import { User } from '../../entities/user';
+import { UserRepository } from '../../ports/user-repository';
 
 export type UpdateUserDTO = {
 	id: string;

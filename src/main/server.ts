@@ -4,6 +4,7 @@ import { prisma } from '../infra/database/prisma-client';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from '../infra/http/swagger';
 import { makeUserController } from './factories/user-controller-factory';
+import { makeBakeryController } from './factories/bakery-controller-factory';
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -11,7 +12,13 @@ const port = process.env.PORT || 3333;
 app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use('/api', makeRoutes(makeUserController()));
+app.use(
+	'/api',
+	makeRoutes({
+		userController: makeUserController(),
+		bakeryController: makeBakeryController(),
+	}),
+);
 
 app.use(
 	(
