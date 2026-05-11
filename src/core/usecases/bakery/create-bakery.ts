@@ -1,4 +1,5 @@
 import { Bakery } from '../../entities/bakery';
+import { toBakery } from '../../mappers/bakery-mapper';
 import { BakeryRepository } from '../../ports/bakery-repository';
 
 export type CreateBakeryDTO = {
@@ -21,15 +22,7 @@ export class CreateBakeryUseCase {
 			throw new Error('CNPJ já está em uso');
 		}
 
-		const bakery: Bakery = {
-			name: data.name,
-			cnpj: data.cnpj,
-			email: data.email,
-			phone: data.phone,
-			whatsapp: data.whatsapp,
-			serviceStartAt: data.serviceStartAt,
-			serviceEndAt: data.serviceEndAt,
-		};
+		const bakery = toBakery(data);
 
 		return this.bakeryRepository.create(bakery);
 	}

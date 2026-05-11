@@ -1,7 +1,8 @@
 import { Bakery } from './../entities/bakery';
+import { BakeryCreateData } from '../mappers/bakery-mapper';
 
 export interface BakeryRepository {
 	find(): Promise<Bakery[]>;
 	findByCnpj(cnpj: string): Promise<Bakery | null>;
-	create(data: any): Promise<any>;
+	create(data: BakeryCreateData): Promise<Bakery>;
 }

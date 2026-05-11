@@ -1,47 +1,24 @@
-import { Bakery } from '../../core/entities/bakery';
+import { BakeryCreateData } from '../../core/mappers/bakery-mapper';
 import { BakeryRepository } from '../../core/ports/bakery-repository';
 import { prisma } from '../database/prisma-client';
+import { toBakery } from '../mappers/prisma-bakery-mapper';
 
 export class PrismaBakeryRepository implements BakeryRepository {
-	async find(): Promise<Bakery[]> {
+	async find() {
 		const found = await prisma.bakery.findMany();
 
-		return found.map((bakery) => ({
-			id: bakery.id,
-			name: bakery.name,
-			cnpj: bakery.cnpj,
-			email: bakery.email,
-			phone: bakery.phone,
-			whatsapp: bakery.whatsapp,
-			serviceStartAt: bakery.serviceStartAt,
-			serviceEndAt: bakery.serviceEndAt,
-			createdAt: bakery.createdAt,
-		}));
+		return found.map(toBakery);
 	}
 
-	async findByCnpj(cnpj: string): Promise<Bakery | null> {
+	async findByCnpj(cnpj: string) {
 		const found = await prisma.bakery.findFirst({
 			where: { cnpj },
 		});
 
-		if (!found) {
-			return null;
-		}
-
-		return {
-			id: found.id,
-			name: found.name,
-			cnpj: found.cnpj,
-			email: found.email,
-			phone: found.phone,
-			whatsapp: found.whatsapp,
-			serviceStartAt: found.serviceStartAt,
-			serviceEndAt: found.serviceEndAt,
-			createdAt: found.createdAt,
-		};
+		return found ? toBakery(found) : null;
 	}
 
-	async create(bakery: Bakery): Promise<Bakery> {
+	async create(bakery: BakeryCreateData) {
 		const created = await prisma.bakery.create({
 			data: {
 				name: bakery.name,
@@ -54,16 +31,6 @@ export class PrismaBakeryRepository implements BakeryRepository {
 			},
 		});
 
-		return {
-			id: created.id,
-			name: created.name,
-			cnpj: created.cnpj,
-			email: created.email,
-			phone: created.phone,
-			whatsapp: created.whatsapp,
-			serviceStartAt: created.serviceStartAt,
-			serviceEndAt: created.serviceEndAt,
-			createdAt: created.createdAt,
-		};
+		return toBakery(created);
 	}
 }
