@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from '../infra/http/swagger';
 import { makeUserController } from './factories/user-controller-factory';
 import { makeBakeryController } from './factories/bakery-controller-factory';
+import { makeSubscribeController } from './factories/subscribe-controller-factory';
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -17,6 +18,7 @@ app.use(
 	makeRoutes({
 		userController: makeUserController(),
 		bakeryController: makeBakeryController(),
+		subscribeController: makeSubscribeController(),
 	}),
 );
 

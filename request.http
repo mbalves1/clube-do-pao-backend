@@ -61,3 +61,21 @@ Content-Type: application/json
   "serviceStartAt": "08:00",
   "serviceEndAt": "18:00"
 }
+
+==============================================
+Subscribe
+==============================================
+
+###
+POST http://localhost:3333/api/subscribe
+Content-Type: application/json
+
+{
+  "userId": "bd910059-c841-4cfa-ba95-206597ab384c",
+  "bakeryId": "f3b5a586-5783-4333-a6b6-f5471344687e",
+  "subscribe": {
+    "start": "8:00",
+    "end": "8:30",
+    "notes": "10 paes" 
+  }
+}

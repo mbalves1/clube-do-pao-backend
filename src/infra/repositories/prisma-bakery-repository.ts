@@ -18,6 +18,14 @@ export class PrismaBakeryRepository implements BakeryRepository {
 		return found ? toBakery(found) : null;
 	}
 
+	async findUnique(id: string) {
+		const found = await prisma.bakery.findFirst({
+			where: { id },
+		});
+
+		return found ? toBakery(found) : null;
+	}
+
 	async create(bakery: BakeryCreateData) {
 		const created = await prisma.bakery.create({
 			data: {

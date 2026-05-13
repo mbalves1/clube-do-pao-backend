@@ -19,7 +19,7 @@ model User {
   city              String?
   state             String?
   favoriteBakeries  FavoriteBakery[]
-  appointments      Appointment[]
+  appointments      Subscription[]
   createdAt         DateTime            @default(now())
 }
 
@@ -33,7 +33,7 @@ model Bakery {
   serviceStartAt    String
   serviceEndAt      String
   favorites         FavoriteBakery[]
-  appointments      Appointment[]
+  appointments      Subscription[]
   createdAt         DateTime            @default(now())
 
   @@map("bakeries")
@@ -48,9 +48,10 @@ model FavoriteBakery {
   createdAt         DateTime            @default(now())
 
   @@unique([userId, bakeryId])
+  @@map("favoriteBakery")
 }
 
-model Appointment {
+model Subscription {
   id                String              @id @default(uuid())
   userId            String
   bakeryId          String
@@ -62,4 +63,6 @@ model Appointment {
   status            String              @default("pending")
   notes             String?
   createdAt         DateTime            @default(now())
+
+  @@map("subscription")
 }
