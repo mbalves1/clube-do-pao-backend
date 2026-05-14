@@ -18,4 +18,12 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 			},
 		});
 	}
+
+	async getList(idUser: string): Promise<any> {
+		return prisma.subscription.findMany({
+			where: {
+				userId: idUser,
+			},
+		});
+	}
 }

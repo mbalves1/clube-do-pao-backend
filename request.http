@@ -79,3 +79,7 @@ Content-Type: application/json
     "notes": "10 paes" 
   }
 }
+
+###
+GET http://localhost:3333/api/subscribe/bd910059-c841-4cfa-ba95-206597ab384c
+Content-Type: application/json
