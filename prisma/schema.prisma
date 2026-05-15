@@ -32,6 +32,12 @@ model Bakery {
   whatsapp          String
   serviceStartAt    String
   serviceEndAt      String
+  zipCode           String?
+  street            String?
+  number            String?
+  district          String?
+  city              String?
+  state             String?
   favorites         FavoriteBakery[]
   appointments      Subscription[]
   createdAt         DateTime            @default(now())
