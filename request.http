@@ -18,8 +18,8 @@ POST http://localhost:3333/api/users
 Content-Type: application/json
 
 {
-  "name": "Vanessa",
-  "email": "vanessa@email.com",
+  "name": "Murilo",
+  "email": "murilo@email.com",
   "password": "123456"
 }
 
@@ -40,10 +40,6 @@ Content-Type: application/json
 }
 
 
-==============================================
-Bakery
-==============================================
-
 ###
 GET  http://localhost:3333/api/bakery
 Content-Type: application/json
@@ -62,24 +58,25 @@ Content-Type: application/json
   "serviceEndAt": "18:00"
 }
 
-==============================================
-Subscribe
-==============================================
 
 ###
 POST http://localhost:3333/api/subscribe
 Content-Type: application/json
 
 {
-  "userId": "bd910059-c841-4cfa-ba95-206597ab384c",
-  "bakeryId": "f3b5a586-5783-4333-a6b6-f5471344687e",
+  "userId": "a8c1bb88-8a26-4369-a1bb-f8cbaccd860c",
+  "bakeryId": "e0758e45-fd77-4dfc-86ad-dab31b7932ed",
   "subscribe": {
-    "start": "8:00",
-    "end": "8:30",
-    "notes": "10 paes" 
+    "serviceStartAt": "01-05-2026",
+    "serviceEndAt": "30-05-2026",
+    "deliveryStartAt": "8:00",
+    "deliveryEndAt": "9:00",
+    "notes": "10 paes",
+    "frequency": "daily"
   }
 }
 
+
 ###
-GET http://localhost:3333/api/subscribe/bd910059-c841-4cfa-ba95-206597ab384c
+GET http://localhost:3333/api/subscribe/99afc466-c437-439d-9a8d-489fba62cf34
 Content-Type: application/json
