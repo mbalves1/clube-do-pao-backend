@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { formatBadRequest } from '../http/validators/format-validation-error';
 import { CreateSubscribeUseCase } from '../../core/usecases/subscribe/create-subscribe';
 import { ListSubscribeUseCase } from '../../core/usecases/subscribe/list-subscribe';
+import { createSubscriptionSchema } from '../http/validators/subscription-validator';
 
 export class SubscribeController {
 	constructor(
@@ -11,13 +12,12 @@ export class SubscribeController {
 
 	async create(req: Request, res: Response): Promise<Response> {
 		try {
-			const userId = req.body.userId;
-			const bakeryId = req.body.bakeryId;
-			const subscribe = req.body.subscribe;
+			const payload = createSubscriptionSchema.parse(req.body);
+
 			const user = await this.createSubscribeUseCase.execute(
-				userId,
-				bakeryId,
-				subscribe,
+				payload.userId,
+				payload.bakeryId,
+				payload.subscribe,
 			);
 			return res.status(201).json(user);
 		} catch (error) {

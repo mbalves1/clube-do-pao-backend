@@ -4,8 +4,12 @@ export interface SubscribeCreateData {
 	serviceDate: Date;
 	serviceStartAt: string;
 	serviceEndAt: string;
-	status: string;
-	notes?: string | null;
+	frequency: 'daily' | 'weekly' | 'monthly';
+	daysWeek?: string[];
+	deliveryStartAt: string;
+	deliveryEndAt: string;
+	status?: 'ACTIVE' | 'PAUSED' | 'CANCELED' | 'PENDING';
+	notes: string;
 }
 
 export interface SubscribeRepository {

@@ -6,13 +6,16 @@ import {
 
 export class PrismaSubscribeRepository implements SubscribeRepository {
 	async create(data: SubscribeCreateData) {
-		return prisma.subscription.create({
+		return await prisma.subscription.create({
 			data: {
 				userId: data.userId,
 				bakeryId: data.bakeryId,
-				serviceDate: data.serviceDate,
 				serviceStartAt: data.serviceStartAt,
 				serviceEndAt: data.serviceEndAt,
+				frequency: data.frequency,
+				daysWeek: data.daysWeek ?? [],
+				deliveryStartAt: data.deliveryStartAt,
+				deliveryEndAt: data.deliveryEndAt,
 				status: data.status,
 				notes: data.notes,
 			},

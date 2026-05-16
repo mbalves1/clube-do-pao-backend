@@ -3,10 +3,12 @@ import { SubscribeRepository } from '../../ports/subscribe-repository';
 import { UserRepository } from '../../ports/user-repository';
 
 interface CreateSubscribeInput {
-	start: string;
-	end: string;
-	notes?: string;
-	serviceDate?: string | Date;
+	frequency: 'daily' | 'weekly' | 'monthly';
+	deliveryStartAt: string;
+	deliveryEndAt: string;
+	serviceStartAt: string;
+	serviceEndAt: string;
+	notes: string;
 }
 
 export class CreateSubscribeUseCase {
@@ -31,16 +33,37 @@ export class CreateSubscribeUseCase {
 			throw new Error('padaria nao encontrado');
 		}
 
-		return this.subscribeRepository.create({
-			userId: idUser,
-			bakeryId: idBakery,
-			serviceDate: subscribe.serviceDate
-				? new Date(subscribe.serviceDate)
-				: new Date(),
-			serviceStartAt: subscribe.start,
-			serviceEndAt: subscribe.end,
-			status: 'pending',
-			notes: subscribe.notes,
-		});
+		const dayStart = Number(subscribe.serviceStartAt.split('-')[0]);
+		const dayEnd = Number(subscribe.serviceEndAt.split('-')[0]);
+
+		if (subscribe.frequency === 'daily') {
+			for (let i = dayStart; i <= dayEnd; i++) {
+				this.subscribeRepository.create({
+					userId: idUser,
+					bakeryId: idBakery,
+					serviceDate: new Date(),
+					serviceStartAt: subscribe.serviceStartAt,
+					serviceEndAt: subscribe.serviceEndAt,
+					frequency: subscribe.frequency,
+					deliveryStartAt: subscribe.deliveryStartAt,
+					deliveryEndAt: subscribe.deliveryEndAt,
+					status: 'PENDING',
+					notes: subscribe.notes,
+				});
+			}
+		} else {
+			return this.subscribeRepository.create({
+				userId: idUser,
+				bakeryId: idBakery,
+				serviceDate: new Date(),
+				serviceStartAt: subscribe.deliveryStartAt,
+				serviceEndAt: subscribe.deliveryEndAt,
+				frequency: subscribe.frequency,
+				deliveryStartAt: subscribe.deliveryStartAt,
+				deliveryEndAt: subscribe.deliveryEndAt,
+				status: 'PENDING',
+				notes: subscribe.notes,
+			});
+		}
 	}
 }
