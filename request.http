@@ -64,15 +64,16 @@ POST http://localhost:3333/api/subscribe
 Content-Type: application/json
 
 {
-  "userId": "a8c1bb88-8a26-4369-a1bb-f8cbaccd860c",
+  "userId": "99afc466-c437-439d-9a8d-489fba62cf34",
   "bakeryId": "e0758e45-fd77-4dfc-86ad-dab31b7932ed",
   "subscribe": {
     "serviceStartAt": "01-05-2026",
     "serviceEndAt": "30-05-2026",
     "deliveryStartAt": "8:00",
     "deliveryEndAt": "9:00",
-    "notes": "10 paes",
-    "frequency": "daily"
+    "notes": "2 paes",
+    "frequency": "weekly",
+    "daysWeek": ["monday", "friday"]
   }
 }
 
