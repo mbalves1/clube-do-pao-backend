@@ -10,6 +10,7 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 			data: {
 				userId: data.userId,
 				bakeryId: data.bakeryId,
+				serviceDate: data.serviceDate,
 				serviceStartAt: data.serviceStartAt,
 				serviceEndAt: data.serviceEndAt,
 				frequency: data.frequency,

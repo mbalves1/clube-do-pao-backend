@@ -50,15 +50,17 @@ export class CreateSubscribeUseCase {
 			throw new Error('padaria nao encontrado');
 		}
 
-		const dayStart = Number(subscribe.serviceStartAt.split('-')[0]);
-		const dayEnd = Number(subscribe.serviceEndAt.split('-')[0]);
+		const startDate = this.parseDate(subscribe.serviceStartAt);
+		const endDate = this.parseDate(subscribe.serviceEndAt);
 
 		if (subscribe.frequency === 'daily') {
-			for (let i = dayStart; i <= dayEnd; i++) {
-				this.subscribeRepository.create({
+			const currentDate = new Date(startDate);
+
+			while (currentDate <= endDate) {
+				await this.subscribeRepository.create({
 					userId: idUser,
 					bakeryId: idBakery,
-					serviceDate: new Date(),
+					serviceDate: new Date(currentDate),
 					serviceStartAt: subscribe.serviceStartAt,
 					serviceEndAt: subscribe.serviceEndAt,
 					frequency: subscribe.frequency,
@@ -67,23 +69,26 @@ export class CreateSubscribeUseCase {
 					status: 'PENDING',
 					notes: subscribe.notes,
 				});
+
+				currentDate.setDate(currentDate.getDate() + 1);
 			}
 		}
 
-		const startDate = this.parseDate(subscribe.serviceStartAt);
-		const endDate = this.parseDate(subscribe.serviceEndAt);
-
 		if (subscribe.frequency === 'weekly' && subscribe.daysWeek?.length) {
-			const selectedDays = subscribe.daysWeek.map(
-				(day: any) => this.weekMap[day.toLowerCase()],
-			);
+			const selectedDays = subscribe.daysWeek.map((day) => ({
+				name: day,
+				weekDay: this.weekMap[day.toLowerCase()],
+			}));
 
 			const currentDate = new Date(startDate);
 
 			while (currentDate <= endDate) {
 				const currentWeekDay = currentDate.getDay();
+				const selectedDay = selectedDays.find(
+					(day) => day.weekDay === currentWeekDay,
+				);
 
-				if (selectedDays.includes(currentWeekDay)) {
+				if (selectedDay) {
 					await this.subscribeRepository.create({
 						userId: idUser,
 						bakeryId: idBakery,
@@ -94,7 +99,7 @@ export class CreateSubscribeUseCase {
 						deliveryStartAt: subscribe.deliveryStartAt,
 						deliveryEndAt: subscribe.deliveryEndAt,
 						status: 'PENDING',
-						daysWeek: subscribe.daysWeek,
+						daysWeek: [selectedDay.name],
 						notes: subscribe.notes,
 					});
 				}
