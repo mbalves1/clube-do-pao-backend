@@ -3,3 +3,6 @@ dist/
 .env
 prisma/dev.db
 .env.docker
+
+.codex/
+.agent/
