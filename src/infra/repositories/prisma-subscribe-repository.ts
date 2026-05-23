@@ -30,4 +30,23 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 			},
 		});
 	}
+
+	async getOrder(idUser: string): Promise<any> {
+		return prisma.subscription.findMany({
+			where: {
+				userId: idUser,
+			},
+		});
+	}
+
+	async getOrderByDay(startOfDay: Date, endOfDay: Date): Promise<any> {
+		return prisma.subscription.findMany({
+			where: {
+				serviceDate: {
+					gte: startOfDay,
+					lt: endOfDay,
+				},
+			},
+		});
+	}
 }

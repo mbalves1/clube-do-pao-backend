@@ -15,4 +15,5 @@ export interface SubscribeCreateData {
 export interface SubscribeRepository {
 	create(data: SubscribeCreateData): Promise<any>;
 	getList(userId: string): Promise<any>;
+	getOrderByDay(startOfDay: Date, endOfDay: Date): Promise<any>;
 }
