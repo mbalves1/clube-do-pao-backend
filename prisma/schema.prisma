@@ -58,21 +58,43 @@ model FavoriteBakery {
 }
 
 model Subscription {
-  id              Int @id @default(autoincrement())
-  userId          String
-  bakeryId        String
-  user            User     @relation(fields: [userId], references: [id])
-  bakery          Bakery   @relation(fields: [bakeryId], references: [id])
-  serviceDate     DateTime @default(now())
-  serviceStartAt  String
-  serviceEndAt    String
-  deliveryStartAt String
-  deliveryEndAt   String
-  status          String   @default("pending")
-  notes           String?
-  frequency       String
-  daysWeek        String[]
-  createdAt       DateTime @default(now())
+  id               Int             @id @default(autoincrement())
+  userId           String
+  bakeryId         String
+  deliveryPersonId String?
+  user             User            @relation(fields: [userId], references: [id])
+  bakery           Bakery          @relation(fields: [bakeryId], references: [id])
+  deliveryPerson   DeliveryPerson? @relation(fields: [deliveryPersonId], references: [id])
+  serviceDate      DateTime        @default(now())
+  serviceStartAt   String
+  serviceEndAt     String
+  deliveryStartAt  String
+  deliveryEndAt    String
+  status           String          @default("pending")
+  notes            String?
+  frequency        String
+  daysWeek         String[]
+  createdAt        DateTime        @default(now())
 
   @@map("subscription")
+}
+
+model DeliveryPerson {
+  id            String         @id @default(uuid())
+  name          String
+  document      String         @unique
+  phone         String?
+  modal         DeliveryModal
+  status        String         @default("ACTIVE")
+  subscriptions Subscription[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("delivery_people")
+}
+
+enum DeliveryModal {
+  BIKE
+  MOTORCYCLE
+  WALKING
 }

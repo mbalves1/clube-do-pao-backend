@@ -5,6 +5,9 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 	const router = Router();
 
 	router.route('/orders').get((req, res) => ordersController.list(req, res));
+	router
+		.route('/orders/:id')
+		.patch((req, res) => ordersController.list(req, res));
 
 	return router;
 }
