@@ -6,8 +6,8 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 
 	router.route('/orders').get((req, res) => ordersController.list(req, res));
 	router
-		.route('/orders/:id')
-		.patch((req, res) => ordersController.list(req, res));
+		.route('/orders/:orderId/:deliveryId')
+		.patch((req, res) => ordersController.updateOrder(req, res));
 
 	return router;
 }

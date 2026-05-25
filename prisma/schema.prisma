@@ -65,6 +65,7 @@ model Subscription {
   user             User            @relation(fields: [userId], references: [id])
   bakery           Bakery          @relation(fields: [bakeryId], references: [id])
   deliveryPerson   DeliveryPerson? @relation(fields: [deliveryPersonId], references: [id])
+  orders           Order[]
   serviceDate      DateTime        @default(now())
   serviceStartAt   String
   serviceEndAt     String
@@ -87,14 +88,41 @@ model DeliveryPerson {
   modal         DeliveryModal
   status        String         @default("ACTIVE")
   subscriptions Subscription[]
+  orders        Order[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
   @@map("delivery_people")
 }
 
+model Order {
+  id               Int             @id @default(autoincrement())
+  subscriptionId   Int
+  deliveryPersonId String?
+  subscription     Subscription    @relation(fields: [subscriptionId], references: [id])
+  deliveryPerson   DeliveryPerson? @relation(fields: [deliveryPersonId], references: [id])
+  serviceDate      DateTime
+  status           OrderStatus     @default(PENDING)
+  acceptedAt       DateTime?
+  pickedUpAt       DateTime?
+  deliveredAt      DateTime?
+  canceledAt       DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@map("orders")
+}
+
 enum DeliveryModal {
   BIKE
   MOTORCYCLE
   WALKING
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  PICKED_UP
+  DELIVERED
+  CANCELED
 }

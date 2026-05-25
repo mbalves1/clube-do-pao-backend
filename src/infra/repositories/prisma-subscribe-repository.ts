@@ -49,4 +49,14 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 			},
 		});
 	}
+
+	async updateOrder(orderId: number, deliveryId: string): Promise<any> {
+		return prisma.subscription.update({
+			where: { id: orderId },
+			data: {
+				deliveryPersonId: deliveryId,
+				status: 'ACTIVE',
+			},
+		});
+	}
 }
