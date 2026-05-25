@@ -12,6 +12,10 @@ const app = express();
 app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+app.get('/health', (req, res) => {
+	return res.status(200).json({ status: 'ok' });
+});
+
 app.use(
 	'/api',
 	makeRoutes({
