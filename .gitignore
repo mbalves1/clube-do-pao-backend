@@ -6,3 +6,4 @@ prisma/dev.db
 
 .codex/
 .agent/
+.vercel
