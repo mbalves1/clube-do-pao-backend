@@ -8,13 +8,13 @@ export class UpdateOrdersUseCase {
 	) {}
 
 	async execute(orderId: number, deliveryId: string): Promise<any> {
-		const order = this.ordersRepository.findById(orderId);
-		const sub = this.subscribeRepository;
-		console.log('auqi', order);
+		const order = await this.subscribeRepository.getSubscribeById(orderId);
+		const sub = this.ordersRepository.create(order, deliveryId);
+		console.log('auqi', sub);
 		// if (!order) {
 		// 	this.ordersRepository.create();
 		// }
 
-		return this.subscribeRepository.updateOrder(orderId, deliveryId);
+		// return this.subscribeRepository.updateOrder(orderId, deliveryId);
 	}
 }

@@ -31,7 +31,7 @@ export class SubscribeController {
 		try {
 			const id = req.params.id as string;
 			const user = await this.getSubscribeUseCase.execute(id);
-			return res.status(201).json(user);
+			return res.status(200).json(user);
 		} catch (error) {
 			return res
 				.status(400)

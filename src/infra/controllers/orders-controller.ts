@@ -32,8 +32,11 @@ export class OrdersController {
 		try {
 			const orderId = Number(req.params.orderId);
 			const deliveryId = req.params.deliveryId;
-			const orders = await this.updateOrdersUseCase.execute(orderId, deliveryId);
-			return res.status(201).json(orders);
+			const orders = await this.updateOrdersUseCase.execute(
+				orderId,
+				deliveryId,
+			);
+			return res.status(200).json(orders);
 		} catch (error) {
 			return res
 				.status(400)

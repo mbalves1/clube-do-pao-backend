@@ -3,6 +3,7 @@ export type OrderStatus =
 	| 'ACCEPTED'
 	| 'PICKED_UP'
 	| 'DELIVERED'
+	| 'ACTIVE'
 	| 'CANCELED';
 
 export type Order = {
@@ -10,7 +11,7 @@ export type Order = {
 	subscriptionId: number;
 	deliveryPersonId?: string | null;
 	serviceDate: Date;
-	status: OrderStatus;
+	status?: OrderStatus | null;
 	acceptedAt?: Date | null;
 	pickedUpAt?: Date | null;
 	deliveredAt?: Date | null;

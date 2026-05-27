@@ -59,4 +59,12 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 			},
 		});
 	}
+
+	async getSubscribeById(orderId: number): Promise<any> {
+		return prisma.subscription.findFirst({
+			where: {
+				id: orderId,
+			},
+		});
+	}
 }

@@ -14,7 +14,7 @@ export type UpdateOrderData = Partial<
 };
 
 export interface OrdersRepository {
-	create(order: CreateOrderData): Promise<Order>;
+	create(order: CreateOrderData, deliveryId: string): Promise<Order>;
 	update(order: UpdateOrderData): Promise<Order>;
 	findById(id: number): Promise<Order | null>;
 	find(): Promise<Order[]>;
