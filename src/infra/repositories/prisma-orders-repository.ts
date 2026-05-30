@@ -7,37 +7,40 @@ import {
 } from '../../core/ports/orders-repository';
 import { prisma } from '../database/prisma-client';
 
-function mapOrder(order: any, deliveryId: string) {
+function mapOrder(order: any): Order {
 	return {
+		id: order.id,
 		subscriptionId: order.subscriptionId,
-		deliveryPersonId: deliveryId,
+		deliveryPersonId: order.deliveryPersonId ?? null,
 		serviceDate: order.serviceDate,
-		status: OrderStatus.PENDING,
-		acceptedAt: null,
-		pickedUpAt: null,
-		deliveredAt: null,
-		canceledAt: null,
+		status: (order.status as Order['status']) ?? null,
+		acceptedAt: order.acceptedAt ?? null,
+		pickedUpAt: order.pickedUpAt ?? null,
+		deliveredAt: order.deliveredAt ?? null,
+		canceledAt: order.canceledAt ?? null,
+		createdAt: order.createdAt,
+		updatedAt: order.updatedAt,
 	};
 }
 
 export class PrismaOrdersRepository implements OrdersRepository {
-	async create(order: any, deliveryId: string): Promise<any> {
-		console.log('order', order);
-
+	async create(order: any, deliveryId: string): Promise<Order> {
 		const created = await prisma.order.create({
 			data: {
-				subscriptionId: order.id,
-				deliveryPersonId: deliveryId,
+				subscription: { connect: { id: order.id } },
+				deliveryPerson: deliveryId
+					? { connect: { id: deliveryId } }
+					: undefined,
 				serviceDate: order.serviceDate,
-				status: 'PENDING',
-				acceptedAt: null,
-				pickedUpAt: null,
-				deliveredAt: null,
-				canceledAt: null,
+				status: (order.status as any) ?? OrderStatus.PENDING,
+				acceptedAt: order.acceptedAt ?? null,
+				pickedUpAt: order.pickedUpAt ?? null,
+				deliveredAt: order.deliveredAt ?? null,
+				canceledAt: order.canceledAt ?? null,
 			},
 		});
 
-		return created;
+		return mapOrder(created);
 	}
 
 	async update(order: UpdateOrderData): Promise<Order> {
@@ -47,13 +50,13 @@ export class PrismaOrdersRepository implements OrdersRepository {
 			},
 			data: {
 				subscriptionId: order.subscriptionId,
-				deliveryPersonId: order.deliveryPersonId,
+				deliveryPersonId: order.deliveryPersonId ?? null,
 				serviceDate: order.serviceDate,
-				status: order.status,
-				acceptedAt: order.acceptedAt,
-				pickedUpAt: order.pickedUpAt,
-				deliveredAt: order.deliveredAt,
-				canceledAt: order.canceledAt,
+				status: (order.status as any) ?? undefined,
+				acceptedAt: order.acceptedAt ?? null,
+				pickedUpAt: order.pickedUpAt ?? null,
+				deliveredAt: order.deliveredAt ?? null,
+				canceledAt: order.canceledAt ?? null,
 			},
 		});
 
@@ -65,9 +68,7 @@ export class PrismaOrdersRepository implements OrdersRepository {
 			where: { id },
 		});
 
-		if (!found) {
-			return null;
-		}
+		if (!found) return null;
 
 		return mapOrder(found);
 	}
@@ -75,6 +76,6 @@ export class PrismaOrdersRepository implements OrdersRepository {
 	async find(): Promise<Order[]> {
 		const found = await prisma.order.findMany();
 
-		return found.map(mapOrder);
+		return found.map((o) => mapOrder(o));
 	}
 }

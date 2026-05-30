@@ -55,7 +55,7 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 			where: { id: orderId },
 			data: {
 				deliveryPersonId: deliveryId,
-				status: 'ACTIVE',
+				status: 'PICKED_UP',
 			},
 		});
 	}
