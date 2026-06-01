@@ -33,7 +33,7 @@ export class PrismaOrdersRepository implements OrdersRepository {
 					: undefined,
 				serviceDate: order.serviceDate,
 				status: (order.status as any) ?? OrderStatus.PENDING,
-				acceptedAt: order.acceptedAt ?? null,
+				acceptedAt: new Date(),
 				pickedUpAt: order.pickedUpAt ?? null,
 				deliveredAt: order.deliveredAt ?? null,
 				canceledAt: order.canceledAt ?? null,
