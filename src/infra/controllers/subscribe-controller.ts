@@ -43,12 +43,19 @@ export class SubscribeController {
 
 	async listAll(req: Request, res: Response): Promise<Response> {
 		try {
-			const user = await this.getAllSubscribeUseCase.execute();
-			return res.status(200).json(user);
+			const page = Number(req.query.page ?? 1);
+			const limit = Number(req.query.limit ?? 10);
+
+			const subscriptions = await this.getAllSubscribeUseCase.execute(
+				page,
+				limit,
+			);
+
+			return res.status(200).json(subscriptions);
 		} catch (error) {
 			return res
 				.status(400)
-				.json(formatBadRequest(error, 'Erro ao listar padarias'));
+				.json(formatBadRequest(error, 'Erro ao listar assinaturas'));
 		}
 	}
 }

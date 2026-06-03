@@ -68,7 +68,27 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 		});
 	}
 
-	async getAll(): Promise<any> {
-		return prisma.subscription.findMany();
+	async getAll(page: number, limit: number): Promise<any> {
+		const skip = (page - 1) * limit;
+
+		const [data, total] = await Promise.all([
+			prisma.subscription.findMany({
+				skip,
+				take: limit,
+				orderBy: {
+					createdAt: 'desc',
+				},
+			}),
+
+			prisma.subscription.count(),
+		]);
+
+		return {
+			data,
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		};
 	}
 }
