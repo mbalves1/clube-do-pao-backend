@@ -117,7 +117,7 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 	 *     tags:
 	 *       - Subscribe
 	 *     summary: Listar assinaturas
-	 *     description: Retorna uma lista paginada de assinaturas.
+	 *     description: Retorna uma lista paginada de assinaturas, podendo filtrar por data de serviço.
 	 *     parameters:
 	 *       - in: query
 	 *         name: page
@@ -126,6 +126,7 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 	 *           type: integer
 	 *           default: 1
 	 *         description: Número da página.
+	 *
 	 *       - in: query
 	 *         name: limit
 	 *         required: false
@@ -133,6 +134,16 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 	 *           type: integer
 	 *           default: 10
 	 *         description: Quantidade de registros por página.
+	 *
+	 *       - in: query
+	 *         name: serviceDate
+	 *         required: false
+	 *         schema:
+	 *           type: string
+	 *           format: date
+	 *         example: "2026-06-03"
+	 *         description: Filtra assinaturas pela data de serviço.
+	 *
 	 *     responses:
 	 *       200:
 	 *         description: Lista de assinaturas retornada com sucesso.
@@ -155,6 +166,10 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 	 *                       bakeryId:
 	 *                         type: string
 	 *                         example: "bakery_456"
+	 *                       serviceDate:
+	 *                         type: string
+	 *                         format: date-time
+	 *                         example: "2026-06-03T08:00:00.000Z"
 	 *                       frequency:
 	 *                         type: string
 	 *                         enum:
@@ -164,18 +179,24 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 	 *                       createdAt:
 	 *                         type: string
 	 *                         format: date-time
+	 *                         example: "2026-06-01T10:00:00.000Z"
+	 *
 	 *                 page:
 	 *                   type: integer
 	 *                   example: 1
+	 *
 	 *                 limit:
 	 *                   type: integer
 	 *                   example: 10
+	 *
 	 *                 total:
 	 *                   type: integer
 	 *                   example: 125
+	 *
 	 *                 totalPages:
 	 *                   type: integer
 	 *                   example: 13
+	 *
 	 *       400:
 	 *         description: Erro ao listar assinaturas.
 	 */

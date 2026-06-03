@@ -45,10 +45,12 @@ export class SubscribeController {
 		try {
 			const page = Number(req.query.page ?? 1);
 			const limit = Number(req.query.limit ?? 10);
+			const serviceDate = req.query.serviceDate as string | undefined;
 
 			const subscriptions = await this.getAllSubscribeUseCase.execute(
 				page,
 				limit,
+				serviceDate,
 			);
 
 			return res.status(200).json(subscriptions);

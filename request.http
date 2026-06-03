@@ -85,8 +85,8 @@ Content-Type: application/json
   "userId": "99afc466-c437-439d-9a8d-489fba62cf34",
   "bakeryId": "e0758e45-fd77-4dfc-86ad-dab31b7932ed",
   "subscribe": {
-    "serviceStartAt": "01-05-2026",
-    "serviceEndAt": "01-06-2026",
+    "serviceStartAt": "01-06-2026",
+    "serviceEndAt": "10-06-2026",
     "deliveryStartAt": "8:00",
     "deliveryEndAt": "9:00",
     "notes": "10 paes",
@@ -101,6 +101,10 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3333/api/subscribe
+Content-Type: application/json
+
+###
+GET http://localhost:3333/api/subscribe?serviceDate=2026-06-03
 Content-Type: application/json
 
 ####

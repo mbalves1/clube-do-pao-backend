@@ -68,19 +68,39 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 		});
 	}
 
-	async getAll(page: number, limit: number): Promise<any> {
+	async getAll(
+		page: number,
+		limit: number,
+		serviceDate?: string,
+	): Promise<any> {
 		const skip = (page - 1) * limit;
+
+		const where: any = {};
+
+		if (serviceDate) {
+			const date = new Date(serviceDate);
+
+			const startOfDay = new Date(date);
+			startOfDay.setHours(0, 0, 0, 0);
+
+			const endOfDay = new Date(date);
+			endOfDay.setHours(23, 59, 59, 999);
+
+			where.serviceDate = {
+				gte: startOfDay,
+				lte: endOfDay,
+			};
+		}
 
 		const [data, total] = await Promise.all([
 			prisma.subscription.findMany({
+				where,
 				skip,
 				take: limit,
-				orderBy: {
-					createdAt: 'desc',
-				},
 			}),
-
-			prisma.subscription.count(),
+			prisma.subscription.count({
+				where,
+			}),
 		]);
 
 		return {
