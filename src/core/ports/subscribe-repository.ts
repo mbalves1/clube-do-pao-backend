@@ -18,4 +18,5 @@ export interface SubscribeRepository {
 	getOrderByDay(startOfDay: Date, endOfDay: Date): Promise<any>;
 	updateOrder(orderId: number, deliveryId: string): Promise<any>;
 	getSubscribeById(orderId: number): Promise<any>;
+	getAll(): Promise<any>;
 }

@@ -67,4 +67,8 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 			},
 		});
 	}
+
+	async getAll(): Promise<any> {
+		return prisma.subscription.findMany();
+	}
 }

@@ -99,6 +99,9 @@ Content-Type: application/json
 GET http://localhost:3333/api/subscribe/99afc466-c437-439d-9a8d-489fba62cf34
 Content-Type: application/json
 
+###
+GET http://localhost:3333/api/subscribe
+Content-Type: application/json
 
 ####
 GET http://localhost:3333/api/orders
