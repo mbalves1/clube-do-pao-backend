@@ -114,3 +114,15 @@ Content-Type: application/json
 ####
 PATCH  http://localhost:3333/api/orders/44/1
 Content-Type: application/json
+
+####
+POST  http://localhost:3333/api/delivery/register
+Content-Type: application/json
+
+{
+  "name": "Aragorn",
+  "document": "55566644489",
+  "phone": "44999885566",
+  "email": "aragorn@email.com",
+  "modal": "MOTORCYCLE"
+}

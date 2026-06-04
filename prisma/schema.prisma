@@ -11,16 +11,16 @@ model User {
   id               String           @id @default(uuid())
   name             String
   email            String           @unique
-  phone            String?
-  zipCode          String?
-  street           String?
-  number           String?
-  district         String?
+  createdAt        DateTime         @default(now())
   city             String?
+  district         String?
+  number           String?
+  phone            String?
   state            String?
+  street           String?
+  zipCode          String?
   favoriteBakeries FavoriteBakery[]
   appointments     Subscription[]
-  createdAt        DateTime         @default(now())
 }
 
 model Bakery {
@@ -32,15 +32,15 @@ model Bakery {
   whatsapp       String
   serviceStartAt String
   serviceEndAt   String
-  zipCode        String?
-  street         String?
-  number         String?
-  district       String?
+  createdAt      DateTime         @default(now())
   city           String?
+  district       String?
+  number         String?
   state          String?
+  street         String?
+  zipCode        String?
   favorites      FavoriteBakery[]
   appointments   Subscription[]
-  createdAt      DateTime         @default(now())
 
   @@map("bakeries")
 }
@@ -49,33 +49,33 @@ model FavoriteBakery {
   id        String   @id @default(uuid())
   userId    String
   bakeryId  String
-  user      User     @relation(fields: [userId], references: [id])
-  bakery    Bakery   @relation(fields: [bakeryId], references: [id])
   createdAt DateTime @default(now())
+  bakery    Bakery   @relation(fields: [bakeryId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, bakeryId])
   @@map("favoriteBakery")
 }
 
 model Subscription {
-  id               Int             @id @default(autoincrement())
   userId           String
   bakeryId         String
-  deliveryPersonId String?
-  user             User            @relation(fields: [userId], references: [id])
-  bakery           Bakery          @relation(fields: [bakeryId], references: [id])
-  deliveryPerson   DeliveryPerson? @relation(fields: [deliveryPersonId], references: [id])
-  orders           Order[]
   serviceDate      DateTime        @default(now())
   serviceStartAt   String
   serviceEndAt     String
-  deliveryStartAt  String
-  deliveryEndAt    String
   status           String          @default("pending")
   notes            String?
-  frequency        String
-  daysWeek         String[]
   createdAt        DateTime        @default(now())
+  daysWeek         String[]
+  deliveryEndAt    String
+  deliveryStartAt  String
+  frequency        String
+  id               Int             @id @default(autoincrement())
+  deliveryPersonId String?
+  orders           Order[]
+  bakery           Bakery          @relation(fields: [bakeryId], references: [id])
+  deliveryPerson   DeliveryPerson? @relation(fields: [deliveryPersonId], references: [id])
+  user             User            @relation(fields: [userId], references: [id])
 
   @@map("subscription")
 }
@@ -87,10 +87,11 @@ model DeliveryPerson {
   phone         String?
   modal         DeliveryModal
   status        String         @default("ACTIVE")
-  subscriptions Subscription[]
-  orders        Order[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  email         String?
+  orders        Order[]
+  subscriptions Subscription[]
 
   @@map("delivery_people")
 }
@@ -99,8 +100,6 @@ model Order {
   id               Int             @id @default(autoincrement())
   subscriptionId   Int
   deliveryPersonId String?
-  subscription     Subscription    @relation(fields: [subscriptionId], references: [id])
-  deliveryPerson   DeliveryPerson? @relation(fields: [deliveryPersonId], references: [id])
   serviceDate      DateTime
   status           OrderStatus     @default(PENDING)
   acceptedAt       DateTime?
@@ -109,6 +108,8 @@ model Order {
   canceledAt       DateTime?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  deliveryPerson   DeliveryPerson? @relation(fields: [deliveryPersonId], references: [id])
+  subscription     Subscription    @relation(fields: [subscriptionId], references: [id])
 
   @@map("orders")
 }

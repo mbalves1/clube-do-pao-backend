@@ -6,6 +6,7 @@ import { makeBakeryController } from './factories/bakery-controller-factory';
 import { makeOrdersController } from './factories/order-controller-factory';
 import { makeSubscribeController } from './factories/subscribe-controller-factory';
 import { makeUserController } from './factories/user-controller-factory';
+import { makeDeliveryUserController } from './factories/devlivery-user-controller-factory';
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(
 		bakeryController: makeBakeryController(),
 		ordersController: makeOrdersController(),
 		subscribeController: makeSubscribeController(),
+		deliveryUserController: makeDeliveryUserController(),
 	}),
 );
 
