@@ -1,4 +1,5 @@
 import { ConflictError } from '../../errors/ConflictError';
+import { OrderStatus } from '../../entities/orders';
 import { OrdersRepository } from '../../ports/orders-repository';
 import { SubscribeRepository } from '../../ports/subscribe-repository';
 
@@ -8,7 +9,11 @@ export class UpdateOrdersUseCase {
 		private ordersRepository: OrdersRepository,
 	) {}
 
-	async execute(orderId: number, deliveryId: string): Promise<any> {
+	async execute(
+		orderId: number,
+		deliveryId: string,
+		status: OrderStatus,
+	): Promise<any> {
 		const order = await this.subscribeRepository.getSubscribeById(orderId);
 		const orderAllocate = await this.ordersRepository.findById(orderId);
 
@@ -16,7 +21,11 @@ export class UpdateOrdersUseCase {
 			throw new ConflictError('Ordem ja alocada');
 		}
 
-		const sub = this.ordersRepository.create(order, deliveryId);
-		return await this.subscribeRepository.updateOrder(orderId, deliveryId);
+		await this.ordersRepository.create({ ...order, status }, deliveryId);
+		return await this.subscribeRepository.updateOrder(
+			orderId,
+			deliveryId,
+			status,
+		);
 	}
 }

@@ -1,4 +1,5 @@
 import { prisma } from './../database/prisma-client';
+import { OrderStatus } from '../../core/entities/orders';
 import {
 	SubscribeCreateData,
 	SubscribeRepository,
@@ -50,12 +51,16 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 		});
 	}
 
-	async updateOrder(orderId: number, deliveryId: string): Promise<any> {
+	async updateOrder(
+		orderId: number,
+		deliveryId: string,
+		status: OrderStatus,
+	): Promise<any> {
 		return prisma.subscription.update({
 			where: { id: orderId },
 			data: {
 				deliveryPersonId: deliveryId,
-				status: 'PICKED_UP',
+				status,
 			},
 		});
 	}

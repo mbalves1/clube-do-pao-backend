@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { OrdersController } from '../../controllers/orders-controller';
+import { validateSchema } from '../../../middlewares/validate-schema';
+import { updateOrderSchema } from '../validators/order-validator';
 
 export function makeOrdersRoutes(ordersController: OrdersController) {
 	const router = Router();
@@ -62,9 +64,11 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 	 *       500:
 	 *         description: Erro interno do servidor
 	 */
-	router
-		.route('/orders/:orderId/:deliveryId')
-		.patch((req, res) => ordersController.updateOrder(req, res));
+	router.patch(
+		'/orders/:orderId/:deliveryId',
+		validateSchema(updateOrderSchema),
+		(req, res) => ordersController.updateOrder(req, res),
+	);
 
 	return router;
 }
