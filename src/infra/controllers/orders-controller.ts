@@ -3,10 +3,15 @@ import { formatBadRequest } from '../http/validators/format-validation-error';
 import { ListOrdersUseCase } from '../../core/usecases/orders/list-orders';
 import { UpdateOrdersUseCase } from '../../core/usecases/orders/update-orders';
 import { AppError } from '../../core/errors/AppError';
+import { OrderStatus } from '../../core/entities/orders';
 
 type UpdateOrderParams = {
 	orderId: string;
 	deliveryId: string;
+};
+
+type UpdateOrderBody = {
+	status: OrderStatus;
 };
 
 export class OrdersController {
@@ -27,15 +32,16 @@ export class OrdersController {
 	}
 
 	async updateOrder(
-		req: Request<UpdateOrderParams>,
+		req: Request,
 		res: Response,
 	): Promise<Response> {
 		try {
-			const orderId = Number(req.params.orderId);
-			const deliveryId = req.params.deliveryId;
+			const { orderId, deliveryId } = req.params as UpdateOrderParams;
+			const { status } = req.body as UpdateOrderBody;
 			const orders = await this.updateOrdersUseCase.execute(
-				orderId,
+				Number(orderId),
 				deliveryId,
+				status,
 			);
 			return res.status(200).json(orders);
 		} catch (error) {
