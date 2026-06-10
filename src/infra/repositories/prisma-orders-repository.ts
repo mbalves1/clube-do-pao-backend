@@ -63,9 +63,9 @@ export class PrismaOrdersRepository implements OrdersRepository {
 		return mapOrder(updated);
 	}
 
-	async findById(id: number): Promise<Order | null> {
-		const found = await prisma.order.findUnique({
-			where: { id },
+	async findBySubscriptionId(subscriptionId: number): Promise<Order | null> {
+		const found = await prisma.order.findFirst({
+			where: { subscriptionId },
 		});
 
 		if (!found) return null;
