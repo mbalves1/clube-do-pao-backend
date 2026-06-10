@@ -112,8 +112,12 @@ GET http://localhost:3333/api/orders
 Content-Type: application/json
 
 ####
-PATCH  http://localhost:3333/api/orders/44/1
+PATCH  http://localhost:3333/api/orders/12421/28eb82e8-4d06-4ca7-977b-0caed0a32cbe
 Content-Type: application/json
+
+{
+  "status": "PICKED_UP"
+}
 
 ####
 POST  http://localhost:3333/api/delivery/register
