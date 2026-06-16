@@ -1,4 +1,14 @@
 
+### LOGIN - retorna o access_token para usar nas rotas autenticadas
+POST https://cduaqnxixtfsijstimxb.supabase.co/auth/v1/token?grant_type=password
+Content-Type: application/json
+apikey: sb_publishable_S7qnVDQzddBDaRvEp3g5Rw_uwzvsLYB
+
+{
+  "email": "murilobalves1@gmail.com",
+  "password": "123456"
+}
+
 ###
 POST http://localhost:3333/api/users
 Content-Type: application/json
@@ -85,8 +95,8 @@ Content-Type: application/json
   "userId": "99afc466-c437-439d-9a8d-489fba62cf34",
   "bakeryId": "e0758e45-fd77-4dfc-86ad-dab31b7932ed",
   "subscribe": {
-    "serviceStartAt": "01-06-2026",
-    "serviceEndAt": "10-06-2026",
+    "serviceStartAt": "16-06-2026",
+    "serviceEndAt": "29-06-2026",
     "deliveryStartAt": "8:00",
     "deliveryEndAt": "9:00",
     "notes": "10 paes",
@@ -110,10 +120,12 @@ Content-Type: application/json
 ####
 GET http://localhost:3333/api/orders
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjY4N2NlNzYzLWQ1NDctNDZmNy1iM2Q0LTIxY2RhNzEzNzAwMCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2NkdWFxbnhpeHRmc2lqc3RpbXhiLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlN2Y1ZmU5MC04ZjVhLTQ1MzEtOTE2OC0zODdiYTQwNjFhMWUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzgxNjExODYxLCJpYXQiOjE3ODE2MDgyNjEsImVtYWlsIjoibXVyaWxvYmFsdmVzMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsX3ZlcmlmaWVkIjp0cnVlfSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc4MTYwODI2MX1dLCJzZXNzaW9uX2lkIjoiYmYyMmY4MGUtMDMyYS00M2Y0LTljOWQtZDExOWI5YTU0ZjNlIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.Oe3_4d8CiUXbFyUA0QN89HzNFd-zJokuT0w4HTk90dYjQtHUPob2m-OchbQHG4kdvoJXB44ZvcbpIBaoz413PQ
 
 ####
 PATCH  http://localhost:3333/api/orders/12421/28eb82e8-4d06-4ca7-977b-0caed0a32cbe
 Content-Type: application/json
+Authorization: Bearer SEU_TOKEN_AQUI
 
 {
   "status": "PICKED_UP"

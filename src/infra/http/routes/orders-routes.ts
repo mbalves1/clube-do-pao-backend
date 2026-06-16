@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { OrdersController } from '../../controllers/orders-controller';
 import { validateSchema } from '../../../middlewares/validate-schema';
 import { updateOrderSchema } from '../validators/order-validator';
+import { authMiddleware } from '../../../middlewares/auth';
 
 export function makeOrdersRoutes(ordersController: OrdersController) {
 	const router = Router();
@@ -26,7 +27,9 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 	 *       500:
 	 *         description: Erro interno do servidor
 	 */
-	router.route('/orders').get((req, res) => ordersController.list(req, res));
+	router
+		.route('/orders')
+		.get(authMiddleware, (req, res) => ordersController.list(req, res));
 	/**
 	 * @swagger
 	 * /orders/{orderId}/{deliveryId}:
@@ -66,6 +69,7 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 	 */
 	router.patch(
 		'/orders/:orderId/:deliveryId',
+		authMiddleware,
 		validateSchema(updateOrderSchema),
 		(req, res) => ordersController.updateOrder(req, res),
 	);
