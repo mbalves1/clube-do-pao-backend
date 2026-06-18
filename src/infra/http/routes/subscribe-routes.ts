@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { SubscribeController } from '../../controllers/subscribe-controller';
+import { authMiddleware } from '../../../middlewares/auth';
 
 export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 	const router = Router();
@@ -79,7 +80,7 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 	 */
 	router
 		.route('/subscribe')
-		.post((req, res) => subscribeController.create(req, res));
+		.post(authMiddleware, (req, res) => subscribeController.create(req, res));
 
 	/**
 	 * @swagger
@@ -108,7 +109,7 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 	 */
 	router
 		.route('/subscribe/:id')
-		.get((req, res) => subscribeController.list(req, res));
+		.get(authMiddleware, (req, res) => subscribeController.list(req, res));
 
 	/**
 	 * @swagger
@@ -202,7 +203,7 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 	 */
 	router
 		.route('/subscribe')
-		.get((req, res) => subscribeController.listAll(req, res));
+		.get(authMiddleware, (req, res) => subscribeController.listAll(req, res));
 
 	return router;
 }

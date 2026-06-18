@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { DeliveryUsersController } from '../../controllers/delivery-users-controller';
 import { createDeliverySchema } from '../validators/delivery-user-validator';
 import { validateSchema } from '../../../middlewares/validate-schema';
+import { authMiddleware } from '../../../middlewares/auth';
 
 export function makeDeliveryUsersRoutes(
 	deliveryUsersController: DeliveryUsersController,
@@ -10,6 +11,7 @@ export function makeDeliveryUsersRoutes(
 
 	router.post(
 		'/delivery/register',
+		authMiddleware,
 		validateSchema(createDeliverySchema),
 		(req, res) => deliveryUsersController.create(req, res),
 	);

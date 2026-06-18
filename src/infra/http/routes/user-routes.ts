@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { UserController } from '../../controllers/user-controller';
+import { authMiddleware } from '../../../middlewares/auth';
 
 export function makeUserRoutes(userController: UserController) {
 	const router = Router();
@@ -54,10 +55,10 @@ export function makeUserRoutes(userController: UserController) {
 	 *       400:
 	 *         description: Erro ao criar usuário
 	 */
-	router
-		.route('/users')
-		.get((req, res) => userController.list(req, res))
-		.post((req, res) => userController.create(req, res));
+	router.get('/users', authMiddleware, (req, res) =>
+		userController.list(req, res),
+	);
+	router.post('/users', (req, res) => userController.create(req, res));
 
 	/**
 	 * @swagger
@@ -107,7 +108,7 @@ export function makeUserRoutes(userController: UserController) {
 	 */
 	router
 		.route('/users/:id')
-		.patch((req, res) => userController.update(req, res));
+		.patch(authMiddleware, (req, res) => userController.update(req, res));
 
 	return router;
 }
