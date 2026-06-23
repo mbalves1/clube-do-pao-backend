@@ -15,7 +15,8 @@ O Clube do Pao tem como finalidade organizar compras recorrentes, como pedidos d
 - Express
 - Prisma ORM
 - PostgreSQL
-- Supabase client
+- Supabase (autenticacao)
+- SSE (Server-Sent Events)
 
 ## Arquitetura
 
@@ -31,7 +32,8 @@ src
 │   ├── controllers
 │   ├── database
 │   ├── http
-│   └── repositories
+│   ├── repositories
+│   └── sse
 └── main
 ```
 
@@ -43,7 +45,7 @@ Contem as regras centrais da aplicacao. Aqui ficam entidades, portas/interfaces 
 
 **infra**
 
-Contem implementacoes externas, como controllers HTTP, repositorios com Prisma, cliente de banco de dados e rotas Express.
+Contem implementacoes externas, como controllers HTTP, repositorios com Prisma, cliente de banco de dados, rotas Express e o servico SSE.
 
 **main**
 
@@ -144,6 +146,32 @@ Esse comando:
 - sobe os containers
 - inicia o PostgreSQL
 - executa as migrations do Prisma
+
+## Notificacoes em tempo real (SSE)
+
+O projeto utiliza Server-Sent Events para notificar o frontend em tempo real quando o status de um pedido e atualizado.
+
+**Conectar ao stream:**
+
+```bash
+curl -N -H "Authorization: Bearer SEU_TOKEN" http://localhost:3333/api/events
+```
+
+**Evento emitido ao atualizar um pedido:**
+
+```
+event: order-status-updated
+data: {"orderId":"123","deliveryId":"abc","status":"PICKED_UP"}
+```
+
+**Consumindo no frontend:**
+
+```js
+const es = new EventSource('/api/events');
+es.addEventListener('order-status-updated', (e) => {
+  const { orderId, status } = JSON.parse(e.data);
+});
+```
 
 ## Estrutura do banco
 
