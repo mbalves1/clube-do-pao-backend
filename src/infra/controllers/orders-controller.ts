@@ -4,6 +4,7 @@ import { ListOrdersUseCase } from '../../core/usecases/orders/list-orders';
 import { UpdateOrdersUseCase } from '../../core/usecases/orders/update-orders';
 import { AppError } from '../../core/errors/AppError';
 import { OrderStatus } from '../../core/entities/orders';
+import { sseService } from '../sse/sse-service';
 
 type UpdateOrderParams = {
 	orderId: string;
@@ -43,6 +44,7 @@ export class OrdersController {
 				deliveryId,
 				status,
 			);
+			sseService.emit('order-status-updated', { orderId, deliveryId, status });
 			return res.status(200).json(orders);
 		} catch (error) {
 			if (error instanceof AppError) {

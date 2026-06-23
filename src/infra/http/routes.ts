@@ -10,6 +10,7 @@ import { OrdersController } from '../controllers/orders-controller';
 import { makeOrdersRoutes } from './routes/orders-routes';
 import { DeliveryUsersController } from '../controllers/delivery-users-controller';
 import { makeDeliveryUsersRoutes } from './routes/delivery-user-routes';
+import { makeSSERoutes } from './routes/sse-routes';
 
 type MakeRoutesParams = {
 	userController: UserController;
@@ -33,6 +34,7 @@ export function makeRoutes({
 	router.use(makeSubscribeRoutes(subscribeController));
 	router.use(makeOrdersRoutes(ordersController));
 	router.use(makeDeliveryUsersRoutes(deliveryUserController));
+	router.use(makeSSERoutes());
 
 	return router;
 }
