@@ -11,6 +11,7 @@ model User {
   id               String           @id @default(uuid())
   name             String
   email            String           @unique
+  supabaseUserId   String           @unique
   createdAt        DateTime         @default(now())
   city             String?
   district         String?
@@ -32,6 +33,7 @@ model Bakery {
   whatsapp       String
   serviceStartAt String
   serviceEndAt   String
+  supabaseUserId String?          @unique
   createdAt      DateTime         @default(now())
   city           String?
   district       String?
@@ -81,17 +83,18 @@ model Subscription {
 }
 
 model DeliveryPerson {
-  id            String         @id @default(uuid())
-  name          String
-  document      String         @unique
-  phone         String?
-  modal         DeliveryModal
-  status        String         @default("ACTIVE")
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  email         String?
-  orders        Order[]
-  subscriptions Subscription[]
+  id             String         @id @default(uuid())
+  name           String
+  document       String         @unique
+  phone          String?
+  modal          DeliveryModal
+  status         String         @default("ACTIVE")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  email          String?
+  supabaseUserId String?        @unique
+  orders         Order[]
+  subscriptions  Subscription[]
 
   @@map("delivery_people")
 }
