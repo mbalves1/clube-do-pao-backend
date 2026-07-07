@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "SupabaseAuthGateway implementation"
 type: backend
 complexity: medium
@@ -31,11 +31,11 @@ Implements the `AuthGateway` port using `@supabase/supabase-js`, providing sign-
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Create `src/infra/gateways/supabase-auth-gateway.ts` with its own Supabase client instance.
-- [ ] 3.2 Implement `signInWithPassword` (email/password → `AuthSession` with role from `app_metadata`).
-- [ ] 3.3 Implement `refreshSession` (refresh token → new session).
-- [ ] 3.4 Implement `createCredential` (email/password/role → Supabase user with `app_metadata.role` set).
-- [ ] 3.5 Verify the service-role-key risk (ADR-003) against the project's actual Supabase instance; apply the `SUPABASE_ANON_KEY` fallback only if verification fails.
+- [x] 3.1 Create `src/infra/gateways/supabase-auth-gateway.ts` with its own Supabase client instance.
+- [x] 3.2 Implement `signInWithPassword` (email/password → `AuthSession` with role from `app_metadata`).
+- [x] 3.3 Implement `refreshSession` (refresh token → new session).
+- [x] 3.4 Implement `createCredential` (email/password/role → Supabase user with `app_metadata.role` set).
+- [x] 3.5 Verify the service-role-key risk (ADR-003) against the project's actual Supabase instance; apply the `SUPABASE_ANON_KEY` fallback only if verification fails. Result: service-role key works fine for `signInWithPassword` — no fallback needed, `docs/infra.md` unchanged.
 
 ## Implementation Details
 See TechSpec "Core Interfaces" for the `AuthGateway` contract and "Integration Points" for how Supabase errors should be surfaced. Reference `src/middlewares/auth.ts` for the existing `createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)` pattern to mirror (not import).
@@ -59,15 +59,15 @@ See TechSpec "Core Interfaces" for the `AuthGateway` contract and "Integration P
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] Calling `signInWithPassword` with a real Supabase test user's correct credentials returns a session with a non-empty `accessToken`, `refreshToken`, and the expected `role`.
-  - [ ] Calling `signInWithPassword` with a wrong password throws/rejects.
-  - [ ] Calling `refreshSession` with a valid refresh token returns a new `accessToken`.
-  - [ ] Calling `refreshSession` with an invalid/expired refresh token throws/rejects.
-  - [ ] Calling `createCredential` creates a Supabase user whose `app_metadata.role` matches the role passed in.
+  - [x] Calling `signInWithPassword` with a real Supabase test user's correct credentials returns a session with a non-empty `accessToken`, `refreshToken`, and the expected `role`.
+  - [x] Calling `signInWithPassword` with a wrong password throws/rejects.
+  - [x] Calling `refreshSession` with a valid refresh token returns a new `accessToken`.
+  - [x] Calling `refreshSession` with an invalid/expired refresh token throws/rejects.
+  - [x] Calling `createCredential` creates a Supabase user whose `app_metadata.role` matches the role passed in.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- All manual verification scenarios passing. Verified live against the project's real Supabase instance via a temporary script (removed after use). Test user left in Supabase per user's explicit choice: `task03-verify-1783465830949@example.com` (id `ba8e76c2-d1ad-415c-99e5-5fd708565a1d`, role `customer`) — not deleted, user opted to leave it for manual cleanup.
 
 ## Success Criteria
-- All three `AuthGateway` methods work against the project's real Supabase instance.
-- The ADR-003 service-role-key risk is resolved one way or the other, with the outcome documented.
-- No changes made to `src/middlewares/auth.ts`.
+- All three `AuthGateway` methods work against the project's real Supabase instance. ✅
+- The ADR-003 service-role-key risk is resolved: service-role client works for `signInWithPassword`, no `SUPABASE_ANON_KEY` fallback needed. ✅
+- No changes made to `src/middlewares/auth.ts`. ✅
