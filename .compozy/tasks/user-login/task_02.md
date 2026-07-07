@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "AuthGateway port"
 type: backend
 complexity: low
@@ -27,9 +27,9 @@ Defines the `AuthGateway` interface that all authentication use cases will depen
 </requirements>
 
 ## Subtasks
-- [ ] 2.1 Create `src/core/ports/auth-gateway.ts`.
-- [ ] 2.2 Define `Role` and `AuthSession` types.
-- [ ] 2.3 Define the `AuthGateway` interface with its three methods.
+- [x] 2.1 Create `src/core/ports/auth-gateway.ts`.
+- [x] 2.2 Define `Role` and `AuthSession` types.
+- [x] 2.3 Define the `AuthGateway` interface with its three methods.
 
 ## Implementation Details
 See TechSpec "Core Interfaces" for the exact type/interface shape to implement. Follow the file/naming style of `src/core/ports/user-repository.ts` (plain TypeScript `type`/`interface`, no decorators, no framework imports).
@@ -50,10 +50,10 @@ See TechSpec "Core Interfaces" for the exact type/interface shape to implement. 
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] File compiles with no TypeScript errors.
-  - [ ] `Role`, `AuthSession`, and `AuthGateway` are all exported and match the TechSpec signatures exactly.
+  - [x] File compiles with no TypeScript errors.
+  - [x] `Role`, `AuthSession`, and `AuthGateway` are all exported and match the TechSpec signatures exactly.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- All manual verification scenarios must pass. Verified via `npx tsc --noEmit`: zero errors in `auth-gateway.ts`; the one remaining project-wide error is the pre-existing, documented follow-up in `prisma-user-repository.ts` (see task_01), unrelated to this file.
 
 ## Success Criteria
 - `AuthGateway` interface and its supporting types exist and compile.
