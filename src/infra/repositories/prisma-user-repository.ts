@@ -11,6 +11,7 @@ export class PrismaUserRepository implements UserRepository {
 			data: {
 				name: user.name,
 				email: user.email,
+				supabaseUserId: user.supabaseUserId,
 			},
 		});
 
@@ -18,6 +19,7 @@ export class PrismaUserRepository implements UserRepository {
 			id: created.id,
 			name: created.name,
 			email: created.email,
+			supabaseUserId: created.supabaseUserId,
 			phone: created.phone,
 			zipCode: created.zipCode,
 			street: created.street,
@@ -51,6 +53,7 @@ export class PrismaUserRepository implements UserRepository {
 			id: updated.id,
 			name: updated.name,
 			email: updated.email,
+			supabaseUserId: updated.supabaseUserId,
 			phone: updated.phone,
 			zipCode: updated.zipCode,
 			street: updated.street,
@@ -75,6 +78,7 @@ export class PrismaUserRepository implements UserRepository {
 			id: found.id,
 			name: found.name,
 			email: found.email,
+			supabaseUserId: found.supabaseUserId,
 			phone: found.phone,
 			zipCode: found.zipCode,
 			street: found.street,
@@ -99,6 +103,32 @@ export class PrismaUserRepository implements UserRepository {
 			id: found.id,
 			name: found.name,
 			email: found.email,
+			supabaseUserId: found.supabaseUserId,
+			phone: found.phone,
+			zipCode: found.zipCode,
+			street: found.street,
+			number: found.number,
+			district: found.district,
+			city: found.city,
+			state: found.state,
+			createdAt: found.createdAt,
+		};
+	}
+
+	async findBySupabaseUserId(supabaseUserId: string): Promise<User | null> {
+		const found = await prisma.user.findUnique({
+			where: { supabaseUserId },
+		});
+
+		if (!found) {
+			return null;
+		}
+
+		return {
+			id: found.id,
+			name: found.name,
+			email: found.email,
+			supabaseUserId: found.supabaseUserId,
 			phone: found.phone,
 			zipCode: found.zipCode,
 			street: found.street,
@@ -117,6 +147,7 @@ export class PrismaUserRepository implements UserRepository {
 			id: user.id,
 			name: user.name,
 			email: user.email,
+			supabaseUserId: user.supabaseUserId,
 			phone: user.phone,
 			zipCode: user.zipCode,
 			street: user.street,

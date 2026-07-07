@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "PrismaUserRepository: persist supabaseUserId + findBySupabaseUserId"
 type: backend
 complexity: low
@@ -28,9 +28,9 @@ Implements the `UserRepository` changes from task_04 in the Prisma-backed reposi
 </requirements>
 
 ## Subtasks
-- [ ] 5.1 Update `create` to accept and persist `supabaseUserId`.
-- [ ] 5.2 Add `findBySupabaseUserId`, mapped to the `User` domain type inline.
-- [ ] 5.3 Verify every existing method's inline mapping still includes all `User` fields, now including `supabaseUserId`.
+- [x] 5.1 Update `create` to accept and persist `supabaseUserId`.
+- [x] 5.2 Add `findBySupabaseUserId`, mapped to the `User` domain type inline.
+- [x] 5.3 Verify every existing method's inline mapping still includes all `User` fields, now including `supabaseUserId`. (`create`, `update`, `findByEmail`, `findById`, `find` all updated.)
 
 ## Implementation Details
 See TechSpec "Component Overview" for how `LoginUseCase` and `CreateUserUseCase` will call this repository. Follow the existing inline-mapping style already used for `findByEmail`/`findById`/`create` in this file — do not introduce a mapper file (Bakery has one, User does not; keep User's existing pattern).
@@ -51,12 +51,12 @@ See TechSpec "Component Overview" for how `LoginUseCase` and `CreateUserUseCase`
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] Creating a user with a `supabaseUserId` persists it and it is readable back via `findById`.
-  - [ ] `findBySupabaseUserId` with an existing value returns the matching `User`, including all its fields.
-  - [ ] `findBySupabaseUserId` with a non-existent value returns `null` (does not throw).
+  - [x] Creating a user with a `supabaseUserId` persists it and it is readable back via `findById`.
+  - [x] `findBySupabaseUserId` with an existing value returns the matching `User`, including all its fields.
+  - [x] `findBySupabaseUserId` with a non-existent value returns `null` (does not throw).
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- All manual verification scenarios passing. Verified live against the real database via a temporary script (removed after use); the test row created was deleted after verification.
 
 ## Success Criteria
-- `PrismaUserRepository` fully implements the `UserRepository` interface, including `supabaseUserId` support.
-- No regression in existing `create`/`update`/`findByEmail`/`findById`/`find` behavior.
+- `PrismaUserRepository` fully implements the `UserRepository` interface, including `supabaseUserId` support. ✅
+- No regression in existing `create`/`update`/`findByEmail`/`findById`/`find` behavior. ✅ (only the remaining, out-of-scope `create-user.ts` error is task_09's)
