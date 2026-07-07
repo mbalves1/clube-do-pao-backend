@@ -7,7 +7,7 @@
 | 01 | Prisma schema: `supabaseUserId` on User/Bakery/DeliveryPerson + migration | completed | low | — |
 | 02 | `AuthGateway` port | completed | low | — |
 | 03 | `SupabaseAuthGateway` implementation | completed | medium | task_02 |
-| 04 | `User` entity + port: `supabaseUserId`, `findBySupabaseUserId` | pending | low | task_01 |
+| 04 | `User` entity + port: `supabaseUserId`, `findBySupabaseUserId` | completed | low | task_01 |
 | 05 | `PrismaUserRepository`: persist `supabaseUserId` + `findBySupabaseUserId` | pending | low | task_04 |
 | 06 | `DeliveryUser` entity + port: `findBySupabaseUserId` | pending | low | task_01 |
 | 07 | `PrismaDeliveryUserRepository`: implement `findBySupabaseUserId` | pending | low | task_06 |

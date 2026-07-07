@@ -11,5 +11,6 @@ export interface UserRepository {
 	update(user: UpdateUserData): Promise<User>;
 	findByEmail(email: string): Promise<User | null>;
 	findById(id: string): Promise<User | null>;
+	findBySupabaseUserId(supabaseUserId: string): Promise<User | null>;
 	find(): Promise<User[]>;
 }

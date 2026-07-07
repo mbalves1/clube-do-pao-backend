@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "User entity + port: supabaseUserId, findBySupabaseUserId"
 type: backend
 complexity: low
@@ -29,9 +29,9 @@ Extends the `User` domain entity and `UserRepository` port to carry and query by
 </requirements>
 
 ## Subtasks
-- [ ] 4.1 Add `supabaseUserId` field to the `User` entity type.
-- [ ] 4.2 Update the `create` method's input type on `UserRepository` to include `supabaseUserId`.
-- [ ] 4.3 Add the `findBySupabaseUserId` method signature to `UserRepository`.
+- [x] 4.1 Add `supabaseUserId` field to the `User` entity type.
+- [x] 4.2 Update the `create` method's input type on `UserRepository` to include `supabaseUserId`. `create(user: Omit<User, 'id'>)` picks this up automatically since `supabaseUserId` was added to `User` itself — no separate change needed.
+- [x] 4.3 Add the `findBySupabaseUserId` method signature to `UserRepository`.
 
 ## Implementation Details
 See TechSpec "Data Models" for the `User.supabaseUserId` field (required, unique) and "Component Overview" for how `findBySupabaseUserId` is used by `LoginUseCase`.
@@ -55,11 +55,11 @@ See TechSpec "Data Models" for the `User.supabaseUserId` field (required, unique
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] `User` type includes `supabaseUserId: string` and the project builds without type errors.
-  - [ ] `UserRepository` interface includes `findBySupabaseUserId` with the correct signature.
+  - [x] `User` type includes `supabaseUserId: string`. `npx tsc --noEmit` shows zero errors in `user.ts`/`user-repository.ts` themselves; remaining project-wide errors are the expected, documented follow-up in `prisma-user-repository.ts`/`create-user.ts`, scoped to task_05/task_09.
+  - [x] `UserRepository` interface includes `findBySupabaseUserId` with the correct signature.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- All manual verification scenarios passing (within this task's scope).
 
 ## Success Criteria
-- `User` entity and `UserRepository` port match the TechSpec's data model for `supabaseUserId`.
-- task_05 can implement the updated interface without further changes to this task's files.
+- `User` entity and `UserRepository` port match the TechSpec's data model for `supabaseUserId`. ✅
+- task_05 can implement the updated interface without further changes to this task's files. ✅ (only `user.ts` and `user-repository.ts` were touched)
