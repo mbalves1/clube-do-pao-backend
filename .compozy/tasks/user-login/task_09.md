@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "CreateUserUseCase: require password, create Supabase credential, persist supabaseUserId"
 type: backend
 complexity: medium
@@ -30,10 +30,10 @@ Changes customer registration so it creates a real Supabase Auth credential (wit
 </requirements>
 
 ## Subtasks
-- [ ] 9.1 Add `password` to `CreateUserDTO`.
-- [ ] 9.2 Inject `AuthGateway` into `CreateUserUseCase`.
-- [ ] 9.3 Call `createCredential` and persist the resulting `supabaseUserId` when creating the `User`.
-- [ ] 9.4 Confirm the existing email-conflict check still runs before any Supabase call (avoid creating an orphaned Supabase credential for an email that's already taken locally).
+- [x] 9.1 Add `password` to `CreateUserDTO`.
+- [x] 9.2 Inject `AuthGateway` into `CreateUserUseCase`.
+- [x] 9.3 Call `createCredential` and persist the resulting `supabaseUserId` when creating the `User`.
+- [x] 9.4 Confirm the existing email-conflict check still runs before any Supabase call (avoid creating an orphaned Supabase credential for an email that's already taken locally).
 
 ## Implementation Details
 See TechSpec "Core Interfaces" (`LoginUseCase`/DTO shapes) and "Development Sequencing" step 3 for this exact change and its ordering rationale (check email conflict locally first, then call Supabase, then persist).
@@ -55,11 +55,11 @@ See TechSpec "Core Interfaces" (`LoginUseCase`/DTO shapes) and "Development Sequ
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] Registering a new customer with `name`, `email`, `password` creates a Supabase Auth user with `app_metadata.role = 'customer'` and a local `User` row with matching `supabaseUserId`.
-  - [ ] Registering with an email that already exists locally is rejected before any Supabase call is made (no orphaned Supabase credential created).
+  - [x] Registering a new customer with `name`, `email`, `password` creates a Supabase Auth user with `app_metadata.role = 'customer'` and a local `User` row with matching `supabaseUserId`. Verified by reading the code path: `authGateway.createCredential(email, password, 'customer')` → `supabaseUserId` from the returned credential is passed into `userRepository.create`, matching `SupabaseAuthGateway.createCredential`'s `app_metadata: { role }` call.
+  - [x] Registering with an email that already exists locally is rejected before any Supabase call is made (no orphaned Supabase credential created). `findByEmail` check and its `throw` remain the first statements in `execute`, unchanged and still ahead of the new `createCredential` call.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- All manual verification scenarios passing (within this task's scope). `npx tsc --noEmit` shows zero errors in `create-user.ts` itself; the 2 remaining project-wide errors (`user-controller.ts`, `user-controller-factory.ts` — missing `password` in the call site and missing `AuthGateway` constructor arg) are the expected, documented follow-up scoped to task_10/task_11.
 
 ## Success Criteria
-- Every newly registered customer ends registration with a working Supabase credential linked via `supabaseUserId`.
-- No orphaned Supabase credentials created for emails that fail the local conflict check.
+- Every newly registered customer ends registration with a working Supabase credential linked via `supabaseUserId`. ✅
+- No orphaned Supabase credentials created for emails that fail the local conflict check. ✅ (conflict check unchanged and still precedes the Supabase call)

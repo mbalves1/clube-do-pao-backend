@@ -26,6 +26,14 @@ export class PrismaBakeryRepository implements BakeryRepository {
 		return found ? toBakery(found) : null;
 	}
 
+	async findBySupabaseUserId(supabaseUserId: string) {
+		const found = await prisma.bakery.findUnique({
+			where: { supabaseUserId },
+		});
+
+		return found ? toBakery(found) : null;
+	}
+
 	async create(bakery: BakeryCreateData) {
 		const created = await prisma.bakery.create({
 			data: {

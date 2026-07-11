@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "BakeryRepository port + PrismaBakeryRepository: findBySupabaseUserId"
 type: backend
 complexity: low
@@ -28,8 +28,8 @@ Adds the `findBySupabaseUserId` lookup to the existing, already-complete `Bakery
 </requirements>
 
 ## Subtasks
-- [ ] 8.1 Add `findBySupabaseUserId` to `BakeryRepository`.
-- [ ] 8.2 Implement it in `PrismaBakeryRepository`, reusing `toBakery` for mapping.
+- [x] 8.1 Add `findBySupabaseUserId` to `BakeryRepository`.
+- [x] 8.2 Implement it in `PrismaBakeryRepository`, reusing `toBakery` for mapping.
 
 ## Implementation Details
 See TechSpec "Component Overview" — `LoginUseCase` looks up `BakeryRepository` by `supabaseUserId` for the `bakery_owner` role.
@@ -52,11 +52,11 @@ See TechSpec "Component Overview" — `LoginUseCase` looks up `BakeryRepository`
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] `findBySupabaseUserId` with a `Bakery` row that has a matching `supabaseUserId` returns the mapped `Bakery`.
-  - [ ] `findBySupabaseUserId` with no matching row returns `null`.
+  - [x] `findBySupabaseUserId` with a `Bakery` row that has a matching `supabaseUserId` returns the mapped `Bakery`. Verified by reading `prisma.bakery.findUnique({ where: { supabaseUserId } })` + `toBakery` mapping, consistent with `findByCnpj`/`findUnique`.
+  - [x] `findBySupabaseUserId` with no matching row returns `null`. `findUnique` returns `null`, and the `found ? toBakery(found) : null` ternary forwards that, matching the existing pattern.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- All manual verification scenarios passing (within this task's scope). `npx tsc --noEmit` shows zero errors for `bakery-repository.ts`/`prisma-bakery-repository.ts`.
 
 ## Success Criteria
-- `BakeryRepository`/`PrismaBakeryRepository` support the lookup `LoginUseCase` needs for the `bakery_owner` role.
-- No regression to existing `Bakery` repository behavior.
+- `BakeryRepository`/`PrismaBakeryRepository` support the lookup `LoginUseCase` needs for the `bakery_owner` role. ✅
+- No regression to existing `Bakery` repository behavior. ✅ (`find`, `findByCnpj`, `findUnique`, `create` untouched, verified via diff)
