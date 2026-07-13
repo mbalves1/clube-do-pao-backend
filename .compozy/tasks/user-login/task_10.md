@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "user-validator.ts: require password in createUserSchema"
 type: backend
 complexity: low
@@ -27,8 +27,8 @@ Updates the registration request schema to require a `password` field, matching 
 </requirements>
 
 ## Subtasks
-- [ ] 10.1 Add `password: z.string().min(8)` (or equivalent) to `createUserSchema`.
-- [ ] 10.2 Leave `updateUserSchema` unchanged.
+- [x] 10.1 Add `password: z.string().min(8)` (or equivalent) to `createUserSchema`.
+- [x] 10.2 Leave `updateUserSchema` unchanged.
 
 ## Implementation Details
 See TechSpec "API Endpoints" — `POST /api/users` now requires `{ name, email, password }`. See PRD "Open Questions" for the unresolved password-policy question this task's minimum-length choice is a placeholder for.
@@ -44,11 +44,13 @@ See TechSpec "API Endpoints" — `POST /api/users` now requires `{ name, email, 
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] `POST /api/users` without a `password` field returns a 400 validation error.
-  - [ ] `POST /api/users` with a `password` shorter than the chosen minimum returns a 400 validation error.
-  - [ ] `POST /api/users` with a valid `password` passes schema validation.
+  - [x] `POST /api/users` without a `password` field returns a 400 validation error. Verified via direct `createUserSchema.safeParse` — `success: false` without `password`.
+  - [x] `POST /api/users` with a `password` shorter than the chosen minimum returns a 400 validation error. Verified — `success: false` for a 7-character password (min is 8).
+  - [x] `POST /api/users` with a valid `password` passes schema validation. Verified — `success: true` for an 8-character password.
 - Test coverage target: N/A — no automated test framework in this project.
 - All manual verification scenarios must pass.
 
 ## Success Criteria
-- `createUserSchema` rejects registration requests without a valid password, matching the TechSpec's `POST /api/users` contract.
+- `createUserSchema` rejects registration requests without a valid password, matching the TechSpec's `POST /api/users` contract. ✅
+
+Note: `min(8)` is a placeholder default per the PRD's "Open Questions" — no final password policy has been decided by product yet.
