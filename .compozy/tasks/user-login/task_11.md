@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "UserController.create + user-controller-factory.ts: forward password, wire AuthGateway"
 type: backend
 complexity: medium
@@ -31,9 +31,9 @@ Wires the updated `CreateUserUseCase` (task_09) into the HTTP layer: the control
 </requirements>
 
 ## Subtasks
-- [ ] 11.1 Update `UserController.create` to forward `password` to the use case.
-- [ ] 11.2 Update `user-controller-factory.ts` to instantiate `SupabaseAuthGateway` and inject it into `CreateUserUseCase`.
-- [ ] 11.3 Confirm `POST /api/users` end-to-end still returns the existing response shape (plus the new credential side effect), with no change to its route registration (`src/infra/http/routes/user-routes.ts`, unauthenticated, unchanged).
+- [x] 11.1 Update `UserController.create` to forward `password` to the use case. (Already satisfied: `createUserSchema.parse(req.body)` returns `{name, email, password}`, matching `CreateUserDTO` exactly — no code change needed.)
+- [x] 11.2 Update `user-controller-factory.ts` to instantiate `SupabaseAuthGateway` and inject it into `CreateUserUseCase`.
+- [x] 11.3 Route registration unchanged, confirmed by inspection of `src/infra/http/routes/user-routes.ts` (`POST /users` still unauthenticated, untouched). End-to-end HTTP response shape **not manually verified** — see Tests note below.
 
 ## Implementation Details
 See TechSpec "Component Overview" (`CreateUserUseCase (modified)`, `UserController (modified)`) and Impact Analysis row for `src/main/factories/user-controller-factory.ts`... (note: TechSpec's Impact Analysis table does not list this factory explicitly, but wiring the new `AuthGateway` dependency into `CreateUserUseCase`'s constructor requires it — treat this as an implied consequence of the `CreateUserUseCase (modified)` row).
@@ -60,8 +60,9 @@ See TechSpec "Component Overview" (`CreateUserUseCase (modified)`, `UserControll
   - [ ] `POST /api/users` with an existing email returns the existing conflict behavior, unchanged.
   - [ ] `POST /api/users` without `password` returns 400 (via task_10's validator), and no Supabase call is attempted.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- **NOT executed**: these 3 manual scenarios require a live server with real DB/Supabase connectivity, which is unreachable from the sandbox this task was executed in (the direct Supabase Postgres host times out — likely IPv6-only route not available here). Skipped per explicit user instruction to proceed without running them. Static validation performed instead: `npx tsc --noEmit` clean (pre-change baseline failed with `TS2554: Expected 2 arguments, but got 1` at the factory call site), plus manual code inspection of the DTO/schema match and route file.
+- Recommended before relying on this in production: run the 3 scenarios above against a real environment (e.g. via `request.http`'s `POST http://localhost:3333/api/users` block) and confirm in the Supabase dashboard.
 
 ## Success Criteria
-- Registration end-to-end (`POST /api/users`) produces a working Supabase credential and a linked local `User` row.
-- `list` and `update` handlers show no behavioral change.
+- Registration end-to-end (`POST /api/users`) produces a working Supabase credential and a linked local `User` row. **(code-complete, unverified live)**
+- `list` and `update` handlers show no behavioral change. (confirmed — untouched)

@@ -14,7 +14,7 @@
 | 08 | `BakeryRepository` port + `PrismaBakeryRepository`: `findBySupabaseUserId` | completed | low | task_01 |
 | 09 | `CreateUserUseCase`: require password, create Supabase credential, persist `supabaseUserId` | completed | medium | task_02, task_04 |
 | 10 | `user-validator.ts`: require `password` in `createUserSchema` | completed | low | task_09 |
-| 11 | `UserController.create` + `user-controller-factory.ts`: forward password, wire `AuthGateway` | pending | medium | task_03, task_05, task_09, task_10 |
+| 11 | `UserController.create` + `user-controller-factory.ts`: forward password, wire `AuthGateway` | completed | medium | task_03, task_05, task_09, task_10 |
 | 12 | `LoginUseCase` | pending | medium | task_02, task_04, task_06, task_08 |
 | 13 | `RefreshSessionUseCase` | pending | low | task_02 |
 | 14 | `auth-validator.ts` (login + refresh schemas) | pending | low | — |
