@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "LoginUseCase"
 type: backend
 complexity: medium
@@ -33,11 +33,11 @@ Implements the core business logic of this feature: authenticate email + passwor
 </requirements>
 
 ## Subtasks
-- [ ] 12.1 Implement `LoginUseCase` with its four constructor dependencies.
-- [ ] 12.2 Call `AuthGateway.signInWithPassword` and handle its failure as a generic credential error.
-- [ ] 12.3 Implement the three-case role → repository switch, looked up by `supabaseUserId`.
-- [ ] 12.4 Handle "authenticated but no matching business record" as the same generic credential error (do not distinguish it from a wrong password).
-- [ ] 12.5 Assemble and return the `LoginResult`.
+- [x] 12.1 Implement `LoginUseCase` with its four constructor dependencies.
+- [x] 12.2 Call `AuthGateway.signInWithPassword` and handle its failure as a generic credential error.
+- [x] 12.3 Implement the three-case role → repository switch, looked up by `supabaseUserId`.
+- [x] 12.4 Handle "authenticated but no matching business record" as the same generic credential error (do not distinguish it from a wrong password).
+- [x] 12.5 Assemble and return the `LoginResult`.
 
 ## Implementation Details
 See TechSpec "Core Interfaces" for `LoginDTO`/`LoginResult` shapes and "Component Overview" for the exact data flow (`AuthController` → `LoginUseCase` → `AuthGateway.signInWithPassword` → role from `app_metadata` → repository lookup by `supabaseUserId` → combined result).
@@ -60,15 +60,16 @@ See TechSpec "Core Interfaces" for `LoginDTO`/`LoginResult` shapes and "Componen
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] Login with a correct customer email/password returns `role: 'customer'` and the correct `profile`.
-  - [ ] Login with a correct bakery-owner email/password returns `role: 'bakery_owner'` and the correct `profile`.
-  - [ ] Login with a correct courier email/password returns `role: 'courier'` and the correct `profile`.
-  - [ ] Login with a wrong password throws the generic credential error.
-  - [ ] Login with a non-existent email throws the same generic credential error (indistinguishable from a wrong password).
-  - [ ] Login with valid Supabase credentials but no matching row in the role-implied table throws the same generic credential error.
+  - [x] Login with a correct customer email/password returns `role: 'customer'` and the correct `profile`.
+  - [x] Login with a correct bakery-owner email/password returns `role: 'bakery_owner'` and the correct `profile`.
+  - [x] Login with a correct courier email/password returns `role: 'courier'` and the correct `profile`.
+  - [x] Login with a wrong password throws the generic credential error.
+  - [x] Login with a non-existent email throws the same generic credential error (indistinguishable from a wrong password).
+  - [x] Login with valid Supabase credentials but no matching row in the role-implied table throws the same generic credential error.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- Verified via `npx tsc --noEmit` (clean) plus a throwaway `ts-node` script exercising `LoginUseCase` directly with mocked `AuthGateway`/repositories (deleted after use, not committed) — this project has no test harness so no `AuthGateway` call ever reaches real Supabase/DB from this environment (same network limitation noted in task_11). All 6 scenarios above passed, including confirming all 3 failure paths throw the exact same error message (`"Email ou senha inválidos"`, `UnprocessableEntityError` 422).
+- Not verified: a real end-to-end run against live Supabase/DB (unreachable from this sandbox). Recommended before relying on this in production: exercise `POST /api/auth/login` once task_15–17 wire it up, against real customer/bakery/courier accounts.
 
 ## Success Criteria
-- All three personas can log in and receive the correct role and profile.
-- No error path distinguishes "wrong email," "wrong password," or "missing linked record" from one another.
+- All three personas can log in and receive the correct role and profile. ✅ (verified via mocked use-case run)
+- No error path distinguishes "wrong email," "wrong password," or "missing linked record" from one another. ✅ (verified — single shared error message across all 3 failure paths)
