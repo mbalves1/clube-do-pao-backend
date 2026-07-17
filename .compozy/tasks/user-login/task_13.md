@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "RefreshSessionUseCase"
 type: backend
 complexity: low
@@ -27,9 +27,9 @@ Implements the use case behind token refresh, letting a client exchange a refres
 </requirements>
 
 ## Subtasks
-- [ ] 13.1 Implement `RefreshSessionUseCase` with its single `AuthGateway` dependency.
-- [ ] 13.2 Call `AuthGateway.refreshSession` and return the `RefreshResult`.
-- [ ] 13.3 Translate a Supabase refresh failure into `UnprocessableEntityError`.
+- [x] 13.1 Implement `RefreshSessionUseCase` with its single `AuthGateway` dependency.
+- [x] 13.2 Call `AuthGateway.refreshSession` and return the `RefreshResult`.
+- [x] 13.3 Translate a Supabase refresh failure into `UnprocessableEntityError`.
 
 ## Implementation Details
 See TechSpec "Data Models" for the exact `RefreshResult` shape and "API Endpoints" for the `POST /api/auth/refresh` contract this use case backs.
@@ -50,11 +50,12 @@ See TechSpec "Data Models" for the exact `RefreshResult` shape and "API Endpoint
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] Refreshing with a valid refresh token returns a new `accessToken`, `refreshToken`, and `expiresIn`.
-  - [ ] Refreshing with an invalid or expired refresh token throws the expected error.
+  - [x] Refreshing with a valid refresh token returns a new `accessToken`, `refreshToken`, and `expiresIn`.
+  - [x] Refreshing with an invalid or expired refresh token throws the expected error.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- Verified via `npx tsc --noEmit` (clean) plus a throwaway `ts-node` script exercising `RefreshSessionUseCase` with a mocked `AuthGateway` (deleted after use, not committed) — same network limitation as tasks 11/12, no real Supabase call made from this environment. Both scenarios passed: valid token returns the new session fields unchanged from the gateway; invalid token throws `UnprocessableEntityError("Sessão expirada, faça login novamente")`, 422.
+- Not verified: a real refresh call against live Supabase (unreachable from this sandbox). Recommended once task_15–17 wire up `POST /api/auth/refresh`.
 
 ## Success Criteria
-- A valid refresh token yields a new working access token without requiring re-login.
-- Invalid/expired refresh tokens are rejected with a translatable error.
+- A valid refresh token yields a new working access token without requiring re-login. ✅ (verified via mocked use-case run)
+- Invalid/expired refresh tokens are rejected with a translatable error. ✅ (verified)

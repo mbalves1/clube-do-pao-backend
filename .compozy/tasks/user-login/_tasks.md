@@ -16,7 +16,7 @@
 | 10 | `user-validator.ts`: require `password` in `createUserSchema` | completed | low | task_09 |
 | 11 | `UserController.create` + `user-controller-factory.ts`: forward password, wire `AuthGateway` | completed | medium | task_03, task_05, task_09, task_10 |
 | 12 | `LoginUseCase` | completed | medium | task_02, task_04, task_06, task_08 |
-| 13 | `RefreshSessionUseCase` | pending | low | task_02 |
+| 13 | `RefreshSessionUseCase` | completed | low | task_02 |
 | 14 | `auth-validator.ts` (login + refresh schemas) | pending | low | — |
 | 15 | `AuthController` (login, refresh) | pending | medium | task_12, task_13, task_14 |
 | 16 | `auth-routes.ts` + `auth-controller-factory.ts` | pending | medium | task_03, task_05, task_07, task_08, task_15 |
