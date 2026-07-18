@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "auth-validator.ts (login + refresh schemas)"
 type: backend
 complexity: low
@@ -26,9 +26,9 @@ Adds the Zod request schemas for the two new auth endpoints (login, refresh), fo
 </requirements>
 
 ## Subtasks
-- [ ] 14.1 Create `src/infra/http/validators/auth-validator.ts`.
-- [ ] 14.2 Define `loginSchema`.
-- [ ] 14.3 Define `refreshSchema`.
+- [x] 14.1 Create `src/infra/http/validators/auth-validator.ts`.
+- [x] 14.2 Define `loginSchema`.
+- [x] 14.3 Define `refreshSchema`.
 
 ## Implementation Details
 See TechSpec "API Endpoints" for the exact request shapes for `POST /api/auth/login` and `POST /api/auth/refresh`.
@@ -45,11 +45,11 @@ See TechSpec "API Endpoints" for the exact request shapes for `POST /api/auth/lo
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] `loginSchema` rejects a payload missing `email` or `password`.
-  - [ ] `loginSchema` rejects a malformed email.
-  - [ ] `refreshSchema` rejects a payload missing `refreshToken`.
+  - [x] `loginSchema` rejects a payload missing `email` or `password`.
+  - [x] `loginSchema` rejects a malformed email.
+  - [x] `refreshSchema` rejects a payload missing `refreshToken`.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- Verified via `npx tsc --noEmit` (clean) plus a throwaway `ts-node` script (deleted after use, not committed) running `.safeParse()` directly against both schemas — no server/DB/Supabase needed for this task. All 3 required scenarios passed, plus 2 extra checks: a short (1-char) password is accepted by `loginSchema` (confirms no strength check leaks policy info, per requirement), and both schemas accept a well-formed payload.
 
 ## Success Criteria
-- Both schemas exist, compile, and validate the shapes described in TechSpec "API Endpoints".
+- Both schemas exist, compile, and validate the shapes described in TechSpec "API Endpoints". ✅ (verified via direct `safeParse` checks)

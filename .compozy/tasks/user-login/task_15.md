@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "AuthController (login, refresh)"
 type: backend
 complexity: medium
@@ -31,9 +31,9 @@ Exposes `LoginUseCase` and `RefreshSessionUseCase` as HTTP handlers, translating
 </requirements>
 
 ## Subtasks
-- [ ] 15.1 Implement the `login` handler: validate → call `LoginUseCase` → 200 or 401.
-- [ ] 15.2 Implement the `refresh` handler: validate → call `RefreshSessionUseCase` → 200 or 401.
-- [ ] 15.3 Add the `console.error` log for unexpected failures, consistent with existing error-handling style.
+- [x] 15.1 Implement the `login` handler: validate → call `LoginUseCase` → 200 or 401.
+- [x] 15.2 Implement the `refresh` handler: validate → call `RefreshSessionUseCase` → 200 or 401.
+- [x] 15.3 Add the `console.error` log for unexpected failures, consistent with existing error-handling style.
 
 ## Implementation Details
 See TechSpec "API Endpoints" for exact status codes and messages, and "Integration Points" for how Supabase errors are expected to already arrive as `UnprocessableEntityError` from the use case layer by the time they reach this controller.
@@ -57,15 +57,16 @@ See TechSpec "API Endpoints" for exact status codes and messages, and "Integrati
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] `POST /api/auth/login` with valid credentials returns 200 with the full `LoginResult`.
-  - [ ] `POST /api/auth/login` with a wrong password returns 401 with `{ message: "Email ou senha inválidos" }`.
-  - [ ] `POST /api/auth/login` with a non-existent email returns the identical 401 response as a wrong password.
-  - [ ] `POST /api/auth/login` with a malformed body (missing `password`) returns 400.
-  - [ ] `POST /api/auth/refresh` with a valid refresh token returns 200 with a new `RefreshResult`.
-  - [ ] `POST /api/auth/refresh` with an invalid/expired refresh token returns 401 with `{ message: "Sessão expirada, faça login novamente" }`.
+  - [x] `POST /api/auth/login` with valid credentials returns 200 with the full `LoginResult`.
+  - [x] `POST /api/auth/login` with a wrong password returns 401 with `{ message: "Email ou senha inválidos" }`.
+  - [x] `POST /api/auth/login` with a non-existent email returns the identical 401 response as a wrong password.
+  - [x] `POST /api/auth/login` with a malformed body (missing `password`) returns 400.
+  - [x] `POST /api/auth/refresh` with a valid refresh token returns 200 with a new `RefreshResult`.
+  - [x] `POST /api/auth/refresh` with an invalid/expired refresh token returns 401 with `{ message: "Sessão expirada, faça login novamente" }`.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- Verified via `npx tsc --noEmit` (clean) plus a throwaway `ts-node` script (deleted after use, not committed) that calls `AuthController.login`/`.refresh` directly with a mocked Express `res` (capturing `.status()`/`.json()`) and mocked use cases — no real HTTP server, DB, or Supabase call needed for this task, since the controller only depends on the use cases (already unit-verified in tasks 12/13) and the schemas (task 14). All 6 required scenarios passed, plus an extra check that an unexpected error returns a generic 500 without leaking the underlying error detail.
+- Not verified: a real HTTP request through Express (unreachable end-to-end without the routes from task_16/17 and live Supabase/DB, per the same sandbox network limitation as prior tasks).
 
 ## Success Criteria
-- Both endpoints return exactly the status codes and messages specified in TechSpec "API Endpoints".
-- The 401 responses for login are indistinguishable regardless of which credential was wrong.
+- Both endpoints return exactly the status codes and messages specified in TechSpec "API Endpoints". ✅ (verified via direct handler invocation)
+- The 401 responses for login are indistinguishable regardless of which credential was wrong. ✅ (verified — identical body for both cases)

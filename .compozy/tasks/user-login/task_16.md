@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "auth-routes.ts + auth-controller-factory.ts"
 type: backend
 complexity: medium
@@ -32,9 +32,9 @@ Wires all the auth feature's pieces together: instantiates the concrete `Supabas
 </requirements>
 
 ## Subtasks
-- [ ] 16.1 Create `auth-controller-factory.ts`, wiring gateway + three repositories + two use cases + controller.
-- [ ] 16.2 Create `auth-routes.ts` with `POST /auth/login` and `POST /auth/refresh`, no `authMiddleware`.
-- [ ] 16.3 Add Swagger JSDoc annotations for both routes.
+- [x] 16.1 Create `auth-controller-factory.ts`, wiring gateway + three repositories + two use cases + controller.
+- [x] 16.2 Create `auth-routes.ts` with `POST /auth/login` and `POST /auth/refresh`, no `authMiddleware`.
+- [x] 16.3 Add Swagger JSDoc annotations for both routes.
 
 ## Implementation Details
 See TechSpec "Impact Analysis" rows for `src/main/factories/auth-controller-factory.ts` and `src/infra/http/routes/auth-routes.ts", and "API Endpoints" for the exact paths/methods.
@@ -56,11 +56,12 @@ See TechSpec "Impact Analysis" rows for `src/main/factories/auth-controller-fact
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] `makeAuthController()` builds without runtime errors (all dependencies wired correctly).
-  - [ ] `makeAuthRoutes(authController)` returns a router exposing `POST /auth/login` and `POST /auth/refresh`.
-  - [ ] Neither route requires an `Authorization` header to be reached (confirms `authMiddleware` is not applied).
+  - [x] `makeAuthController()` builds without runtime errors (all dependencies wired correctly).
+  - [x] `makeAuthRoutes(authController)` returns a router exposing `POST /auth/login` and `POST /auth/refresh`.
+  - [x] Neither route requires an `Authorization` header to be reached (confirms `authMiddleware` is not applied).
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios must pass.
+- Verified via `npx tsc --noEmit` (clean) plus a throwaway `ts-node` script (deleted after use, not committed), run with real env vars (`node --env-file=.env -r ts-node/register`) so `SupabaseAuthGateway`'s module-level `createClient` call doesn't throw for missing config. It called `makeAuthController()` for real (no mocking) and inspected the returned Express router's internal `.stack` — confirmed both routes are registered at the expected paths/methods and each has exactly one handler layer (i.e., no `authMiddleware` inserted). This did not make any real Supabase/DB network call — `PrismaClient` is lazily initialized (only connects on first query) and `createClient` doesn't connect at construction time, so this check is safe to run in this sandbox despite the DB being otherwise unreachable here.
+- Not verified: this factory/router mounted into the actual running app (`routes.ts`/`app.ts`), since that's task_17.
 
 ## Success Criteria
-- `makeAuthController()` and `makeAuthRoutes()` exist and are ready to be registered in `routes.ts`/`app.ts` (task_17) without further changes.
+- `makeAuthController()` and `makeAuthRoutes()` exist and are ready to be registered in `routes.ts`/`app.ts` (task_17) without further changes. ✅ (verified — real factory call succeeds, router shape confirmed)
