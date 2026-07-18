@@ -56,13 +56,13 @@ See TechSpec "Component Overview" (`CreateUserUseCase (modified)`, `UserControll
 
 ## Tests
 - Manual verification (project has no automated test framework — see TechSpec "Testing Approach"):
-  - [ ] `POST /api/users` with `{ name, email, password }` returns 201 and the created user has a Supabase credential with `app_metadata.role = 'customer'`.
-  - [ ] `POST /api/users` with an existing email returns the existing conflict behavior, unchanged.
-  - [ ] `POST /api/users` without `password` returns 400 (via task_10's validator), and no Supabase call is attempted.
+  - [x] `POST /api/users` with `{ name, email, password }` returns 201 and the created user has a Supabase credential with `app_metadata.role = 'customer'`.
+  - [ ] `POST /api/users` with an existing email returns the existing conflict behavior, unchanged. Still not executed — see note.
+  - [ ] `POST /api/users` without `password` returns 400 (via task_10's validator), and no Supabase call is attempted. Still not executed — see note.
 - Test coverage target: N/A — no automated test framework in this project.
-- **NOT executed**: these 3 manual scenarios require a live server with real DB/Supabase connectivity, which is unreachable from the sandbox this task was executed in (the direct Supabase Postgres host times out — likely IPv6-only route not available here). Skipped per explicit user instruction to proceed without running them. Static validation performed instead: `npx tsc --noEmit` clean (pre-change baseline failed with `TS2554: Expected 2 arguments, but got 1` at the factory call site), plus manual code inspection of the DTO/schema match and route file.
-- Recommended before relying on this in production: run the 3 scenarios above against a real environment (e.g. via `request.http`'s `POST http://localhost:3333/api/users` block) and confirm in the Supabase dashboard.
+- **Update (during task_17's live run)**: the sandbox's DB connectivity, unreachable when this task was originally executed, was reachable later. Ran a real `POST /api/users` against the live server as part of task_17's end-to-end pass: 201, real `supabaseUserId` returned, credential confirmed working by successfully logging in with it via `POST /api/auth/login` immediately after. The test account and its Supabase credential were deleted afterward (cleanup documented in task_17). The other two scenarios (duplicate email, missing password) were not re-run live — they're low-risk (duplicate-email check and password validation are unchanged pre-existing logic, not part of this task's diff) but remain formally unverified live.
+- Originally: `npx tsc --noEmit` clean (pre-change baseline failed with `TS2554: Expected 2 arguments, but got 1` at the factory call site), plus manual code inspection of the DTO/schema match and route file.
 
 ## Success Criteria
-- Registration end-to-end (`POST /api/users`) produces a working Supabase credential and a linked local `User` row. **(code-complete, unverified live)**
+- Registration end-to-end (`POST /api/users`) produces a working Supabase credential and a linked local `User` row. ✅ (verified live during task_17)
 - `list` and `update` handlers show no behavioral change. (confirmed — untouched)

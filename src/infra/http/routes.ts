@@ -1,6 +1,8 @@
 import { Router } from 'express';
+import { AuthController } from '../controllers/auth-controller';
 import { BakeryController } from '../controllers/bakery-controller';
 import { UserController } from '../controllers/user-controller';
+import { makeAuthRoutes } from './routes/auth-routes';
 import { makeBakeryRoutes } from './routes/bakery-routes';
 import { makeUserRoutes } from './routes/user-routes';
 import { makeSubscribeRoutes } from './routes/subscribe-routes';
@@ -18,6 +20,7 @@ type MakeRoutesParams = {
 	subscribeController: SubscribeController;
 	ordersController: OrdersController;
 	deliveryUserController: DeliveryUsersController;
+	authController: AuthController;
 };
 
 export function makeRoutes({
@@ -26,6 +29,7 @@ export function makeRoutes({
 	subscribeController,
 	ordersController,
 	deliveryUserController,
+	authController,
 }: MakeRoutesParams) {
 	const router = Router();
 
@@ -35,6 +39,7 @@ export function makeRoutes({
 	router.use(makeOrdersRoutes(ordersController));
 	router.use(makeDeliveryUsersRoutes(deliveryUserController));
 	router.use(makeSSERoutes());
+	router.use(makeAuthRoutes(authController));
 
 	return router;
 }

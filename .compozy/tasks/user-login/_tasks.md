@@ -20,4 +20,4 @@
 | 14 | `auth-validator.ts` (login + refresh schemas) | completed | low | — |
 | 15 | `AuthController` (login, refresh) | completed | medium | task_12, task_13, task_14 |
 | 16 | `auth-routes.ts` + `auth-controller-factory.ts` | completed | medium | task_03, task_05, task_07, task_08, task_15 |
-| 17 | Register auth routes: `routes.ts` + `app.ts` | pending | low | task_16 |
+| 17 | Register auth routes: `routes.ts` + `app.ts` | completed | low | task_16 |
