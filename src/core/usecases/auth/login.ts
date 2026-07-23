@@ -70,7 +70,7 @@ export class LoginUseCase {
 					await this.userRepository.findBySupabaseUserId(supabaseUserId);
 				return user && { id: user.id, name: user.name, email: user.email };
 			}
-			case 'bakery_owner': {
+			case 'company': {
 				const bakery =
 					await this.bakeryRepository.findBySupabaseUserId(supabaseUserId);
 				return (
@@ -81,7 +81,7 @@ export class LoginUseCase {
 					}
 				);
 			}
-			case 'courier': {
+			case 'delivery': {
 				const deliveryUser =
 					await this.deliveryUserRepository.findBySupabaseUserId(supabaseUserId);
 				return (

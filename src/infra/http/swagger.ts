@@ -9,6 +9,13 @@ export const swaggerSpec = swaggerJsdoc({
 			version: '1.0.0',
 		},
 		components: {
+			securitySchemes: {
+				bearerAuth: {
+					type: 'http',
+					scheme: 'bearer',
+					bearerFormat: 'JWT',
+				},
+			},
 			schemas: {
 				User: {
 					type: 'object',
@@ -61,6 +68,50 @@ export const swaggerSpec = swaggerJsdoc({
 							type: 'string',
 							nullable: true,
 							example: 'SP',
+						},
+						createdAt: {
+							type: 'string',
+							format: 'date-time',
+							example: '2026-05-08T12:00:00.000Z',
+						},
+					},
+				},
+				Bakery: {
+					type: 'object',
+					properties: {
+						id: {
+							type: 'string',
+							format: 'uuid',
+							example: 'e0758e45-fd77-4dfc-86ad-dab31b7932ed',
+						},
+						name: {
+							type: 'string',
+							example: 'Padaria Central',
+						},
+						cnpj: {
+							type: 'string',
+							example: '12345678000199',
+						},
+						email: {
+							type: 'string',
+							format: 'email',
+							example: 'padaria@email.com',
+						},
+						phone: {
+							type: 'string',
+							example: '11999999999',
+						},
+						whatsapp: {
+							type: 'string',
+							example: '11999999999',
+						},
+						serviceStartAt: {
+							type: 'string',
+							example: '08:00',
+						},
+						serviceEndAt: {
+							type: 'string',
+							example: '18:00',
 						},
 						createdAt: {
 							type: 'string',

@@ -5,6 +5,7 @@ export const createUserSchema = z.object({
 	email: z.string().email('Email inválido'),
 	// Minimum length is a placeholder default; product has not yet defined a password policy (see PRD "Open Questions").
 	password: z.string().min(8, 'Senha deve ter no mínimo 8 caracteres'),
+	role: z.enum(['customer', 'delivery', 'company']).default('customer'),
 });
 
 export const updateUserSchema = z.object({

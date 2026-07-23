@@ -1,4 +1,4 @@
-export type Role = 'customer' | 'bakery_owner' | 'courier';
+export type Role = 'customer' | 'delivery' | 'company';
 
 export type AuthSession = {
 	accessToken: string;

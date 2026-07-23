@@ -37,6 +37,7 @@ export function makeUserRoutes(userController: UserController) {
 	 *             required:
 	 *               - name
 	 *               - email
+	 *               - password
 	 *             properties:
 	 *               name:
 	 *                 type: string
@@ -45,6 +46,13 @@ export function makeUserRoutes(userController: UserController) {
 	 *                 type: string
 	 *                 format: email
 	 *                 example: murilo@email.com
+	 *               password:
+	 *                 type: string
+	 *                 example: senha12345
+	 *               role:
+	 *                 type: string
+	 *                 enum: [customer, delivery, company]
+	 *                 default: customer
 	 *     responses:
 	 *       201:
 	 *         description: Usuário criado com sucesso

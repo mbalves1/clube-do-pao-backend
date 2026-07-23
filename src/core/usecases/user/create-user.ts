@@ -1,12 +1,13 @@
 import { UnprocessableEntityError } from '../../errors/UnprocessableEntityError';
 import { User } from '../../entities/user';
-import { AuthGateway } from '../../ports/auth-gateway';
+import { AuthGateway, Role } from '../../ports/auth-gateway';
 import { UserRepository } from '../../ports/user-repository';
 
 export type CreateUserDTO = {
 	name: string;
 	email: string;
 	password: string;
+	role: Role;
 };
 
 export class CreateUserUseCase {
@@ -26,7 +27,7 @@ export class CreateUserUseCase {
 			const credential = await this.authGateway.createCredential(
 				data.email,
 				data.password,
-				'customer',
+				data.role,
 			);
 			supabaseUserId = credential.supabaseUserId;
 		} catch {

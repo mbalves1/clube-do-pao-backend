@@ -44,7 +44,7 @@ export function makeAuthRoutes(authController: AuthController) {
 	 *                   type: number
 	 *                 role:
 	 *                   type: string
-	 *                   enum: [customer, bakery_owner, courier]
+	 *                   enum: [customer, delivery, company]
 	 *                 profile:
 	 *                   type: object
 	 *                   properties:
