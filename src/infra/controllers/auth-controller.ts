@@ -2,7 +2,9 @@ import { Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { LoginUseCase } from '../../core/usecases/auth/login';
 import { RefreshSessionUseCase } from '../../core/usecases/auth/refresh-session';
+import { GetMeUseCase } from '../../core/usecases/auth/get-me';
 import { UnprocessableEntityError } from '../../core/errors/UnprocessableEntityError';
+import { Role } from '../../core/ports/auth-gateway';
 import { loginSchema, refreshSchema } from '../http/validators/auth-validator';
 import { formatBadRequest } from '../http/validators/format-validation-error';
 
@@ -10,6 +12,7 @@ export class AuthController {
 	constructor(
 		private loginUseCase: LoginUseCase,
 		private refreshSessionUseCase: RefreshSessionUseCase,
+		private getMeUseCase: GetMeUseCase,
 	) {}
 
 	async login(req: Request, res: Response): Promise<Response> {
@@ -47,6 +50,22 @@ export class AuthController {
 					.status(401)
 					.json({ message: 'Sessão expirada, faça login novamente' });
 			}
+			console.error(error);
+			return res.status(500).json({ message: 'Erro interno do servidor' });
+		}
+	}
+
+	async me(req: Request, res: Response): Promise<Response> {
+		try {
+			const role = req.user.app_metadata.role as Role;
+			const profile = await this.getMeUseCase.execute(role, req.user.id);
+
+			if (!profile) {
+				return res.status(404).json({ message: 'Perfil não encontrado' });
+			}
+
+			return res.status(200).json(profile);
+		} catch (error) {
 			console.error(error);
 			return res.status(500).json({ message: 'Erro interno do servidor' });
 		}

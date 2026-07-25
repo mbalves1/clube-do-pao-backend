@@ -1,5 +1,6 @@
 import { LoginUseCase } from '../../core/usecases/auth/login';
 import { RefreshSessionUseCase } from '../../core/usecases/auth/refresh-session';
+import { GetMeUseCase } from '../../core/usecases/auth/get-me';
 import { AuthController } from '../../infra/controllers/auth-controller';
 import { SupabaseAuthGateway } from '../../infra/gateways/supabase-auth-gateway';
 import { PrismaBakeryRepository } from '../../infra/repositories/prisma-bakery-repository';
@@ -19,6 +20,11 @@ export function makeAuthController() {
 		deliveryUserRepository,
 	);
 	const refreshSessionUseCase = new RefreshSessionUseCase(authGateway);
+	const getMeUseCase = new GetMeUseCase(
+		userRepository,
+		bakeryRepository,
+		deliveryUserRepository,
+	);
 
-	return new AuthController(loginUseCase, refreshSessionUseCase);
+	return new AuthController(loginUseCase, refreshSessionUseCase, getMeUseCase);
 }

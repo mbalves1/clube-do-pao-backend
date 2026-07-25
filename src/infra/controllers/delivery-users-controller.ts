@@ -7,7 +7,7 @@ export class DeliveryUsersController {
 
 	async create(req: Request, res: Response): Promise<Response> {
 		try {
-			const data = req.body;
+			const data = { ...req.body, supabaseUserId: req.user.id };
 			const user = await this.createDeliveryUserUseCase.execute(data);
 			return res.status(201).json(user);
 		} catch (error) {

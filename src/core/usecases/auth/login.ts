@@ -3,17 +3,14 @@ import { AuthGateway, Role } from '../../ports/auth-gateway';
 import { BakeryRepository } from '../../ports/bakery-repository';
 import { DeliveryUserRepository } from '../../ports/delivery-user-repository';
 import { UserRepository } from '../../ports/user-repository';
+import { Profile, resolveProfile } from './resolve-profile';
 
 export type LoginDTO = {
 	email: string;
 	password: string;
 };
 
-export type LoginProfile = {
-	id: string;
-	name: string;
-	email: string;
-};
+export type LoginProfile = Profile;
 
 export type LoginResult = {
 	accessToken: string;
@@ -45,7 +42,11 @@ export class LoginUseCase {
 		}
 
 		const { supabaseUserId, role } = session;
-		const profile = await this.findProfile(role, supabaseUserId);
+		const profile = await resolveProfile(role, supabaseUserId, {
+			userRepository: this.userRepository,
+			bakeryRepository: this.bakeryRepository,
+			deliveryUserRepository: this.deliveryUserRepository,
+		});
 
 		if (!profile) {
 			throw new UnprocessableEntityError(INVALID_CREDENTIALS_MESSAGE);
@@ -58,40 +59,5 @@ export class LoginUseCase {
 			role,
 			profile,
 		};
-	}
-
-	private async findProfile(
-		role: Role,
-		supabaseUserId: string,
-	): Promise<LoginProfile | null> {
-		switch (role) {
-			case 'customer': {
-				const user =
-					await this.userRepository.findBySupabaseUserId(supabaseUserId);
-				return user && { id: user.id, name: user.name, email: user.email };
-			}
-			case 'company': {
-				const bakery =
-					await this.bakeryRepository.findBySupabaseUserId(supabaseUserId);
-				return (
-					bakery && {
-						id: bakery.id as string,
-						name: bakery.name,
-						email: bakery.email,
-					}
-				);
-			}
-			case 'delivery': {
-				const deliveryUser =
-					await this.deliveryUserRepository.findBySupabaseUserId(supabaseUserId);
-				return (
-					deliveryUser && {
-						id: deliveryUser.id,
-						name: deliveryUser.name,
-						email: deliveryUser.email,
-					}
-				);
-			}
-		}
 	}
 }

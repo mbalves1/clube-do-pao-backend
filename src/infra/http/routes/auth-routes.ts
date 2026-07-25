@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { AuthController } from '../../controllers/auth-controller';
+import { authMiddleware } from '../../../middlewares/auth';
 
 export function makeAuthRoutes(authController: AuthController) {
 	const router = Router();
@@ -99,6 +100,38 @@ export function makeAuthRoutes(authController: AuthController) {
 	 *         description: Sessão expirada, faça login novamente
 	 */
 	router.post('/auth/refresh', (req, res) => authController.refresh(req, res));
+
+	/**
+	 * @swagger
+	 * /api/auth/me:
+	 *   get:
+	 *     summary: Retorna o perfil do usuário autenticado
+	 *     tags:
+	 *       - Auth
+	 *     security:
+	 *       - bearerAuth: []
+	 *     responses:
+	 *       200:
+	 *         description: Perfil retornado com sucesso
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               type: object
+	 *               properties:
+	 *                 id:
+	 *                   type: string
+	 *                 name:
+	 *                   type: string
+	 *                 email:
+	 *                   type: string
+	 *       401:
+	 *         description: Token não fornecido, inválido ou expirado
+	 *       404:
+	 *         description: Perfil não encontrado
+	 */
+	router.get('/auth/me', authMiddleware, (req, res) =>
+		authController.me(req, res),
+	);
 
 	return router;
 }

@@ -11,6 +11,7 @@ export class PrismaDeliveryUserRepository implements DeliveryUserRepository {
 				email: data.email,
 				phone: data.phone,
 				modal: data.modal,
+				supabaseUserId: data.supabaseUserId,
 			},
 		});
 	}
