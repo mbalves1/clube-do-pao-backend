@@ -56,3 +56,29 @@ Siga sempre esta ordem (de dentro para fora):
 - **Rotas protegidas** usam `authMiddleware` e acessam `req.user` para obter o usuário autenticado
 - **Erros de domínio** estendem `AppError` (`src/core/errors/`) — controllers fazem catch e retornam o status correto
 - **Prisma client** é singleton lazy em `src/infra/database/prisma-client.ts` — nunca instanciar `PrismaClient` diretamente
+
+## Modelo de domínio
+
+Entidades principais (`prisma/schema.prisma`):
+
+- `User` — cliente (role `customer`)
+- `Bakery` — padaria (role `company`)
+- `DeliveryPerson` — entregador (role `delivery`)
+- `Subscription` — assinatura recorrente entre `User` e `Bakery` (dias da semana, frequência, janela de entrega)
+- `Order` — pedido pontual gerado a partir de uma `Subscription`, com status `PENDING → ACCEPTED → PICKED_UP → DELIVERED`/`CANCELED`
+- `FavoriteBakery` — relação N:N entre `User` e `Bakery`
+
+## Autenticação e papéis (roles)
+
+Não existe coluna `role` unificada no banco — o papel do usuário é **estrutural**: definido por em qual tabela o registro existe, não por um campo.
+
+| Role (`app_metadata.role` no Supabase) | Tabela Prisma      |
+|-----------------------------------------|--------------------|
+| `customer`                              | `User`             |
+| `company`                                | `Bakery`           |
+| `delivery`                               | `DeliveryPerson`   |
+
+- A role é definida na criação da credencial (`AuthGateway.createCredential`, implementado em `src/infra/gateways/supabase-auth-gateway.ts`) e fica salva **apenas** em `app_metadata.role` no Supabase Auth — não é persistida no Postgres.
+- No login (`LoginUseCase.findProfile`, `src/core/usecases/auth/login.ts`), a role vinda da sessão Supabase decide em qual repositório buscar o perfil (`User`, `Bakery` ou `DeliveryPerson`).
+- `authMiddleware` (`src/middlewares/auth.ts`) apenas valida o JWT e injeta `req.user` (objeto do Supabase, com `app_metadata`) — **não há guard de autorização por role** aplicado nas rotas hoje.
+- Hoje só `POST /api/users` (`CreateUserUseCase`) cria credencial Supabase com senha e aceita `role` no body. Os cadastros de `Bakery` (`create-bakery.ts`) e `DeliveryPerson` (`create-delivery.ts`) ainda **não** criam credencial Supabase nem pedem senha — contas `company`/`delivery` criadas por esses fluxos não conseguem fazer login até isso ser implementado.

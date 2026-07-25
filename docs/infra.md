@@ -9,12 +9,18 @@ SUPABASE_SERVICE_ROLE_KEY= # Chave de serviço do Supabase
 # Comandos úteis
 
 ```bash
-npm run dev          # Desenvolvimento com hot reload
-npm run build        # Compila TypeScript → dist/
+npm run dev              # Desenvolvimento com hot reload (ts-node-dev)
+npm run build            # prisma generate + compila TypeScript → dist/
+npm start                # Roda o build (dist/main/server.js)
 npm run prisma:generate  # Gera Prisma Client após alterar o schema
-npm run prisma:deploy    # Executa migrations em produção
-npm run docker:up    # Sobe PostgreSQL local via Docker
+npm run prisma:format    # Formata prisma/schema.prisma
+npm run prisma:deploy    # Executa migrations em produção (migrate deploy)
+npm run docker:up        # Sobe PostgreSQL local via Docker
+npm run docker:down      # Derruba os containers
+npm run setup            # Primeira execução: docker:up + aguarda Postgres + migrate dev
 ```
+
+Não há scripts de `lint` ou `test` configurados no projeto no momento — o CI (`.github/workflows/ci.yml`) só roda `prisma generate` + `npm run build`.
 
 # Notas de deploy (Vercel)
 
