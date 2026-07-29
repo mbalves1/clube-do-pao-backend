@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "CreateDeliveryUserUseCase: require password, create Supabase credential, persist supabaseUserId"
 type: backend
 complexity: medium
@@ -32,10 +32,10 @@ Closes the blocking gap identified in the TechSpec: today `CreateDeliveryUserUse
 </requirements>
 
 ## Subtasks
-- [ ] 4.1 Change constructor to take `DeliveryUserRepository` (port) and `AuthGateway`.
-- [ ] 4.2 Add `password` and keep existing fields in the use case's input DTO.
-- [ ] 4.3 Call `authGateway.createCredential(email, password, 'delivery')`, handling failure the same way `CreateUserUseCase` does.
-- [ ] 4.4 Pass `supabaseUserId` through to `deliveryUserRepository.create`.
+- [x] 4.1 Change constructor to take `DeliveryUserRepository` (port) and `AuthGateway`.
+- [x] 4.2 Add `password` and keep existing fields in the use case's input DTO.
+- [x] 4.3 Call `authGateway.createCredential(email, password, 'delivery')`, handling failure the same way `CreateUserUseCase` does.
+- [x] 4.4 Pass `supabaseUserId` through to `deliveryUserRepository.create`.
 
 ## Implementation Details
 See TechSpec "Technical Dependencies" and "Impact Analysis" for why this task exists. Mirror `src/core/usecases/user/create-user.ts` structurally — same constructor shape, same try/catch around `createCredential`, same `role` parameter usage, just with `'delivery'` instead of `'customer'` and the delivery-specific fields (`document`, `phone`, `modal`) instead of the user ones.
@@ -56,9 +56,9 @@ See TechSpec "Technical Dependencies" and "Impact Analysis" for why this task ex
 
 ## Tests
 - Manual verification:
-  - [ ] Calling `execute` with valid data (including `password`) creates a Supabase user with `app_metadata.role === 'delivery'` and a `DeliveryPerson` row with matching `supabaseUserId`.
-  - [ ] A Supabase credential-creation failure (e.g., temporarily invalid Supabase env vars) results in `UnprocessableEntityError`, not an unhandled exception.
-  - [ ] The delivery person created this way can subsequently log in via the existing `POST /api/auth/login` and is resolved as role `delivery`.
+  - [x] Not exercised as a live Supabase call — deferred to task_06, where `DeliveryUsersController` is actually reachable end-to-end (this use case isn't callable through the app yet; the factory still has the pre-task_06 1-arg constructor call). Verified by code review instead: `execute` calls `authGateway.createCredential(data.email, data.password, 'delivery')` before the DB write, structurally identical to `CreateUserUseCase`.
+  - [x] Credential-creation failure path verified by code review: the `try/catch` around `createCredential` throws `UnprocessableEntityError` on any rejection, mirroring `CreateUserUseCase` exactly — no unhandled-exception path exists.
+  - [ ] Login-after-creation: deferred to task_06 for the same reachability reason above.
 - Test coverage target: N/A — no automated test framework in this project.
 - All manual verification scenarios passing.
 

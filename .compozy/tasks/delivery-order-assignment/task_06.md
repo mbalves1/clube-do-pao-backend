@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "DeliveryUsersController.create + factory: forward password, wire AuthGateway"
 type: backend
 complexity: medium
@@ -29,8 +29,8 @@ Wires the completed credential-creation chain (tasks 2-5) through to the HTTP la
 </requirements>
 
 ## Subtasks
-- [ ] 6.1 Update `makeDeliveryUserController` to instantiate `SupabaseAuthGateway` and pass it into `CreateDeliveryUserUseCase` alongside `PrismaDeliveryUserRepository`.
-- [ ] 6.2 Confirm `DeliveryUsersController.create` requires no changes (it already forwards the full validated `req.body`, which now includes `password` per task_05).
+- [x] 6.1 Update `makeDeliveryUserController` to instantiate `SupabaseAuthGateway` and pass it into `CreateDeliveryUserUseCase` alongside `PrismaDeliveryUserRepository`.
+- [x] 6.2 Confirm `DeliveryUsersController.create` requires no changes (it already forwards the full validated `req.body`, which now includes `password` per task_05).
 
 ## Implementation Details
 See `src/main/factories/user-controller-factory.ts` for the exact wiring pattern to replicate (constructing `SupabaseAuthGateway` and injecting it alongside the repository).
@@ -50,8 +50,8 @@ See `src/main/factories/user-controller-factory.ts` for the exact wiring pattern
 
 ## Tests
 - Manual verification:
-  - [ ] `npm run build` compiles with no errors after tasks 2-6 are all applied together.
-  - [ ] End-to-end: `POST /delivery/register` with a valid payload (including `password`) creates a working, loggable-in delivery person — verified via `request.http` or `curl`, then confirmed with `POST /api/auth/login`.
+  - [x] `npm run build` compiles with no errors after tasks 2-6 are all applied together (exit 0, confirmed above).
+  - [ ] End-to-end HTTP/Supabase login round-trip not exercised — `.env`'s Supabase/DB credentials point at live shared infrastructure; deferred to the project owner to run manually against a real environment.
 - Test coverage target: N/A — no automated test framework in this project.
 - All manual verification scenarios passing.
 

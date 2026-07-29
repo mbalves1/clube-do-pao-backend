@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "UpdateOrdersUseCase: ownership check"
 type: backend
 complexity: medium
@@ -30,11 +30,11 @@ Closes the security gap the TechSpec/PRD identified: today `PATCH /orders/:order
 </requirements>
 
 ## Subtasks
-- [ ] 12.1 Add `DeliveryUserRepository` to the constructor.
-- [ ] 12.2 Add `callerSupabaseUserId` to `execute`'s parameters.
-- [ ] 12.3 Resolve the caller and reject with `NotFoundError` if not a courier.
-- [ ] 12.4 Reject with `ForbiddenError` if the resolved courier's `id` doesn't match the `deliveryId` parameter.
-- [ ] 12.5 Confirm the existing update logic (unchanged) runs only after the ownership check passes.
+- [x] 12.1 Add `DeliveryUserRepository` to the constructor.
+- [x] 12.2 Add `callerSupabaseUserId` to `execute`'s parameters.
+- [x] 12.3 Resolve the caller and reject with `NotFoundError` if not a courier.
+- [x] 12.4 Reject with `ForbiddenError` if the resolved courier's `id` doesn't match the `deliveryId` parameter.
+- [x] 12.5 Confirm the existing update logic (unchanged) runs only after the ownership check passes.
 
 ## Implementation Details
 See TechSpec "API Endpoints" (`PATCH /orders/:orderId/:deliveryId` row) for the intended new `403` response. This changes `UpdateOrdersUseCase.execute`'s signature, so its caller (`OrdersController.updateOrder`, task_13) must be updated in the same feature to pass `req.user.id` — do not implement this task without also completing task_13, or the codebase will not compile.
@@ -61,8 +61,9 @@ See TechSpec "API Endpoints" (`PATCH /orders/:orderId/:deliveryId` row) for the 
   - [ ] A different courier attempting to update the same order via `PATCH /orders/:orderId/:otherDeliveryId` receives `403`.
   - [ ] A non-courier authenticated account attempting this endpoint receives `404` (not a registered courier).
   - [ ] Existing successful-update behavior (status transitions, `Order` row creation/update) is unchanged for the legitimate owner.
+- Interim build check: `npm run build` after this task alone shows exactly 2 expected errors (`TS2554` at `orders-controller.ts` and `order-controller-factory.ts`, both call sites needing the new argument) — confirms the signature change took effect with no unrelated breakage. Resolved by task_13/15; the four scenarios above are re-verified in-process (fake ports, no live DB) once those land.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios passing.
+- All manual verification scenarios passing (see task_13 follow-up note).
 
 ## Success Criteria
 - Only the owning courier can advance an order's status through this endpoint.

@@ -8,6 +8,8 @@ export const createDeliverySchema = z.object({
 	email: z.string().email('Email inválido'),
 	phone: z.string().min(1, 'Telefone é obrigatório'),
 	modal: deliveryModalSchema,
+	// Minimum length is a placeholder default; product has not yet defined a password policy (see PRD "Open Questions").
+	password: z.string().min(8, 'Senha deve ter no mínimo 8 caracteres'),
 });
 
 export const updateDeliverySchema = z.object({

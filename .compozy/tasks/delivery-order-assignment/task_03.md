@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "PrismaDeliveryUserRepository.create: persist supabaseUserId"
 type: backend
 complexity: low
@@ -27,9 +27,9 @@ Implements the port change from task_02 in the Prisma-backed repository: `create
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Update `create`'s parameter type to match task_02's port change.
-- [ ] 3.2 Pass `supabaseUserId` into the `prisma.deliveryPerson.create({ data: { ... } })` call.
-- [ ] 3.3 Verify the return type/mapping is consistent with `findBySupabaseUserId`'s existing mapping shape.
+- [x] 3.1 Update `create`'s parameter type to match task_02's port change.
+- [x] 3.2 Pass `supabaseUserId` into the `prisma.deliveryPerson.create({ data: { ... } })` call.
+- [x] 3.3 Verify the return type/mapping is consistent with `findBySupabaseUserId`'s existing mapping shape.
 
 ## Implementation Details
 Follow the same shape `PrismaUserRepository.create` already uses for persisting `supabaseUserId` (added in the prior `user-login` feature) — this repository already has `findBySupabaseUserId` implemented with a manual inline mapping; `create` just needs the same field added to its `data` object.
@@ -47,8 +47,8 @@ Follow the same shape `PrismaUserRepository.create` already uses for persisting 
 
 ## Tests
 - Manual verification:
-  - [ ] Creating a delivery person with a `supabaseUserId` persists it and it is readable back via `findBySupabaseUserId`.
-  - [ ] `npm run build` compiles with no type errors once this task and task_02 are both applied.
+  - [x] Not exercised as a live DB write — `DATABASE_URL` points at a remote/shared Supabase instance, not a disposable local DB, so a real insert was not performed. Verified instead by code + schema inspection: `create`'s `data` object now includes `supabaseUserId`, which maps to `DeliveryPerson.supabaseUserId` (`@unique`), and the returned mapping (`{ id, name, email, supabaseUserId }`) matches `findBySupabaseUserId`'s existing shape exactly.
+  - [x] `npm run build` compiles with no type errors once this task and task_02 are both applied.
 - Test coverage target: N/A — no automated test framework in this project.
 - All manual verification scenarios passing.
 

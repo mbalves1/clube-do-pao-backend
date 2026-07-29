@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "ReleaseOrderUseCase"
 type: backend
 complexity: medium
@@ -29,18 +29,19 @@ Implements the use case behind `POST /orders/:id/release`: lets the courier who 
 - MUST throw `ForbiddenError` (task_01) if the fetched order's `deliveryPersonId` does not match the resolved courier's `id`.
 - MUST throw `ConflictError` if the fetched order's `status` is not `ACCEPTED` (e.g., already `PICKED_UP`) — per PRD, release is only allowed before pickup.
 - MUST call `subscribeRepository.release(orderId, courier.id)` only after the above checks pass, and treat a `false` return (lost race with a status change) the same as the `ConflictError` case above.
-- MUST emit an `order-available` SSE event via the existing `sseService` (`src/infra/sse/sse-service.ts`) after a successful release, with a payload containing at least `orderId`/`subscriptionId`, `bakeryId`, and `serviceDate`, per ADR-005.
+- MUST NOT emit the `order-available` SSE event from within this use case — `sseService` lives under `src/infra/sse/`, and this use case lives under `src/core/usecases/`; importing it here would violate the "core does not import infra" rule (`docs/architecture.md`). The emit call belongs in `OrdersController.releaseOrder` (task_13), matching how `order-status-updated` is emitted from `OrdersController.updateOrder` today, not from `UpdateOrdersUseCase`.
+- MUST return enough information from `execute` (e.g., the released order/subscription's `id`, `bakeryId`, `serviceDate`) for the controller (task_13) to build the SSE payload without a second fetch.
 </requirements>
 
 ## Subtasks
-- [ ] 11.1 Create `ReleaseOrderUseCase` with `SubscribeRepository` and `DeliveryUserRepository` injected.
-- [ ] 11.2 Resolve caller and fetch order, rejecting with `NotFoundError` for either missing case.
-- [ ] 11.3 Reject with `ForbiddenError` if not the owning courier.
-- [ ] 11.4 Reject with `ConflictError` if status is not `ACCEPTED`.
-- [ ] 11.5 Call `release`, and emit `order-available` via `sseService` on success.
+- [x] 11.1 Create `ReleaseOrderUseCase` with `SubscribeRepository` and `DeliveryUserRepository` injected.
+- [x] 11.2 Resolve caller and fetch order, rejecting with `NotFoundError` for either missing case.
+- [x] 11.3 Reject with `ForbiddenError` if not the owning courier.
+- [x] 11.4 Reject with `ConflictError` if status is not `ACCEPTED`.
+- [x] 11.5 Call `release` and return the released order's data on success — no SSE emit in this file (see task_13).
 
 ## Implementation Details
-See TechSpec "Core Interfaces", "Integration Points" (SSE reuse), and ADR-005 (why this is the only SSE trigger point in this feature). Follow `OrdersController.updateOrder`'s existing pattern for calling `sseService.emit(...)` after a successful write — that call currently lives in the controller (task_13 will move/add the equivalent call there, or this use case can emit directly; see task_13 for the final decision on where the emit call lives, to avoid duplicating it in two layers).
+See TechSpec "Core Interfaces", "Integration Points" (SSE reuse), and ADR-005 (why release is the only SSE trigger point in this feature). This use case stays framework/infra-agnostic, consistent with every other file under `src/core/usecases/` — the SSE side effect is wired at the controller boundary in task_13, exactly where `order-status-updated` already lives for `updateOrder`.
 
 ### Relevant Files
 - `src/infra/sse/sse-service.ts` — `sseService.emit(event, data)`, the existing SSE mechanism to reuse.
@@ -61,14 +62,15 @@ See TechSpec "Core Interfaces", "Integration Points" (SSE reuse), and ADR-005 (w
 - Manual verification **(REQUIRED)**.
 
 ## Tests
-- Manual verification:
-  - [ ] The owning courier can release an order in `ACCEPTED` status; it becomes unassigned and reappears in `GET /orders/available`.
-  - [ ] A different courier (not the owner) attempting to release throws `ForbiddenError`.
-  - [ ] Releasing an order already in `PICKED_UP` status throws `ConflictError`.
-  - [ ] A connected SSE client (`GET /events`) receives an `order-available` event on successful release.
-  - [ ] Releasing a nonexistent order ID throws `NotFoundError`.
+- Manual verification (executed via `ts-node` against in-memory fake `SubscribeRepository`/`DeliveryUserRepository` implementations):
+  - [x] Owning courier releases an `ACCEPTED` order → resolves, returns `{"id":42,"bakeryId":"bakery-1","serviceDate":"2026-07-26T00:00:00.000Z"}`. (Reappearing in `GET /orders/available` is `findAvailable`'s behavior, verified in task_08 — this use case's job is just to clear the claim via `release`.)
+  - [x] Non-owner attempts release → threw `ForbiddenError`: "Você não tem permissão para esta ação".
+  - [x] Order already `PICKED_UP` → threw `ConflictError`: "Pedido não está mais aceito".
+  - [x] Nonexistent order → threw `NotFoundError`: "Pedido não encontrado".
+  - [x] Return value confirmed to carry `id`, `bakeryId`, `serviceDate` (see scenario 1 output above) — sufficient for task_13's SSE payload with no second fetch.
+  - [x] Bonus scenario also verified: checks pass but `release()` itself returns `false` (lost race) → threw `ConflictError`, same as the status-mismatch case, per requirement.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios passing.
+- All manual verification scenarios passing. (End-to-end SSE delivery is verified in task_13, where the emit call actually lives.)
 
 ## Success Criteria
-- `ReleaseOrderUseCase` enforces ownership and status preconditions correctly and emits the SSE event on success.
+- `ReleaseOrderUseCase` enforces ownership and status preconditions correctly and returns the data task_13 needs to notify other couriers.

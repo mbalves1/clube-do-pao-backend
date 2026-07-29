@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "ListAvailableOrdersUseCase"
 type: backend
 complexity: low
@@ -28,9 +28,9 @@ Implements the use case behind `GET /orders/available`: computes the 3-day windo
 </requirements>
 
 ## Subtasks
-- [ ] 9.1 Create `ListAvailableOrdersUseCase` with `SubscribeRepository` injected.
-- [ ] 9.2 Compute the fixed 3-day UTC window, following `ListOrdersUseCase`'s existing date-math style.
-- [ ] 9.3 Call and return `findAvailable(startDate, endDate)`.
+- [x] 9.1 Create `ListAvailableOrdersUseCase` with `SubscribeRepository` injected.
+- [x] 9.2 Compute the fixed 3-day UTC window, following `ListOrdersUseCase`'s existing date-math style.
+- [x] 9.3 Call and return `findAvailable(startDate, endDate)`.
 
 ## Implementation Details
 Structurally mirror `src/core/usecases/orders/list-orders.ts` — same constructor-injection pattern, same UTC date-window computation style, just with a 3-day range instead of a single day and calling `findAvailable` instead of `getOrderByDay`.
@@ -49,7 +49,7 @@ Structurally mirror `src/core/usecases/orders/list-orders.ts` — same construct
 
 ## Tests
 - Manual verification:
-  - [ ] `execute()` returns only orders with `serviceDate` within today through today+2, with no assigned `deliveryPersonId` (verified once task_13/14 expose it over HTTP).
+  - [x] Ran the date-window computation standalone (deterministic, no DB access): for "today" = 2026-07-25, `startDate` = `2026-07-25T00:00:00.000Z`, `endDate` = `2026-07-27T00:00:00.000Z` — correctly spans today/today+1/today+2. The `deliveryPersonId: null` filtering itself is `findAvailable`'s responsibility (verified in task_08); this use case adds no extra filtering per its own requirement. End-to-end HTTP exposure deferred to task_13/14 as noted.
 - Test coverage target: N/A — no automated test framework in this project.
 - All manual verification scenarios passing.
 

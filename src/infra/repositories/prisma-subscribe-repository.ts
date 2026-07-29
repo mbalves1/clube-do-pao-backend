@@ -1,6 +1,7 @@
 import { prisma } from './../database/prisma-client';
 import { OrderStatus } from '../../core/entities/orders';
 import {
+	AvailableOrder,
 	SubscribeCreateData,
 	SubscribeRepository,
 } from '../../core/ports/subscribe-repository';
@@ -115,5 +116,43 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 			total,
 			totalPages: Math.ceil(total / limit),
 		};
+	}
+
+	async findAvailable(startDate: Date, endDate: Date): Promise<AvailableOrder[]> {
+		const rows = await prisma.subscription.findMany({
+			where: {
+				serviceDate: { gte: startDate, lte: endDate },
+				deliveryPersonId: null,
+			},
+		});
+
+		return rows.map((row) => ({
+			id: row.id,
+			bakeryId: row.bakeryId,
+			serviceDate: row.serviceDate,
+			serviceStartAt: row.serviceStartAt,
+			serviceEndAt: row.serviceEndAt,
+			deliveryStartAt: row.deliveryStartAt,
+			deliveryEndAt: row.deliveryEndAt,
+			status: row.status as OrderStatus,
+		}));
+	}
+
+	async claim(id: number, deliveryPersonId: string): Promise<boolean> {
+		const { count } = await prisma.subscription.updateMany({
+			where: { id, deliveryPersonId: null },
+			data: { deliveryPersonId, status: 'ACCEPTED' },
+		});
+
+		return count === 1;
+	}
+
+	async release(id: number, deliveryPersonId: string): Promise<boolean> {
+		const { count } = await prisma.subscription.updateMany({
+			where: { id, deliveryPersonId, status: 'ACCEPTED' },
+			data: { deliveryPersonId: null, status: 'PENDING' },
+		});
+
+		return count === 1;
 	}
 }

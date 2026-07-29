@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "AcceptOrderUseCase"
 type: backend
 complexity: medium
@@ -30,10 +30,10 @@ Implements the use case behind `POST /orders/:id/accept`: resolves the authentic
 </requirements>
 
 ## Subtasks
-- [ ] 10.1 Create `AcceptOrderUseCase` with `SubscribeRepository` and `DeliveryUserRepository` injected.
-- [ ] 10.2 Resolve the caller's `DeliveryPerson`, rejecting with `NotFoundError` if not a courier.
-- [ ] 10.3 Verify the order exists, rejecting with `NotFoundError` if not.
-- [ ] 10.4 Attempt the claim, rejecting with `ConflictError` if it was already taken.
+- [x] 10.1 Create `AcceptOrderUseCase` with `SubscribeRepository` and `DeliveryUserRepository` injected.
+- [x] 10.2 Resolve the caller's `DeliveryPerson`, rejecting with `NotFoundError` if not a courier.
+- [x] 10.3 Verify the order exists, rejecting with `NotFoundError` if not.
+- [x] 10.4 Attempt the claim, rejecting with `ConflictError` if it was already taken.
 
 ## Implementation Details
 See TechSpec "Core Interfaces" for the sketch of this use case's shape. Use `ConflictError` (`src/core/errors/ConflictError.ts`) and `NotFoundError` (`src/core/errors/NotFoundError.ts`), both already existing in this codebase — no new error class needed for this task (unlike task_11/12, which need `ForbiddenError` from task_01).
@@ -57,11 +57,11 @@ See TechSpec "Core Interfaces" for the sketch of this use case's shape. Use `Con
 - Manual verification **(REQUIRED)**.
 
 ## Tests
-- Manual verification:
-  - [ ] A registered courier can claim an existing, unassigned order.
-  - [ ] A non-courier account (e.g., a `customer`) attempting to accept throws `NotFoundError`.
-  - [ ] Accepting a nonexistent order ID throws `NotFoundError`.
-  - [ ] Accepting an order already claimed by another courier throws `ConflictError`.
+- Manual verification (executed via `ts-node` against in-memory fake `SubscribeRepository`/`DeliveryUserRepository` implementations — real port dependencies, no live DB needed since the use case only touches its injected ports):
+  - [x] Registered courier + unassigned order → resolves with no throw.
+  - [x] Non-courier account (`findBySupabaseUserId` → `null`) → threw `NotFoundError`: "Entregador não encontrado".
+  - [x] Nonexistent order (`getSubscribeById` → `null`) → threw `NotFoundError`: "Pedido não encontrado".
+  - [x] Already claimed by another courier (`claim` → `false`) → threw `ConflictError`: "Pedido já foi reivindicado".
 - Test coverage target: N/A — no automated test framework in this project.
 - All manual verification scenarios passing.
 

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "DeliveryUser entity + DeliveryUserRepository port: create() includes supabaseUserId"
 type: backend
 complexity: low
@@ -26,9 +26,9 @@ Updates the `DeliveryUserRepository` port so `create()` accepts and is expected 
 </requirements>
 
 ## Subtasks
-- [ ] 2.1 Define a typed `CreateDeliveryUserData` (or equivalent) input type for `create()`, replacing the current `any` parameter, including `supabaseUserId: string` as required.
-- [ ] 2.2 Update `DeliveryUserRepository.create` signature to use this new type.
-- [ ] 2.3 Confirm `DeliveryUser` entity fields still match what `findBySupabaseUserId` returns (no change expected, verification only).
+- [x] 2.1 Define a typed `CreateDeliveryUserData` (or equivalent) input type for `create()`, replacing the current `any` parameter, including `supabaseUserId: string` as required.
+- [x] 2.2 Update `DeliveryUserRepository.create` signature to use this new type.
+- [x] 2.3 Confirm `DeliveryUser` entity fields still match what `findBySupabaseUserId` returns (no change expected, verification only).
 
 ## Implementation Details
 This only changes the port (interface); the Prisma implementation is task_03. See TechSpec "Technical Dependencies" for why this chain of tasks (2 through 6) exists — it is a prerequisite for the delivery-order-assignment feature itself, not part of its core scope.
@@ -47,7 +47,7 @@ This only changes the port (interface); the Prisma implementation is task_03. Se
 
 ## Tests
 - Manual verification:
-  - [ ] `npm run build` fails at `PrismaDeliveryUserRepository.create` (expected, until task_03 lands) confirming the type change took effect and is enforced.
+  - [x] Ran `npm run build` after this change alone: it compiled with 0 errors, not the predicted failure. Root cause: `PrismaDeliveryUserRepository.create(data: any): Promise<any>` still type-checks against the new port signature because `any` is bidirectionally assignable (bypasses the parameter/return type check in both directions). The port type change is confirmed in place via source inspection (`src/core/ports/delivery-user-repository.ts`); task_03 replaces `any` with the real type and adds `supabaseUserId` to the Prisma write.
 - Test coverage target: N/A — no automated test framework in this project.
 - All manual verification scenarios passing.
 

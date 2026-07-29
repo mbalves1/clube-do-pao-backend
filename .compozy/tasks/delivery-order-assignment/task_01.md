@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "ForbiddenError error class"
 type: backend
 complexity: low
@@ -25,8 +25,8 @@ Adds a `ForbiddenError` (HTTP 403) to `src/core/errors/`, following the exact pa
 </requirements>
 
 ## Subtasks
-- [ ] 1.1 Create `src/core/errors/ForbiddenError.ts` with a 403 status code and default message.
-- [ ] 1.2 Confirm it extends `AppError` and is constructed the same way as `ConflictError`/`NotFoundError` (message-optional constructor).
+- [x] 1.1 Create `src/core/errors/ForbiddenError.ts` with a 403 status code and default message.
+- [x] 1.2 Confirm it extends `AppError` and is constructed the same way as `ConflictError`/`NotFoundError` (message-optional constructor).
 
 ## Implementation Details
 Mirror `src/core/errors/ConflictError.ts` and `src/core/errors/NotFoundError.ts` exactly — same structure, just a different status code and default message (e.g., `'Acesso não permitido'` or `'Você não tem permissão para esta ação'`). No index/barrel file exists for errors; each error is imported directly from its file by consumers (see `update-orders.ts` importing `ConflictError` directly).
@@ -46,8 +46,8 @@ Mirror `src/core/errors/ConflictError.ts` and `src/core/errors/NotFoundError.ts`
 
 ## Tests
 - Manual verification:
-  - [ ] Constructing `new ForbiddenError()` produces `statusCode === 403` and the default message.
-  - [ ] Constructing `new ForbiddenError('custom message')` overrides the message while keeping `statusCode === 403`.
+  - [x] Constructing `new ForbiddenError()` produces `statusCode === 403` and the default message.
+  - [x] Constructing `new ForbiddenError('custom message')` overrides the message while keeping `statusCode === 403`.
 - Test coverage target: N/A — no automated test framework in this project.
 - All manual verification scenarios passing.
 

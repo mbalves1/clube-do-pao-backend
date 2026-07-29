@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "SubscribeRepository port: findAvailable, claim, release + AvailableOrder type"
 type: backend
 complexity: low
@@ -28,10 +28,10 @@ Extends the `SubscribeRepository` port with the three methods this feature needs
 </requirements>
 
 ## Subtasks
-- [ ] 7.1 Define the `AvailableOrder` type.
-- [ ] 7.2 Add `findAvailable(startDate, endDate)` to the interface.
-- [ ] 7.3 Add `claim(id, deliveryPersonId)` to the interface, documented as returning `false` (not throwing) on a lost race.
-- [ ] 7.4 Add `release(id, deliveryPersonId)` to the interface, documented as returning `false` (not throwing) when not owner or wrong status.
+- [x] 7.1 Define the `AvailableOrder` type.
+- [x] 7.2 Add `findAvailable(startDate, endDate)` to the interface.
+- [x] 7.3 Add `claim(id, deliveryPersonId)` to the interface, documented as returning `false` (not throwing) on a lost race.
+- [x] 7.4 Add `release(id, deliveryPersonId)` to the interface, documented as returning `false` (not throwing) when not owner or wrong status.
 
 ## Implementation Details
 See TechSpec "Core Interfaces" for the exact method shapes and ADR-002/ADR-004 for the rationale behind querying `Subscription` and using boolean-returning conditional updates instead of throwing from the repository layer (error mapping to `ConflictError`/`ForbiddenError`/`NotFoundError` happens in the use cases, tasks 09-11, which can distinguish these cases using `getSubscribeById` before calling `claim`/`release`).
@@ -52,7 +52,7 @@ See TechSpec "Core Interfaces" for the exact method shapes and ADR-002/ADR-004 f
 
 ## Tests
 - Manual verification:
-  - [ ] `npm run build` shows the expected "not implemented" type errors at `PrismaSubscribeRepository` (confirms the interface change is picked up; resolved by task_08).
+  - [x] `npm run build` shows the expected "not implemented" errors: `PrismaSubscribeRepository` missing `findAvailable`/`claim`/`release` (TS2420), plus downstream `TS2345` at `order-controller-factory.ts` and `subscribe-controller-factory.ts` where it's passed in — all resolved by task_08. No existing method signatures flagged.
 - Test coverage target: N/A — no automated test framework in this project.
 - All manual verification scenarios passing.
 

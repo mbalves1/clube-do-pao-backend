@@ -30,7 +30,7 @@ Wires the four use cases from tasks 09-12 into `OrdersController`: three new han
 - MUST update `updateOrder` to pass `req.user.id` as the new `callerSupabaseUserId` argument to `UpdateOrdersUseCase.execute` (task_12's signature change).
 - MUST use the existing `AppError`-aware catch pattern already present in `updateOrder` (checks `error instanceof AppError`, returns `error.statusCode`) for all three new handlers — this is what correctly maps `NotFoundError`/`ConflictError`/`ForbiddenError` to their respective status codes. Do NOT use the `formatBadRequest`-only pattern from `list`/`create`, which flattens every error to `400`.
 - MUST keep the existing `sseService.emit('order-status-updated', ...)` call in `updateOrder` unchanged.
-- SHOULD place the `sseService.emit('order-available', ...)` call inside `releaseOrder` (controller layer), matching where `order-status-updated` is currently emitted from `updateOrder`, rather than inside `ReleaseOrderUseCase` itself — for consistency with this controller's existing pattern of emitting SSE events at the HTTP boundary, not inside use cases. If task_11 already implemented the emit inside the use case, remove the duplicate here so the event fires exactly once.
+- MUST call `sseService.emit('order-available', ...)` inside `releaseOrder` (controller layer), using the data `ReleaseOrderUseCase.execute` returns (task_11 deliberately does not emit from within the use case, to keep `src/core/usecases/` free of infra imports) — matching where `order-status-updated` is already emitted from `updateOrder` today.
 </requirements>
 
 ## Subtasks

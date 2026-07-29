@@ -1,10 +1,13 @@
 import { DeliveryUser } from '../../core/entities/delivery';
-import { DeliveryUserRepository } from '../../core/ports/delivery-user-repository';
+import {
+	CreateDeliveryUserData,
+	DeliveryUserRepository,
+} from '../../core/ports/delivery-user-repository';
 import { prisma } from '../database/prisma-client';
 
 export class PrismaDeliveryUserRepository implements DeliveryUserRepository {
-	async create(data: any): Promise<any> {
-		return await prisma.deliveryPerson.create({
+	async create(data: CreateDeliveryUserData): Promise<DeliveryUser> {
+		const created = await prisma.deliveryPerson.create({
 			data: {
 				name: data.name,
 				document: data.document,
@@ -14,6 +17,13 @@ export class PrismaDeliveryUserRepository implements DeliveryUserRepository {
 				supabaseUserId: data.supabaseUserId,
 			},
 		});
+
+		return {
+			id: created.id,
+			name: created.name,
+			email: created.email!,
+			supabaseUserId: created.supabaseUserId!,
+		};
 	}
 
 	async findBySupabaseUserId(
