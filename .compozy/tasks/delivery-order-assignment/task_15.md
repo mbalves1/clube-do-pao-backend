@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "order-controller-factory.ts: wire new use cases"
 type: backend
 complexity: low
@@ -32,10 +32,10 @@ Updates `makeOrdersController` to instantiate the three new use cases (`ListAvai
 </requirements>
 
 ## Subtasks
-- [ ] 15.1 Instantiate `PrismaDeliveryUserRepository`.
-- [ ] 15.2 Instantiate `ListAvailableOrdersUseCase`, `AcceptOrderUseCase`, `ReleaseOrderUseCase`.
-- [ ] 15.3 Update `UpdateOrdersUseCase`'s construction to include `PrismaDeliveryUserRepository` (task_12's new dependency).
-- [ ] 15.4 Pass all five use cases into `OrdersController`'s constructor.
+- [x] 15.1 Instantiate `PrismaDeliveryUserRepository`.
+- [x] 15.2 Instantiate `ListAvailableOrdersUseCase`, `AcceptOrderUseCase`, `ReleaseOrderUseCase`.
+- [x] 15.3 Update `UpdateOrdersUseCase`'s construction to include `PrismaDeliveryUserRepository` (task_12's new dependency).
+- [x] 15.4 Pass all five use cases into `OrdersController`'s constructor.
 
 ## Implementation Details
 See TechSpec "Development Sequencing" Build Order step 6. Follow this file's existing flat instantiation style (repository → use case → controller, all in one function body) — no new abstraction needed for five use cases instead of two.
@@ -54,10 +54,11 @@ See TechSpec "Development Sequencing" Build Order step 6. Follow this file's exi
 
 ## Tests
 - Manual verification:
-  - [ ] `npm run build` compiles with no errors once all 15 tasks are applied.
+  - [x] `npm run build` compiles with no errors once all 15 tasks are applied.
   - [ ] Full end-to-end flow works via `request.http`/`curl`: register a delivery person (task_04-06) → log in → `GET /orders/available` → `POST /orders/:id/accept` → `PATCH .../:orderId/:deliveryId` (status update, owner succeeds) → `POST /orders/:id/release` on a different order → confirm SSE `order-available` fires.
+    - Not run: requires creating real accounts against the project's live Supabase instance. Partial substitute evidence: `npm run dev` boots and connects to the DB with the new 5-use-case wiring, and `GET/POST /api/orders/available|:id/accept|:id/release` all return 401 (reach `authMiddleware`, not 404/500), confirming the DI chain and routes are live up to the auth boundary.
 - Test coverage target: N/A — no automated test framework in this project.
-- All manual verification scenarios passing.
+- All manual verification scenarios passing except the full authenticated e2e flow, which needs to be run manually against real Supabase credentials.
 
 ## Success Criteria
 - `OrdersController` is fully wired with all five use cases.
