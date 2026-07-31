@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "orders-routes.ts: register new routes + swagger"
 type: backend
 complexity: medium
@@ -30,11 +30,11 @@ Registers the three new HTTP routes (`GET /orders/available`, `POST /orders/:id/
 </requirements>
 
 ## Subtasks
-- [ ] 14.1 Register `GET /orders/available`.
-- [ ] 14.2 Register `POST /orders/:id/accept`.
-- [ ] 14.3 Register `POST /orders/:id/release`.
-- [ ] 14.4 Add swagger docs for all three new routes.
-- [ ] 14.5 Add the `403` response to the existing PATCH route's swagger docs.
+- [x] 14.1 Register `GET /orders/available`.
+- [x] 14.2 Register `POST /orders/:id/accept`.
+- [x] 14.3 Register `POST /orders/:id/release`.
+- [x] 14.4 Add swagger docs for all three new routes.
+- [x] 14.5 Add the `403` response to the existing PATCH route's swagger docs.
 
 ## Implementation Details
 See TechSpec "API Endpoints" for the exact method/path/response combinations. Follow this file's existing swagger comment block style exactly (see the current `/orders` GET and `/orders/{orderId}/{deliveryId}` PATCH blocks for the format to replicate).

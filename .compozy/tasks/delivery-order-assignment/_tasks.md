@@ -15,7 +15,7 @@
 | 09 | `ListAvailableOrdersUseCase` | completed | low | task_08 |
 | 10 | `AcceptOrderUseCase` | completed | medium | task_08 |
 | 11 | `ReleaseOrderUseCase` | completed | medium | task_01, task_08 |
-| 12 | `UpdateOrdersUseCase`: ownership check | pending | medium | task_01 |
-| 13 | `OrdersController`: `listAvailable`/`acceptOrder`/`releaseOrder` handlers + `updateOrder` caller id | pending | medium | task_09, task_10, task_11, task_12 |
-| 14 | `orders-routes.ts`: register new routes + swagger | pending | medium | task_13 |
+| 12 | `UpdateOrdersUseCase`: ownership check | completed | medium | task_01 |
+| 13 | `OrdersController`: `listAvailable`/`acceptOrder`/`releaseOrder` handlers + `updateOrder` caller id | completed | medium | task_09, task_10, task_11, task_12 |
+| 14 | `orders-routes.ts`: register new routes + swagger | completed | medium | task_13 |
 | 15 | `order-controller-factory.ts`: wire new use cases | pending | low | task_09, task_10, task_11, task_12, task_13 |

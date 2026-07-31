@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "OrdersController: listAvailable/acceptOrder/releaseOrder handlers + updateOrder caller id"
 type: backend
 complexity: medium
@@ -34,11 +34,11 @@ Wires the four use cases from tasks 09-12 into `OrdersController`: three new han
 </requirements>
 
 ## Subtasks
-- [ ] 13.1 Add `listAvailable` handler.
-- [ ] 13.2 Add `acceptOrder` handler with `AppError`-aware error mapping.
-- [ ] 13.3 Add `releaseOrder` handler with `AppError`-aware error mapping and the SSE emit (reconciling with task_11's placement, per the requirement above — exactly one emit call must remain).
-- [ ] 13.4 Update `updateOrder` to pass `req.user.id` to `UpdateOrdersUseCase.execute`.
-- [ ] 13.5 Update the constructor to accept the three new use cases.
+- [x] 13.1 Add `listAvailable` handler.
+- [x] 13.2 Add `acceptOrder` handler with `AppError`-aware error mapping.
+- [x] 13.3 Add `releaseOrder` handler with `AppError`-aware error mapping and the SSE emit (reconciling with task_11's placement, per the requirement above — exactly one emit call must remain).
+- [x] 13.4 Update `updateOrder` to pass `req.user.id` to `UpdateOrdersUseCase.execute`.
+- [x] 13.5 Update the constructor to accept the three new use cases.
 
 ## Implementation Details
 See TechSpec "API Endpoints" for the four routes this controller now backs, and "Core Interfaces" for the use cases' shapes. `req.user` is the Supabase `User` object already attached by `authMiddleware` (see `src/middlewares/auth.ts`) — `req.user.id` is the Supabase user ID to pass as `supabaseUserId`/`callerSupabaseUserId`.
