@@ -9,14 +9,21 @@ apikey: sb_publishable_S7qnVDQzddBDaRvEp3g5Rw_uwzvsLYB
   "password": "123456"
 }
 
-###
+### Cria um usuário "company" — rota única de cadastro, cria User + Bakery + bakery_people
 POST http://localhost:3333/api/users
 Content-Type: application/json
 
 {
-  "name": "Murilo",
-  "email": "murilo@email.com",
-  "password": "12345678"
+  "name": "Vanessa R",
+  "email": "vanessa@email.com",
+  "password": "12345678",
+  "role": "company",
+  "businessName": "Padaria da Vanessa",
+  "cnpj": "98765432000188",
+  "phone": "11999999999",
+  "whatsapp": "11999999999",
+  "serviceStartAt": "08:00",
+  "serviceEndAt": "18:00"
 }
 
 ###
@@ -33,14 +40,15 @@ GET  http://localhost:3333/api/users
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjY4N2NlNzYzLWQ1NDctNDZmNy1iM2Q0LTIxY2RhNzEzNzAwMCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2NkdWFxbnhpeHRmc2lqc3RpbXhiLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI0YzVjZDY2Zi1jMjA3LTQwOWUtYWFlNS1lMDczNzU2MmY4ZTYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzg0Mzg2Mjc3LCJpYXQiOjE3ODQzODI2NzcsImVtYWlsIjoibXVyaWxvQGVtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXSwicm9sZSI6ImN1c3RvbWVyIn0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzg0MzgyNjc3fV0sInNlc3Npb25faWQiOiI2ZDYwOTUwNC03ZGQyLTQzM2MtOWU1NS03NzRiY2Y3MTZmZWEiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.qhnnOWsocubcdQ4TDLzu_SfFBtY5jUhazaZp6QG6-JS6sjR0GBHlEjEcMDPj_3PMo41KZNwaL219zIb3zRy1Sg
 
-###
+### Cria um usuário "customer"
 POST http://localhost:3333/api/users
 Content-Type: application/json
 
 {
   "name": "Murilo",
   "email": "murilo@email.com",
-  "password": "123456"
+  "password": "123456",
+  "role": "customer"
 }
 
 ###
@@ -65,21 +73,22 @@ GET  http://localhost:3333/api/bakery
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjY4N2NlNzYzLWQ1NDctNDZmNy1iM2Q0LTIxY2RhNzEzNzAwMCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2NkdWFxbnhpeHRmc2lqc3RpbXhiLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI0YzVjZDY2Zi1jMjA3LTQwOWUtYWFlNS1lMDczNzU2MmY4ZTYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzg0Mzg2Mjc3LCJpYXQiOjE3ODQzODI2NzcsImVtYWlsIjoibXVyaWxvQGVtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXSwicm9sZSI6ImN1c3RvbWVyIn0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzg0MzgyNjc3fV0sInNlc3Npb25faWQiOiI2ZDYwOTUwNC03ZGQyLTQzM2MtOWU1NS03NzRiY2Y3MTZmZWEiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.qhnnOWsocubcdQ4TDLzu_SfFBtY5jUhazaZp6QG6-JS6sjR0GBHlEjEcMDPj_3PMo41KZNwaL219zIb3zRy1Sg
 
-###
-POST http://localhost:3333/api/bakery
+### Outra padaria de exemplo, também pela rota única
+POST http://localhost:3333/api/users
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjY4N2NlNzYzLWQ1NDctNDZmNy1iM2Q0LTIxY2RhNzEzNzAwMCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2NkdWFxbnhpeHRmc2lqc3RpbXhiLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI0YzVjZDY2Zi1jMjA3LTQwOWUtYWFlNS1lMDczNzU2MmY4ZTYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzg0Mzg2Mjc3LCJpYXQiOjE3ODQzODI2NzcsImVtYWlsIjoibXVyaWxvQGVtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXSwicm9sZSI6ImN1c3RvbWVyIn0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzg0MzgyNjc3fV0sInNlc3Npb25faWQiOiI2ZDYwOTUwNC03ZGQyLTQzM2MtOWU1NS03NzRiY2Y3MTZmZWEiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.qhnnOWsocubcdQ4TDLzu_SfFBtY5jUhazaZp6QG6-JS6sjR0GBHlEjEcMDPj_3PMo41KZNwaL219zIb3zRy1Sg
 
 {
-  "name": "Padaria Central",
-  "cnpj": "12345678000199",
+  "name": "Dono da Padaria Central",
   "email": "padaria@email.com",
+  "password": "12345678",
+  "role": "company",
+  "businessName": "Padaria Central",
+  "cnpj": "12345678000199",
   "phone": "11999999999",
   "whatsapp": "11999999999",
   "serviceStartAt": "08:00",
   "serviceEndAt": "18:00"
 }
-
 
 ###
 POST http://localhost:3333/api/subscribe
@@ -146,15 +155,17 @@ Authorization: Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjY4N2NlNzYzLWQ1NDctNDZmNy1iM2
   "status": "PICKED_UP"
 }
 
-####
-POST  http://localhost:3333/api/delivery/register
+#### Cria um usuário "delivery" — rota única de cadastro, cria User + delivery_people
+POST http://localhost:3333/api/users
 Content-Type: application/json
 
 {
   "name": "Aragorn",
+  "email": "aragorn@email.com",
+  "password": "12345678",
+  "role": "delivery",
   "document": "55566644489",
   "phone": "44999885566",
-  "email": "aragorn@email.com",
   "modal": "MOTORCYCLE"
 }
 

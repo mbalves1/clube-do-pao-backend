@@ -1,15 +1,5 @@
 import { z } from 'zod';
 
-export const createBakerySchema = z.object({
-	name: z.string().min(1, 'Nome é obrigatório'),
-	cnpj: z.string().min(1, 'CNPJ é obrigatório'),
-	email: z.string().email('Email inválido'),
-	phone: z.string().min(1, 'Telefone é obrigatório'),
-	whatsapp: z.string().min(1, 'WhatsApp é obrigatório'),
-	serviceStartAt: z.string().min(1, 'Horário de início é obrigatório'),
-	serviceEndAt: z.string().min(1, 'Horário de fim é obrigatório'),
-});
-
 export const updateBakerySchema = z.object({
 	name: z.string().min(1).optional(),
 	cnpj: z.string().min(1).optional(),

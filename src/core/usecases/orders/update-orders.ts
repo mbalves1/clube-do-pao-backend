@@ -1,16 +1,17 @@
-import { ConflictError } from '../../errors/ConflictError';
 import { ForbiddenError } from '../../errors/ForbiddenError';
 import { NotFoundError } from '../../errors/NotFoundError';
 import { OrderStatus } from '../../entities/orders';
 import { DeliveryUserRepository } from '../../ports/delivery-user-repository';
 import { OrdersRepository } from '../../ports/orders-repository';
 import { SubscribeRepository } from '../../ports/subscribe-repository';
+import { UserRepository } from '../../ports/user-repository';
 
 export class UpdateOrdersUseCase {
 	constructor(
 		private subscribeRepository: SubscribeRepository,
 		private ordersRepository: OrdersRepository,
 		private deliveryUserRepository: DeliveryUserRepository,
+		private userRepository: UserRepository,
 	) {}
 
 	async execute(
@@ -19,10 +20,14 @@ export class UpdateOrdersUseCase {
 		status: OrderStatus,
 		callerSupabaseUserId: string,
 	): Promise<any> {
-		const courier =
-			await this.deliveryUserRepository.findBySupabaseUserId(
-				callerSupabaseUserId,
-			);
+		const user = await this.userRepository.findBySupabaseUserId(
+			callerSupabaseUserId,
+		);
+		if (!user) {
+			throw new NotFoundError('Entregador não encontrado');
+		}
+
+		const courier = await this.deliveryUserRepository.findByUserId(user.id);
 		if (!courier) {
 			throw new NotFoundError('Entregador não encontrado');
 		}

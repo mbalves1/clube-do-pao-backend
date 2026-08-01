@@ -7,16 +7,19 @@ import { OrdersController } from '../../infra/controllers/orders-controller';
 import { PrismaSubscribeRepository } from '../../infra/repositories/prisma-subscribe-repository';
 import { PrismaOrdersRepository } from '../../infra/repositories/prisma-orders-repository';
 import { PrismaDeliveryUserRepository } from '../../infra/repositories/prisma-delivery-user-repository';
+import { PrismaUserRepository } from '../../infra/repositories/prisma-user-repository';
 
 export function makeOrdersController() {
 	const subscribeRepository = new PrismaSubscribeRepository();
 	const orderRepository = new PrismaOrdersRepository();
 	const deliveryUserRepository = new PrismaDeliveryUserRepository();
+	const userRepository = new PrismaUserRepository();
 	const listSubscribeUseCase = new ListOrdersUseCase(subscribeRepository);
 	const updateOrdersUseCase = new UpdateOrdersUseCase(
 		subscribeRepository,
 		orderRepository,
 		deliveryUserRepository,
+		userRepository,
 	);
 	const listAvailableOrdersUseCase = new ListAvailableOrdersUseCase(
 		subscribeRepository,
@@ -24,10 +27,12 @@ export function makeOrdersController() {
 	const acceptOrderUseCase = new AcceptOrderUseCase(
 		subscribeRepository,
 		deliveryUserRepository,
+		userRepository,
 	);
 	const releaseOrderUseCase = new ReleaseOrderUseCase(
 		subscribeRepository,
 		deliveryUserRepository,
+		userRepository,
 	);
 
 	return new OrdersController(

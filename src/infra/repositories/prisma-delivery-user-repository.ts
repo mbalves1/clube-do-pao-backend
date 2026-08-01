@@ -9,28 +9,26 @@ export class PrismaDeliveryUserRepository implements DeliveryUserRepository {
 	async create(data: CreateDeliveryUserData): Promise<DeliveryUser> {
 		const created = await prisma.deliveryPerson.create({
 			data: {
-				name: data.name,
+				userId: data.userId,
 				document: data.document,
-				email: data.email,
 				phone: data.phone,
 				modal: data.modal,
-				supabaseUserId: data.supabaseUserId,
 			},
 		});
 
 		return {
 			id: created.id,
-			name: created.name,
-			email: created.email!,
-			supabaseUserId: created.supabaseUserId!,
+			userId: created.userId,
+			document: created.document,
+			phone: created.phone,
+			modal: created.modal,
+			status: created.status,
 		};
 	}
 
-	async findBySupabaseUserId(
-		supabaseUserId: string,
-	): Promise<DeliveryUser | null> {
+	async findByUserId(userId: string): Promise<DeliveryUser | null> {
 		const found = await prisma.deliveryPerson.findUnique({
-			where: { supabaseUserId },
+			where: { userId },
 		});
 
 		if (!found) {
@@ -39,9 +37,11 @@ export class PrismaDeliveryUserRepository implements DeliveryUserRepository {
 
 		return {
 			id: found.id,
-			name: found.name,
-			email: found.email!,
-			supabaseUserId: found.supabaseUserId!,
+			userId: found.userId,
+			document: found.document,
+			phone: found.phone,
+			modal: found.modal,
+			status: found.status,
 		};
 	}
 }
