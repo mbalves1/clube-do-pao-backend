@@ -25,7 +25,12 @@ export function makeUserRoutes(userController: UserController) {
 	 *         description: Erro ao listar usuários
 	 *
 	 *   post:
-	 *     summary: Cria um usuário
+	 *     summary: Cria um usuário (customer, company ou delivery)
+	 *     description: >
+	 *       Rota única de cadastro. O campo `role` determina quais campos
+	 *       adicionais são obrigatórios e o que é criado além do registro em `User`:
+	 *       `company` também cria a padaria (`Bakery`) e o vínculo em `bakery_people`;
+	 *       `delivery` também cria o registro em `delivery_people`.
 	 *     tags:
 	 *       - Users
 	 *     requestBody:
@@ -38,6 +43,7 @@ export function makeUserRoutes(userController: UserController) {
 	 *               - name
 	 *               - email
 	 *               - password
+	 *               - role
 	 *             properties:
 	 *               name:
 	 *                 type: string
@@ -51,8 +57,38 @@ export function makeUserRoutes(userController: UserController) {
 	 *                 example: senha12345
 	 *               role:
 	 *                 type: string
-	 *                 enum: [customer, delivery, company]
-	 *                 default: customer
+	 *                 enum: [customer, company, delivery]
+	 *           examples:
+	 *             customer:
+	 *               summary: Cliente
+	 *               value:
+	 *                 name: Murilo
+	 *                 email: murilo@email.com
+	 *                 password: senha12345
+	 *                 role: customer
+	 *             company:
+	 *               summary: Padaria
+	 *               value:
+	 *                 name: Vanessa R
+	 *                 email: vanessa@email.com
+	 *                 password: senha12345
+	 *                 role: company
+	 *                 businessName: Padaria da Vanessa
+	 *                 cnpj: '12345678000199'
+	 *                 phone: '11999999999'
+	 *                 whatsapp: '11999999999'
+	 *                 serviceStartAt: '08:00'
+	 *                 serviceEndAt: '18:00'
+	 *             delivery:
+	 *               summary: Entregador
+	 *               value:
+	 *                 name: Aragorn
+	 *                 email: aragorn@email.com
+	 *                 password: senha12345
+	 *                 role: delivery
+	 *                 document: '55566644489'
+	 *                 phone: '44999885566'
+	 *                 modal: MOTORCYCLE
 	 *     responses:
 	 *       201:
 	 *         description: Usuário criado com sucesso

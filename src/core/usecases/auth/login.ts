@@ -1,6 +1,6 @@
 import { UnprocessableEntityError } from '../../errors/UnprocessableEntityError';
 import { AuthGateway, Role } from '../../ports/auth-gateway';
-import { BakeryRepository } from '../../ports/bakery-repository';
+import { BakeryPersonRepository } from '../../ports/bakery-person-repository';
 import { DeliveryUserRepository } from '../../ports/delivery-user-repository';
 import { UserRepository } from '../../ports/user-repository';
 import { Profile, resolveProfile } from './resolve-profile';
@@ -26,7 +26,7 @@ export class LoginUseCase {
 	constructor(
 		private authGateway: AuthGateway,
 		private userRepository: UserRepository,
-		private bakeryRepository: BakeryRepository,
+		private bakeryPersonRepository: BakeryPersonRepository,
 		private deliveryUserRepository: DeliveryUserRepository,
 	) {}
 
@@ -44,7 +44,7 @@ export class LoginUseCase {
 		const { supabaseUserId, role } = session;
 		const profile = await resolveProfile(role, supabaseUserId, {
 			userRepository: this.userRepository,
-			bakeryRepository: this.bakeryRepository,
+			bakeryPersonRepository: this.bakeryPersonRepository,
 			deliveryUserRepository: this.deliveryUserRepository,
 		});
 

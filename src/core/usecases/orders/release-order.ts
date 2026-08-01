@@ -3,6 +3,7 @@ import { ForbiddenError } from '../../errors/ForbiddenError';
 import { NotFoundError } from '../../errors/NotFoundError';
 import { DeliveryUserRepository } from '../../ports/delivery-user-repository';
 import { SubscribeRepository } from '../../ports/subscribe-repository';
+import { UserRepository } from '../../ports/user-repository';
 
 export type ReleasedOrder = {
 	id: number;
@@ -14,14 +15,20 @@ export class ReleaseOrderUseCase {
 	constructor(
 		private subscribeRepository: SubscribeRepository,
 		private deliveryUserRepository: DeliveryUserRepository,
+		private userRepository: UserRepository,
 	) {}
 
 	async execute(
 		orderId: number,
 		supabaseUserId: string,
 	): Promise<ReleasedOrder> {
-		const courier =
-			await this.deliveryUserRepository.findBySupabaseUserId(supabaseUserId);
+		const user =
+			await this.userRepository.findBySupabaseUserId(supabaseUserId);
+		if (!user) {
+			throw new NotFoundError('Entregador não encontrado');
+		}
+
+		const courier = await this.deliveryUserRepository.findByUserId(user.id);
 		if (!courier) {
 			throw new NotFoundError('Entregador não encontrado');
 		}

@@ -1,6 +1,8 @@
 export type DeliveryUser = {
 	id: string;
-	name: string;
-	email: string;
-	supabaseUserId: string;
+	userId: string;
+	document: string;
+	phone: string | null;
+	modal: 'BIKE' | 'MOTORCYCLE' | 'WALKING';
+	status: string;
 };
