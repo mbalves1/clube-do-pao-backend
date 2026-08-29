@@ -11,6 +11,8 @@ import { SubscribeController } from '../controllers/subscribe-controller';
 import { OrdersController } from '../controllers/orders-controller';
 import { makeOrdersRoutes } from './routes/orders-routes';
 import { makeSSERoutes } from './routes/sse-routes';
+import { ItemController } from '../controllers/item-controller';
+import { makeItemRoutes } from './routes/item-routes';
 
 type MakeRoutesParams = {
 	userController: UserController;
@@ -18,6 +20,7 @@ type MakeRoutesParams = {
 	subscribeController: SubscribeController;
 	ordersController: OrdersController;
 	authController: AuthController;
+	itemController: ItemController;
 };
 
 export function makeRoutes({
@@ -26,6 +29,7 @@ export function makeRoutes({
 	subscribeController,
 	ordersController,
 	authController,
+	itemController,
 }: MakeRoutesParams) {
 	const router = Router();
 
@@ -33,6 +37,7 @@ export function makeRoutes({
 	router.use(makeBakeryRoutes(bakeryController));
 	router.use(makeSubscribeRoutes(subscribeController));
 	router.use(makeOrdersRoutes(ordersController));
+	router.use(makeItemRoutes(itemController));
 	router.use(makeSSERoutes());
 	router.use(makeAuthRoutes(authController));
 

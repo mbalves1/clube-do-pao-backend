@@ -46,6 +46,7 @@ model Bakery {
   favorites      FavoriteBakery[]
   appointments   Subscription[]
   bakeryPeople   BakeryPerson[]
+  items          Item[]
 
   @@map("bakeries")
 }
@@ -128,6 +129,20 @@ model Order {
   subscription     Subscription    @relation(fields: [subscriptionId], references: [id])
 
   @@map("orders")
+}
+
+model Item {
+  id          String   @id @default(uuid())
+  bakeryId    String
+  name        String
+  description String?
+  priceCents  Int
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bakery      Bakery   @relation(fields: [bakeryId], references: [id])
+
+  @@map("items")
 }
 
 enum DeliveryModal {

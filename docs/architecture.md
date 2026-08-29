@@ -67,6 +67,7 @@ Entidades principais (`prisma/schema.prisma`):
 - `Subscription` — assinatura recorrente entre `User` e `Bakery` (dias da semana, frequência, janela de entrega)
 - `Order` — pedido pontual gerado a partir de uma `Subscription`, com status `PENDING → ACCEPTED → PICKED_UP → DELIVERED`/`CANCELED`
 - `FavoriteBakery` — relação N:N entre `User` e `Bakery`
+- `Item` — item à venda (nome, descrição opcional, `priceCents` em centavos, `available`), pertence a uma `Bakery`. CRUD restrito ao `company` dono: as rotas `/items` resolvem a `bakeryId` do chamador via `BakeryPerson` (mesmo lookup do `GetMeUseCase`) e `update`/`delete` verificam que o item pertence a essa `bakeryId` antes de agir — não há endpoint público de listagem por padaria ainda.
 
 ## Autenticação e papéis (roles)
 

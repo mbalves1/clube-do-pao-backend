@@ -120,6 +120,92 @@ export const swaggerSpec = swaggerJsdoc({
 						},
 					},
 				},
+				Item: {
+					type: 'object',
+					properties: {
+						id: {
+							type: 'string',
+							format: 'uuid',
+							example: 'b3e2f8a0-1c2d-4e3f-9a5b-6c7d8e9f0a1b',
+						},
+						bakeryId: {
+							type: 'string',
+							format: 'uuid',
+							example: 'e0758e45-fd77-4dfc-86ad-dab31b7932ed',
+						},
+						name: {
+							type: 'string',
+							example: 'Pão francês',
+						},
+						description: {
+							type: 'string',
+							nullable: true,
+							example: 'Pão francês fresquinho, saído do forno',
+						},
+						priceCents: {
+							type: 'integer',
+							example: 150,
+							description: 'Preço em centavos (150 = R$ 1,50)',
+						},
+						available: {
+							type: 'boolean',
+							example: true,
+						},
+						createdAt: {
+							type: 'string',
+							format: 'date-time',
+							example: '2026-05-08T12:00:00.000Z',
+						},
+						updatedAt: {
+							type: 'string',
+							format: 'date-time',
+							example: '2026-05-08T12:00:00.000Z',
+						},
+					},
+				},
+				CreateItem: {
+					type: 'object',
+					required: ['name', 'priceCents'],
+					properties: {
+						name: {
+							type: 'string',
+							example: 'Pão francês',
+						},
+						description: {
+							type: 'string',
+							example: 'Pão francês fresquinho, saído do forno',
+						},
+						priceCents: {
+							type: 'integer',
+							example: 150,
+						},
+						available: {
+							type: 'boolean',
+							example: true,
+						},
+					},
+				},
+				UpdateItem: {
+					type: 'object',
+					properties: {
+						name: {
+							type: 'string',
+							example: 'Pão francês',
+						},
+						description: {
+							type: 'string',
+							example: 'Pão francês fresquinho, saído do forno',
+						},
+						priceCents: {
+							type: 'integer',
+							example: 150,
+						},
+						available: {
+							type: 'boolean',
+							example: false,
+						},
+					},
+				},
 				UpdateUser: {
 					type: 'object',
 					properties: {
