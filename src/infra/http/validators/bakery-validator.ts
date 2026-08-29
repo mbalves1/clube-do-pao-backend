@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+export const createBakerySchema = z.object({
+	name: z.string().min(1),
+	cnpj: z.string().min(1),
+	email: z.string().email(),
+	phone: z.string().min(1),
+	whatsapp: z.string().min(1),
+	serviceStartAt: z.string().min(1),
+	serviceEndAt: z.string().min(1),
+});
+
 export const updateBakerySchema = z.object({
 	name: z.string().min(1).optional(),
 	cnpj: z.string().min(1).optional(),
