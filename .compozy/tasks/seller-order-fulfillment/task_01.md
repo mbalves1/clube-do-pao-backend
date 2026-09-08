@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Prisma schema: Subscription/Order split, OrderItem + SubscriptionItem, FulfillmentType, PREPARING/READY"
 type: backend
 complexity: high
@@ -32,11 +32,11 @@ Reshapes the persistence model so `Order` is the per-service-date instance and `
 </requirements>
 
 ## Subtasks
-- [ ] 1.1 Update `OrderStatus`; add `FulfillmentType`.
-- [ ] 1.2 Extend `Order` (fields, relations, unique constraint).
-- [ ] 1.3 Add `OrderItem` and `SubscriptionItem` models + back-relations.
-- [ ] 1.4 Extend `Subscription` (fulfillmentType, active, items); leave legacy columns intact.
-- [ ] 1.5 Create the migration; run `prisma generate`; `npm run build`.
+- [x] 1.1 Update `OrderStatus`; add `FulfillmentType`.
+- [x] 1.2 Extend `Order` (fields, relations, unique constraint).
+- [x] 1.3 Add `OrderItem` and `SubscriptionItem` models + back-relations.
+- [x] 1.4 Extend `Subscription` (fulfillmentType, active, items); leave legacy columns intact.
+- [x] 1.5 Create the migration; run `prisma generate`; `npm run build`.
 
 ## Implementation Details
 See TechSpec "Data Models" for the exact model bodies. Follow the schema style already in `prisma/schema.prisma` (`@@map` snake_case table names, `@default(now())`, `@updatedAt`). The `@@unique([subscriptionId, serviceDate])` on `Order` is what makes generation (task_09) idempotent — do not omit it. Existing `Order` rows in a dev DB may violate the new unique constraint if duplicates exist; the migration for a fresh dev DB is clean, and production has effectively no `Order` rows (they are only lazily created today) — note any dev-data cleanup needed in the migration notes.
@@ -60,10 +60,10 @@ See TechSpec "Data Models" for the exact model bodies. Follow the schema style a
 
 ## Tests
 - Manual verification:
-  - [ ] `npx prisma migrate dev` applies cleanly on a fresh dev DB.
-  - [ ] `npx prisma generate` succeeds; generated client exposes `orderItem`, `subscriptionItem`, `FulfillmentType`, and `OrderStatus.PREPARING`/`READY`.
-  - [ ] `npm run build` compiles.
-  - [ ] Inspecting the DB shows `orders.bakery_id`, `orders.fulfillment_type`, `orders.preparing_at`, `orders.ready_at`, the `order_items` and `subscription_items` tables, and the `orders(subscription_id, service_date)` unique index.
+  - [x] `npx prisma migrate dev` applies cleanly on a fresh dev DB.
+  - [x] `npx prisma generate` succeeds; generated client exposes `orderItem`, `subscriptionItem`, `FulfillmentType`, and `OrderStatus.PREPARING`/`READY`.
+  - [x] `npm run build` compiles.
+  - [x] Inspecting the DB shows `orders.bakery_id`, `orders.fulfillment_type`, `orders.preparing_at`, `orders.ready_at`, the `order_items` and `subscription_items` tables, and the `orders(subscription_id, service_date)` unique index.
 - Coverage target: N/A.
 
 ## Success Criteria

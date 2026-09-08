@@ -4,7 +4,7 @@
 
 | # | Title | Status | Complexity | Dependencies |
 |---|-------|--------|------------|--------------|
-| 01 | Prisma schema: Subscription/Order split, OrderItem + SubscriptionItem, FulfillmentType, PREPARING/READY | pending | high | — |
+| 01 | Prisma schema: Subscription/Order split, OrderItem + SubscriptionItem, FulfillmentType, PREPARING/READY | done | high | — |
 | 02 | Data backfill: create one Order per existing subscription row | pending | high | task_01 |
 | 03 | Domain entities: Order (reworked), OrderItem, SubscriptionItem, Subscription | pending | medium | task_01 |
 | 04 | `order-status-transitions.ts` module + `InvalidOrderStatusTransitionError` | pending | medium | task_03 |

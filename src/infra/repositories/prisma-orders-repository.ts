@@ -28,6 +28,7 @@ export class PrismaOrdersRepository implements OrdersRepository {
 		const created = await prisma.order.create({
 			data: {
 				subscription: { connect: { id: order.id } },
+				bakery: { connect: { id: order.bakeryId } },
 				deliveryPerson: deliveryId
 					? { connect: { id: deliveryId } }
 					: undefined,
