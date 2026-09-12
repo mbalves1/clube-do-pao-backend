@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "order-status-transitions.ts module + InvalidOrderStatusTransitionError"
 type: backend
 complexity: medium
@@ -33,9 +33,9 @@ A single pure core module that defines every legal `OrderStatus` transition and 
 </requirements>
 
 ## Subtasks
-- [ ] 4.1 Add `InvalidOrderStatusTransitionError` (422).
-- [ ] 4.2 Add `order-status-transitions.ts` with the full table.
-- [ ] 4.3 Exhaustively sanity-check every legal move passes and a sample of illegal moves throw.
+- [x] 4.1 Add `InvalidOrderStatusTransitionError` (422).
+- [x] 4.2 Add `order-status-transitions.ts` with the full table.
+- [x] 4.3 Exhaustively sanity-check every legal move passes and a sample of illegal moves throw.
 
 ## Implementation Details
 A `Record` keyed by `actor` → `fulfillmentType` → `from` → allowed `to[]`, or a flat list of tuples filtered — either is fine; keep it readable and total. `AppError` subclasses take `(message = default, statusCode)` per `ConflictError.ts`. There is already an `UnprocessableEntityError` (422) in `src/core/errors/` — a distinct named class is still preferred here so callers/tests can assert the specific failure, but reusing `UnprocessableEntityError` with a specific message is acceptable if you note the choice.
@@ -56,15 +56,16 @@ A `Record` keyed by `actor` → `fulfillmentType` → `from` → allowed `to[]`,
 - Manual verification **(REQUIRED)**.
 
 ## Tests
-- Manual verification (scratch script calling `assertOrderTransition`):
-  - [ ] Every row in the TechSpec table returns without throwing.
-  - [ ] `assertOrderTransition('PENDING','READY','seller','DELIVERY')` throws `InvalidOrderStatusTransitionError` (422).
-  - [ ] `assertOrderTransition('READY','ACCEPTED','seller','DELIVERY')` throws (courier-only move).
-  - [ ] `assertOrderTransition('READY','PICKED_UP','seller','DELIVERY')` throws (pickup-only move).
-  - [ ] `assertOrderTransition('READY','PICKED_UP','seller','PICKUP')` passes.
-  - [ ] `assertOrderTransition('DELIVERED','PENDING','courier','DELIVERY')` throws.
+- Manual verification (scratch script calling `assertOrderTransition`, run via `ts-node --transpile-only`, then deleted):
+  - [x] Every row in the TechSpec table returns without throwing — all 15 legal moves (10 seller-any, 1 seller-pickup, 4 courier-delivery) passed.
+  - [x] `assertOrderTransition('PENDING','READY','seller','DELIVERY')` throws `InvalidOrderStatusTransitionError` (422).
+  - [x] `assertOrderTransition('READY','ACCEPTED','seller','DELIVERY')` throws (courier-only move).
+  - [x] `assertOrderTransition('READY','PICKED_UP','seller','DELIVERY')` throws (pickup-only move).
+  - [x] `assertOrderTransition('READY','PICKED_UP','seller','PICKUP')` passes.
+  - [x] `assertOrderTransition('DELIVERED','PENDING','courier','DELIVERY')` throws.
+  - Plus 4 extra illegal edges checked for good measure (wrong-fulfillment courier move, seller attempting a courier move, transition out of a terminal state, skipping `READY`) — all correctly threw.
 - Coverage target: N/A.
 
 ## Success Criteria
-- One module is the single source of truth for legal transitions.
-- Illegal moves raise a 422 `AppError` subclass caught by existing controller error handling.
+- One module is the single source of truth for legal transitions. ✅
+- Illegal moves raise a 422 `AppError` subclass caught by existing controller error handling. ✅ (`InvalidOrderStatusTransitionError extends AppError`, statusCode 422, same shape as `ConflictError`/`UnprocessableEntityError`).

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "OrdersRepository port: rewrite around the instance model"
 type: backend
 complexity: medium
@@ -29,9 +29,9 @@ Replaces the current `OrdersRepository` interface (built around lazy `create`/`u
 </requirements>
 
 ## Subtasks
-- [ ] 5.1 Replace the interface body with the new method set + supporting types.
-- [ ] 5.2 Decide and document the fate of `findBySubscriptionId` (remove now vs. remove in task_16).
-- [ ] 5.3 `npm run build` (impl breakage in `prisma-orders-repository.ts` is expected and owned by task_07).
+- [x] 5.1 Replace the interface body with the new method set + supporting types.
+- [x] 5.2 Decide and document the fate of `findBySubscriptionId` (remove now vs. remove in task_16).
+- [x] 5.3 `npm run build` (impl breakage in `prisma-orders-repository.ts` is expected and owned by task_07).
 
 ## Implementation Details
 Copy the exact signatures from the TechSpec. `GenerateOrderInput.items` carries the already-snapshotted `nameSnapshot`/`priceCentsSnapshot` (the snapshot happens in the template query, task_08 / use case, task_09) — the repo just persists what it's given. `updateStatus(id, status, patch)` takes the new `status` plus only the timestamp/`deliveryPersonId` fields that change for that transition; the use cases decide which patch fields to send.
@@ -54,11 +54,19 @@ Copy the exact signatures from the TechSpec. `GenerateOrderInput.items` carries 
 
 ## Tests
 - Manual verification:
-  - [ ] Port compiles in isolation; no Prisma import.
-  - [ ] Every method the TechSpec API table implies has a corresponding port method.
-  - [ ] `claim`/`release` return `Promise<boolean>`.
+  - [x] Port compiles in isolation; no Prisma import (file only imports from `../entities/orders`).
+  - [x] Every method the TechSpec API table implies has a corresponding port method — `createFromSubscription`, `existsForSubscriptionAndDate`, `findByIdWithItems`, `listByBakery`, `findByDateRange`, `findAvailableForDelivery`, `updateStatus`, `claim`, `release` all present, signatures match verbatim.
+  - [x] `claim`/`release` return `Promise<boolean>`.
 - Coverage target: N/A.
 
 ## Success Criteria
-- The port expresses the full instance-model contract the feature needs.
-- No framework types leak into `core/ports`.
+- The port expresses the full instance-model contract the feature needs. ✅
+- No framework types leak into `core/ports`. ✅
+
+## Completion Notes
+- **`findBySubscriptionId` removed now** (not kept temporarily) — matches the TechSpec interface exactly, along with `create`/`update`. Chose removal over the temporary-keep option because keeping only `findBySubscriptionId` wouldn't have prevented `update-orders.ts` from breaking anyway (it also calls the removed `create`/`update`), so there was no partial-compile benefit to keeping it.
+- **Downstream breaks, all expected and pre-existing-pattern (fresh `npx tsc --noEmit` run, chain confirmed):**
+  - `src/core/usecases/orders/update-orders.ts` — calls the removed `findBySubscriptionId`/`update`/`create`. Owned by **task_16** (courier status use case migration).
+  - `src/infra/repositories/prisma-orders-repository.ts` — no longer implements the interface (missing all 9 new methods) + no longer exports `CreateOrderData`/`UpdateOrderData` (removed from the port). Owned by **task_07**.
+  - `src/main/factories/order-controller-factory.ts` — wires `PrismaOrdersRepository`, inherits its non-conformance. Resolves automatically once task_07 lands.
+  - No other file broke.

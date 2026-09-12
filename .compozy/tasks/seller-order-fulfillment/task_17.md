@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Zod validators: generate, seller status update, bakery-orders query; narrow courier updateOrderSchema"
 type: backend
 complexity: low
@@ -32,9 +32,9 @@ Adds the Zod schemas for the three new endpoints and narrows the existing courie
 </requirements>
 
 ## Subtasks
-- [ ] 17.1 Add the three new schemas.
-- [ ] 17.2 Narrow `updateOrderSchema`.
-- [ ] 17.3 `safeParse` sanity checks; build.
+- [x] 17.1 Add the three new schemas.
+- [x] 17.2 Narrow `updateOrderSchema`.
+- [x] 17.3 `safeParse` sanity checks; build.
 
 ## Implementation Details
 `date` format `dd-mm-yyyy` matches what `create-subscribe.ts` / the use cases parse. `validateSchema` (the middleware) runs `schema.parse(req.body)` — query-param schemas (`listBakeryOrdersQuerySchema`) are parsed in the controller against `req.query` (task_19), not via the body middleware.
@@ -55,11 +55,13 @@ Adds the Zod schemas for the three new endpoints and narrows the existing courie
 - Manual verification **(REQUIRED)**.
 
 ## Tests
-- Manual verification (`safeParse`):
-  - [ ] `generateOrdersSchema.safeParse({})` → ok; `{ date: '2026-9-7' }` → fail; `{ date: '07-09-2026' }` → ok.
-  - [ ] `updateOrderStatusBySellerSchema.safeParse({ status: 'ACCEPTED' })` → fail; `{ status: 'READY' }` → ok.
-  - [ ] `updateOrderSchema.safeParse({ status: 'PENDING' })` → fail; `{ status: 'DELIVERED' }` → ok.
+- Manual verification (`safeParse`, 18 assertions in a scratch script run via `ts-node --transpile-only`, then deleted):
+  - [x] `generateOrdersSchema.safeParse({})` → ok; `{ date: '2026-9-7' }` → fail; `{ date: '07-09-2026' }` → ok.
+  - [x] `updateOrderStatusBySellerSchema.safeParse({ status: 'ACCEPTED' })` → fail; `{ status: 'READY' }` → ok. Also checked `PREPARING`/`CANCELED`/`PICKED_UP` → all ok.
+  - [x] `updateOrderSchema.safeParse({ status: 'PENDING' })` → fail; `{ status: 'DELIVERED' }` → ok. Also checked `ACCEPTED` → fail, `PICKED_UP`/`CANCELED` → ok.
+  - Plus `listBakeryOrdersQuerySchema`: `{}` → ok, valid `status`/`date` → ok, invalid `status`/`date` → fail.
+  - `npx tsc --noEmit` re-run fresh: output byte-identical to the pre-task_17 baseline (post-task_06) — zero new errors introduced.
 - Coverage target: N/A.
 
 ## Success Criteria
-- Each new endpoint has a matching schema; the courier schema no longer accepts non-courier statuses.
+- Each new endpoint has a matching schema; the courier schema no longer accepts non-courier statuses. ✅

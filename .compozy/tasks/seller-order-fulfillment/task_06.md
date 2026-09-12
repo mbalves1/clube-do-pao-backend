@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "SubscribeRepository port: template query + basket; drop order-ish methods"
 type: backend
 complexity: medium
@@ -33,10 +33,10 @@ Refocuses `SubscribeRepository` on the recurring template: add the query generat
 </requirements>
 
 ## Subtasks
-- [ ] 6.1 Add `listActiveTemplatesForDate` + `SubscriptionTemplateForDate`.
-- [ ] 6.2 Add `getItems` / `setItems`; add `fulfillmentType` to `SubscribeCreateData`.
-- [ ] 6.3 Remove (or `@deprecate`-stub) the order-ish methods + `AvailableOrder`.
-- [ ] 6.4 `npm run build` (impl in task_08; courier use case breakage owned by tasks 13–16).
+- [x] 6.1 Add `listActiveTemplatesForDate` + `SubscriptionTemplateForDate`.
+- [x] 6.2 Add `getItems` / `setItems`; add `fulfillmentType` to `SubscribeCreateData`.
+- [x] 6.3 Remove (or `@deprecate`-stub) the order-ish methods + `AvailableOrder`.
+- [x] 6.4 `npm run build` (impl in task_08; courier use case breakage owned by tasks 13–16).
 
 ## Implementation Details
 The weekday match for `listActiveTemplatesForDate` reuses the `weekMap` idea from `create-subscribe.ts` (`daysWeek` holds day names). "Schedule matches `date`" = the date's weekday name is in `daysWeek` (for `weekly`) or `frequency === 'daily'`. Richer `frequency` handling is an open question in the PRD — match whatever `create-subscribe.ts` currently produces.
@@ -60,11 +60,19 @@ The weekday match for `listActiveTemplatesForDate` reuses the `weekMap` idea fro
 
 ## Tests
 - Manual verification:
-  - [ ] Port compiles; no Prisma import.
-  - [ ] `listActiveTemplatesForDate` return type carries snapshot-shaped `items`.
-  - [ ] `findAvailable`/`claim`/`release`/`updateOrder`/`getOrderByDay` are gone (or `@deprecated` with a note pointing to tasks 13–16).
+  - [x] Port compiles; no Prisma import (imports only from `../entities/orders` and `../entities/subscription-item`).
+  - [x] `listActiveTemplatesForDate` return type carries snapshot-shaped `items` (`{ itemId, nameSnapshot, priceCentsSnapshot, quantity }[]`, per ADR-002).
+  - [x] `findAvailable`/`claim`/`release`/`updateOrder`/`getOrderByDay`/`AvailableOrder` are gone — removed outright (not stubbed), matching the same clean-removal choice made in task_05.
 - Coverage target: N/A.
 
 ## Success Criteria
-- `SubscribeRepository` describes templates and baskets, not order lifecycle.
-- Generation has the single query it needs.
+- `SubscribeRepository` describes templates and baskets, not order lifecycle. ✅
+- Generation has the single query it needs. ✅ (`listActiveTemplatesForDate`).
+
+## Completion Notes
+- Removed the order-ish methods outright rather than `@deprecated`-stubbing, consistent with task_05's approach.
+- **Downstream breaks, all expected (fresh `npx tsc --noEmit` run traced end-to-end):**
+  - Courier use cases — `accept-order.ts` (`.claim`), `list-available-orders.ts` (`AvailableOrder`, `.findAvailable`), `list-orders.ts` (`.getOrderByDay`), `release-order.ts` (`.release`), `update-orders.ts` (`.updateOrder`, plus its pre-existing `OrdersRepository`-side breaks from task_05). Owned by **tasks 13–16**.
+  - `src/infra/repositories/prisma-subscribe-repository.ts` — no longer implements the interface (missing the 3 new methods) + no longer exports `AvailableOrder`. Owned by **task_08**.
+  - `src/main/factories/order-controller-factory.ts` and `subscribe-controller-factory.ts` — wire `PrismaSubscribeRepository`, inherit its non-conformance. Resolves automatically once task_08 lands.
+  - No other file broke beyond the set already documented in task_05's notes plus this task's own.

@@ -1,14 +1,18 @@
-import { OrderStatus } from '../entities/orders';
+import { FulfillmentType } from '../entities/orders';
+import { SubscriptionItem } from '../entities/subscription-item';
 
-export type AvailableOrder = {
+export type SubscriptionTemplateForDate = {
 	id: number;
 	bakeryId: string;
-	serviceDate: Date;
-	serviceStartAt: string;
-	serviceEndAt: string;
-	deliveryStartAt: string;
-	deliveryEndAt: string;
-	status: OrderStatus;
+	userId: string;
+	serviceDate: Date; // the target date, echoed back for convenience
+	fulfillmentType: FulfillmentType;
+	items: {
+		itemId: string;
+		nameSnapshot: string;
+		priceCentsSnapshot: number;
+		quantity: number;
+	}[];
 };
 
 export interface SubscribeCreateData {
@@ -23,22 +27,21 @@ export interface SubscribeCreateData {
 	deliveryEndAt: string;
 	status?: 'ACTIVE' | 'PAUSED' | 'CANCELED' | 'PENDING';
 	notes: string;
+	fulfillmentType?: FulfillmentType;
 }
 
 export interface SubscribeRepository {
 	create(data: SubscribeCreateData): Promise<any>;
 	getList(userId: string): Promise<any>;
-	getOrderByDay(startOfDay: Date, endOfDay: Date): Promise<any>;
-	updateOrder(
-		orderId: number,
-		deliveryId: string,
-		status: OrderStatus,
-	): Promise<any>;
 	getSubscribeById(orderId: number): Promise<any>;
 	getAll(page: number, limit: number, serviceDate?: string): Promise<any>;
-	findAvailable(startDate: Date, endDate: Date): Promise<AvailableOrder[]>;
-	// Returns false (not throwing) when the order is already claimed — lost-race case per ADR-004.
-	claim(id: number, deliveryPersonId: string): Promise<boolean>;
-	// Returns false (not throwing) when the caller doesn't own the claim or the order isn't ACCEPTED.
-	release(id: number, deliveryPersonId: string): Promise<boolean>;
+	// Templates (`active = true`) whose schedule matches `date` — the generation
+	// use case's single read (ADR-001). `items` is already snapshot-shaped,
+	// read from the live `Item` at query time (ADR-002).
+	listActiveTemplatesForDate(date: Date): Promise<SubscriptionTemplateForDate[]>;
+	getItems(subscriptionId: number): Promise<SubscriptionItem[]>;
+	setItems(
+		subscriptionId: number,
+		items: { itemId: string; quantity: number }[],
+	): Promise<void>;
 }

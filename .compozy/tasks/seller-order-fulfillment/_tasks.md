@@ -7,9 +7,9 @@
 | 01 | Prisma schema: Subscription/Order split, OrderItem + SubscriptionItem, FulfillmentType, PREPARING/READY | done | high | — |
 | 02 | Data backfill: create one Order per existing subscription row | done | high | task_01 |
 | 03 | Domain entities: Order (reworked), OrderItem, SubscriptionItem, Subscription | done | medium | task_01 |
-| 04 | `order-status-transitions.ts` module + `InvalidOrderStatusTransitionError` | pending | medium | task_03 |
-| 05 | `OrdersRepository` port: rewrite around the instance model | pending | medium | task_03 |
-| 06 | `SubscribeRepository` port: template query + basket; drop order-ish methods | pending | medium | task_03 |
+| 04 | `order-status-transitions.ts` module + `InvalidOrderStatusTransitionError` | done | medium | task_03 |
+| 05 | `OrdersRepository` port: rewrite around the instance model | done | medium | task_03 |
+| 06 | `SubscribeRepository` port: template query + basket; drop order-ish methods | done | medium | task_03 |
 | 07 | `PrismaOrdersRepository`: implement the new port + `prisma-orders-mapper` | pending | high | task_01, task_05 |
 | 08 | `PrismaSubscribeRepository`: `listActiveTemplatesForDate` + `getItems`/`setItems`; remove legacy order methods | pending | medium | task_01, task_06 |
 | 09 | `GenerateOrdersFromSubscriptionsUseCase` | pending | medium | task_05, task_06, task_07, task_08 |
@@ -20,7 +20,7 @@
 | 14 | Migrate `AcceptOrderUseCase` onto `Order.claim` | pending | medium | task_02, task_07 |
 | 15 | Migrate `ReleaseOrderUseCase` onto `Order.release` | pending | medium | task_02, task_07 |
 | 16 | Migrate `UpdateOrdersUseCase` (courier status) onto Order + transition module | pending | medium | task_02, task_04, task_07 |
-| 17 | Zod validators: generate, seller status update, bakery-orders query; narrow courier `updateOrderSchema` | pending | low | task_03 |
+| 17 | Zod validators: generate, seller status update, bakery-orders query; narrow courier `updateOrderSchema` | done | low | task_03 |
 | 18 | `CreateSubscribeUseCase` + validator: accept `items[]` basket and `fulfillmentType` | pending | medium | task_06, task_08, task_17 |
 | 19 | `OrdersController`: new handlers + adapt migrated handlers | pending | medium | task_09, task_11, task_12, task_13, task_14, task_15, task_16, task_17 |
 | 20 | `orders-routes.ts`: register new routes + Swagger; literal paths before param paths | pending | medium | task_17, task_19 |
