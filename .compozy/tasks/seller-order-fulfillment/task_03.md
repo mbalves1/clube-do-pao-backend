@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Domain entities: Order (reworked), OrderItem, SubscriptionItem, Subscription"
 type: backend
 complexity: medium
@@ -34,10 +34,10 @@ Brings the `src/core/entities/` types in line with the task_01 schema: reworks `
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Rework `orders.ts` (status union, `FulfillmentType`, new `Order` fields).
-- [ ] 3.2 Grep-confirm `'ACTIVE'` is unused, then remove it.
-- [ ] 3.3 Add `order-item.ts`, `subscription-item.ts`, `subscription.ts`.
-- [ ] 3.4 `npm run build`; record any downstream break for its owning task.
+- [x] 3.1 Rework `orders.ts` (status union, `FulfillmentType`, new `Order` fields).
+- [x] 3.2 Grep-confirm `'ACTIVE'` is unused, then remove it.
+- [x] 3.3 Add `order-item.ts`, `subscription-item.ts`, `subscription.ts`.
+- [x] 3.4 `npm run build`; record any downstream break for its owning task.
 
 ## Implementation Details
 Match the style of the existing entity files (plain `export type`, `Date` for timestamps, `?: T | null` for nullable). The `Order` shape change will ripple into `prisma-orders-repository.ts` and the order use cases — those are handled in tasks 07 and 13–16; if the repo file won't compile after this task, it's acceptable for it to be fixed in task_07 as long as you list it in this task's completion notes.
@@ -59,11 +59,15 @@ Match the style of the existing entity files (plain `export type`, `Date` for ti
 
 ## Tests
 - Manual verification:
-  - [ ] `grep -rn "'ACTIVE'\|\"ACTIVE\"" src/` returns nothing order-related before removal.
-  - [ ] `npm run build` compiles (or the only errors are in files explicitly deferred to tasks 07/13–16, listed in notes).
-  - [ ] Importing `Order`, `OrderItem`, `SubscriptionItem`, `FulfillmentType` from their entity files type-checks in a scratch file.
+  - [x] `grep -rn "'ACTIVE'\|\"ACTIVE\"" src/` returns nothing order-related before removal — only hit is `subscribe-repository.ts:24`'s unrelated `Subscription`-lifecycle status union (`'ACTIVE'|'PAUSED'|'CANCELED'|'PENDING'`, not `OrderStatus`).
+  - [x] `npm run build` compiles, with exactly one deferred error: `src/infra/repositories/prisma-orders-repository.ts(11,2)` — `mapOrder`'s return object is "missing bakeryId, fulfillmentType, items" from the new `Order` shape. This is the file task_07 (`PrismaOrdersRepository` rewrite) owns; no other file broke. Deferred as instructed by this task's Implementation Details.
+  - [x] Importing `Order`, `OrderItem`, `SubscriptionItem`, `FulfillmentType`, `Subscription` from their entity files type-checks in a scratch file (constructed one instance of each, `tsc --noEmit` clean).
 - Coverage target: N/A.
 
 ## Success Criteria
-- Entities mirror the task_01 schema; no Prisma import in `core/entities`.
-- `'ACTIVE'` removed with grep evidence it was dead.
+- Entities mirror the task_01 schema; no Prisma import in `core/entities`. ✅
+- `'ACTIVE'` removed with grep evidence it was dead. ✅
+
+## Completion Notes
+- Downstream break (expected, deferred to task_07): `src/infra/repositories/prisma-orders-repository.ts` — `mapOrder()` no longer satisfies `Order` (missing `bakeryId`, `fulfillmentType`, `items`). `PrismaOrdersRepository` is rewritten wholesale in task_07 against the new `OrdersRepository` port (task_05), so no partial fix was applied here.
+- `export type Orders = Order;` kept as-is for backward compat (unused today, `grep` found no importer of `Orders`) — not in this task's scope to remove.

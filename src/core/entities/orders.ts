@@ -1,17 +1,27 @@
+import { OrderItem } from './order-item';
+
 export type OrderStatus =
 	| 'PENDING'
+	| 'PREPARING'
+	| 'READY'
 	| 'ACCEPTED'
 	| 'PICKED_UP'
 	| 'DELIVERED'
-	| 'ACTIVE'
 	| 'CANCELED';
+
+export type FulfillmentType = 'PICKUP' | 'DELIVERY';
 
 export type Order = {
 	id: number;
 	subscriptionId: number;
+	bakeryId: string;
 	deliveryPersonId?: string | null;
 	serviceDate: Date;
-	status?: OrderStatus | null;
+	fulfillmentType: FulfillmentType;
+	status: OrderStatus;
+	items: OrderItem[];
+	preparingAt?: Date | null;
+	readyAt?: Date | null;
 	acceptedAt?: Date | null;
 	pickedUpAt?: Date | null;
 	deliveredAt?: Date | null;

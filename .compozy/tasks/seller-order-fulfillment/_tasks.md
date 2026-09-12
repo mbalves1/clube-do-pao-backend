@@ -5,15 +5,15 @@
 | # | Title | Status | Complexity | Dependencies |
 |---|-------|--------|------------|--------------|
 | 01 | Prisma schema: Subscription/Order split, OrderItem + SubscriptionItem, FulfillmentType, PREPARING/READY | done | high | — |
-| 02 | Data backfill: create one Order per existing subscription row | pending | high | task_01 |
-| 03 | Domain entities: Order (reworked), OrderItem, SubscriptionItem, Subscription | pending | medium | task_01 |
+| 02 | Data backfill: create one Order per existing subscription row | done | high | task_01 |
+| 03 | Domain entities: Order (reworked), OrderItem, SubscriptionItem, Subscription | done | medium | task_01 |
 | 04 | `order-status-transitions.ts` module + `InvalidOrderStatusTransitionError` | pending | medium | task_03 |
 | 05 | `OrdersRepository` port: rewrite around the instance model | pending | medium | task_03 |
 | 06 | `SubscribeRepository` port: template query + basket; drop order-ish methods | pending | medium | task_03 |
 | 07 | `PrismaOrdersRepository`: implement the new port + `prisma-orders-mapper` | pending | high | task_01, task_05 |
 | 08 | `PrismaSubscribeRepository`: `listActiveTemplatesForDate` + `getItems`/`setItems`; remove legacy order methods | pending | medium | task_01, task_06 |
 | 09 | `GenerateOrdersFromSubscriptionsUseCase` | pending | medium | task_05, task_06, task_07, task_08 |
-| 10 | Relocate `resolveOwnerBakeryId` to `usecases/shared/` | pending | low | — |
+| 10 | Relocate `resolveOwnerBakeryId` to `usecases/shared/` | done | low | — |
 | 11 | `ListBakeryOrdersUseCase` | pending | low | task_05, task_07, task_10 |
 | 12 | `UpdateOrderStatusBySellerUseCase` (+ SSE on READY) | pending | medium | task_04, task_05, task_07, task_10 |
 | 13 | Migrate `ListAvailableOrdersUseCase` onto Order | pending | low | task_02, task_07 |

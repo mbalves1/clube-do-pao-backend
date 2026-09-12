@@ -2,7 +2,7 @@ import { Item } from '../../entities/item';
 import { BakeryPersonRepository } from '../../ports/bakery-person-repository';
 import { ItemRepository } from '../../ports/item-repository';
 import { UserRepository } from '../../ports/user-repository';
-import { resolveOwnerBakeryId } from './resolve-owner-bakery-id';
+import { resolveOwnerBakeryId } from '../shared/resolve-owner-bakery-id';
 
 export type CreateItemInput = {
 	name: string;

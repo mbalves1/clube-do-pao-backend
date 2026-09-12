@@ -14,7 +14,8 @@
 		"prisma:deploy": "prisma migrate deploy",
 		"docker:up": "docker compose up --build",
 		"docker:down": "docker compose down",
-		"setup": "npm run docker:up && wait-on tcp:5432 && npx prisma migrate dev"
+		"setup": "npm run docker:up && wait-on tcp:5432 && npx prisma migrate dev",
+		"backfill:orders": "TS_NODE_COMPILER_OPTIONS='{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"ignoreDeprecations\":\"6.0\"}' node --env-file .env node_modules/.bin/ts-node --transpile-only prisma/scripts/backfill-orders.ts"
 	},
 	"keywords": [],
 	"author": "",

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Relocate resolveOwnerBakeryId to usecases/shared/"
 type: backend
 complexity: low
@@ -28,10 +28,10 @@ dependencies: []
 </requirements>
 
 ## Subtasks
-- [ ] 10.1 Create the file under `usecases/shared/` (verbatim copy).
-- [ ] 10.2 Repoint the 4 item use case imports.
-- [ ] 10.3 Delete the old file; `npm run build`.
-- [ ] 10.4 `grep` for any other importer of the old path.
+- [x] 10.1 Create the file under `usecases/shared/` (verbatim copy).
+- [x] 10.2 Repoint the 4 item use case imports.
+- [x] 10.3 Delete the old file; `npm run build`.
+- [x] 10.4 `grep` for any other importer of the old path.
 
 ## Implementation Details
 Pure move + re-import. If `usecases/shared/` does not exist yet, create it. No barrel file — direct imports, consistent with the rest of the codebase.
@@ -52,11 +52,11 @@ Pure move + re-import. If `usecases/shared/` does not exist yet, create it. No b
 
 ## Tests
 - Manual verification:
-  - [ ] `grep -rn "item/resolve-owner-bakery-id" src/` returns nothing.
-  - [ ] `npm run build` compiles.
-  - [ ] The item endpoints (`GET/POST /items`) still resolve the bakery correctly via `request.http` (spot check one).
+  - [x] `grep -rn "item/resolve-owner-bakery-id" src/` returns nothing.
+  - [x] `npm run build` compiles — only the pre-existing, unrelated, already-documented `prisma-orders-repository.ts` error from task_03 (owned by task_07) remains; no new error from this move.
+  - [ ] The item endpoints (`GET/POST /items`) still resolve the bakery correctly via `request.http` (spot check one) — **not exercised live**: same standing blocker the TechSpec documents ("Technical dependencies") — `company` accounts have no Supabase credential yet, so there's no way to obtain a `company` JWT to call the endpoint end-to-end in this environment. Verified instead structurally: the move is a verbatim function-body copy (identical signature, logic, error types/messages) with only import paths changed in the 4 call sites (`grep resolveOwnerBakeryId` shows all 4 importing from `../shared/resolve-owner-bakery-id` and all 4 call sites unchanged); `npm run build` confirms all 4 item use case files still compile against the new import.
 - Coverage target: N/A.
 
 ## Success Criteria
-- One shared helper, imported by both features from `usecases/shared/`.
-- No behavior change to item management.
+- One shared helper, imported by both features from `usecases/shared/`. ✅
+- No behavior change to item management. ✅ (verbatim move, verified structurally — see live-E2E gap noted above, same standing blocker as `delivery-order-assignment`/TechSpec).

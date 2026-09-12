@@ -3,7 +3,7 @@ import { NotFoundError } from '../../errors/NotFoundError';
 import { BakeryPersonRepository } from '../../ports/bakery-person-repository';
 import { ItemRepository } from '../../ports/item-repository';
 import { UserRepository } from '../../ports/user-repository';
-import { resolveOwnerBakeryId } from './resolve-owner-bakery-id';
+import { resolveOwnerBakeryId } from '../shared/resolve-owner-bakery-id';
 
 export class DeleteItemUseCase {
 	constructor(

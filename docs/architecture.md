@@ -69,6 +69,16 @@ Entidades principais (`prisma/schema.prisma`):
 - `FavoriteBakery` — relação N:N entre `User` e `Bakery`
 - `Item` — item à venda (nome, descrição opcional, `priceCents` em centavos, `available`), pertence a uma `Bakery`. CRUD restrito ao `company` dono: as rotas `/items` resolvem a `bakeryId` do chamador via `BakeryPerson` (mesmo lookup do `GetMeUseCase`) e `update`/`delete` verificam que o item pertence a essa `bakeryId` antes de agir — não há endpoint público de listagem por padaria ainda.
 
+### Split `Subscription` / `Order` (em andamento — `seller-order-fulfillment`)
+
+O schema Prisma já reflete a separação template/instância descrita na [ADR-001](../.compozy/tasks/seller-order-fulfillment/adrs/adr-001.md): `Subscription` é o template recorrente (`fulfillmentType` padrão, `active`, basket via `SubscriptionItem[]`); `Order` passa a ser a instância por `serviceDate` (`bakeryId` denormalizado, `fulfillmentType`, status estendido com `PREPARING`/`READY`, timestamps de ciclo de vida, basket snapshot via `OrderItem[]`), com unique em `(subscriptionId, serviceDate)` garantindo geração idempotente.
+
+As colunas legadas de `Subscription` (`serviceDate`, `status`, `deliveryPersonId`) permanecem no banco só para histórico/backfill — nenhum código novo escreve nelas.
+
+**Backfill one-off:** `prisma/scripts/backfill-orders.ts` (`npm run backfill:orders`) cria um `Order` por `subscription` existente que ainda não tem um, copiando `serviceDate`/`bakeryId`/`deliveryPersonId` e mapeando `subscription.status` → `OrderStatus` (`ACCEPTED`/`PICKED_UP`/`DELIVERED`/`CANCELED` mantidos, qualquer outro valor → `PENDING`); `fulfillmentType` fixo em `DELIVERY` (não há dado histórico de pickup) e sem `OrderItem`. Usa `createMany({ skipDuplicates: true })` sobre o unique de `Order`, então é seguro rodar mais de uma vez (reexecuções não criam duplicata). Já rodado no banco de dev em 2026-09-12 (17 `subscription` → 17 `Order` criados, 0 pulados na primeira execução; reexecução confirmou 0 criados / 17 pulados).
+
+Os use cases de entregador (`list-available-orders`, `accept-order`, `release-order`, `update-orders`) e as entidades/ports de domínio (`src/core/entities/orders.ts`, `src/core/ports/orders-repository.ts`) ainda refletem o modelo antigo — a migração completa é o restante das tasks de `seller-order-fulfillment`.
+
 ## Autenticação e papéis (roles)
 
 Não existe coluna `role` unificada no banco — o papel do usuário é **estrutural**: definido por em qual tabela o registro existe, não por um campo.
