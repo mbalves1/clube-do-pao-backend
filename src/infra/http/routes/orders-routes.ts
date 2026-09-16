@@ -9,7 +9,7 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 
 	/**
 	 * @swagger
-	 * /orders:
+	 * /api/orders:
 	 *   get:
 	 *     tags:
 	 *       - Orders
@@ -33,7 +33,7 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 
 	/**
 	 * @swagger
-	 * /orders/available:
+	 * /api/orders/available:
 	 *   get:
 	 *     tags:
 	 *       - Orders
@@ -57,7 +57,7 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 
 	/**
 	 * @swagger
-	 * /orders/{id}/accept:
+	 * /api/orders/{id}/accept:
 	 *   post:
 	 *     tags:
 	 *       - Orders
@@ -86,7 +86,7 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 
 	/**
 	 * @swagger
-	 * /orders/{id}/release:
+	 * /api/orders/{id}/release:
 	 *   post:
 	 *     tags:
 	 *       - Orders
@@ -115,7 +115,7 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 
 	/**
 	 * @swagger
-	 * /orders/{orderId}/{deliveryId}:
+	 * /api/orders/{orderId}/{deliveryId}:
 	 *   patch:
 	 *     tags:
 	 *       - Orders

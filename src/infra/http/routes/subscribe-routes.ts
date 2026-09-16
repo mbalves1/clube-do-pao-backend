@@ -7,7 +7,7 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 
 	/**
 	 * @swagger
-	 * /subscribe:
+	 * /api/subscribe:
 	 *   post:
 	 *     tags:
 	 *       - Subscribe
@@ -84,7 +84,7 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 
 	/**
 	 * @swagger
-	 * /subscribe/{id}:
+	 * /api/subscribe/{id}:
 	 *   get:
 	 *     tags:
 	 *       - Subscribe
@@ -113,7 +113,7 @@ export function makeSubscribeRoutes(subscribeController: SubscribeController) {
 
 	/**
 	 * @swagger
-	 * /subscribe:
+	 * /api/subscribe:
 	 *   get:
 	 *     tags:
 	 *       - Subscribe

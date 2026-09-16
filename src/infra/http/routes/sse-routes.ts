@@ -5,7 +5,7 @@ import { authMiddleware } from '../../../middlewares/auth';
 
 /**
  * @swagger
- * /events:
+ * /api/events:
  *   get:
  *     tags:
  *       - SSE

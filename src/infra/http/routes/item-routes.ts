@@ -9,7 +9,7 @@ export function makeItemRoutes(itemController: ItemController) {
 
 	/**
 	 * @swagger
-	 * /items:
+	 * /api/items:
 	 *   get:
 	 *     summary: Lista os itens da padaria do lojista autenticado
 	 *     tags:
@@ -66,7 +66,7 @@ export function makeItemRoutes(itemController: ItemController) {
 
 	/**
 	 * @swagger
-	 * /items/{id}:
+	 * /api/items/{id}:
 	 *   patch:
 	 *     summary: Edita um item da padaria do lojista autenticado
 	 *     tags:
