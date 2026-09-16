@@ -65,7 +65,7 @@ Entidades principais (`prisma/schema.prisma`):
 - `Bakery` — padaria (role `company`)
 - `DeliveryPerson` — entregador (role `delivery`)
 - `Subscription` — assinatura recorrente entre `User` e `Bakery` (dias da semana, frequência, janela de entrega)
-- `Order` — pedido pontual gerado a partir de uma `Subscription`, com status `PENDING → ACCEPTED → PICKED_UP → DELIVERED`/`CANCELED`
+- `Order` — pedido pontual gerado a partir de uma `Subscription`, com status `PENDING → PREPARING → READY → ACCEPTED → PICKED_UP → DELIVERED`/`CANCELED` (ver detalhes e ADR-003 na seção de split abaixo)
 - `FavoriteBakery` — relação N:N entre `User` e `Bakery`
 - `Item` — item à venda (nome, descrição opcional, `priceCents` em centavos, `available`), pertence a uma `Bakery`. CRUD restrito ao `company` dono: as rotas `/items` resolvem a `bakeryId` do chamador via `BakeryPerson` (mesmo lookup do `GetMeUseCase`) e `update`/`delete` verificam que o item pertence a essa `bakeryId` antes de agir — não há endpoint público de listagem por padaria ainda.
 
@@ -77,7 +77,9 @@ As colunas legadas de `Subscription` (`serviceDate`, `status`, `deliveryPersonId
 
 **Backfill one-off:** `prisma/scripts/backfill-orders.ts` (`npm run backfill:orders`) cria um `Order` por `subscription` existente que ainda não tem um, copiando `serviceDate`/`bakeryId`/`deliveryPersonId` e mapeando `subscription.status` → `OrderStatus` (`ACCEPTED`/`PICKED_UP`/`DELIVERED`/`CANCELED` mantidos, qualquer outro valor → `PENDING`); `fulfillmentType` fixo em `DELIVERY` (não há dado histórico de pickup) e sem `OrderItem`. Usa `createMany({ skipDuplicates: true })` sobre o unique de `Order`, então é seguro rodar mais de uma vez (reexecuções não criam duplicata). Já rodado no banco de dev em 2026-09-12 (17 `subscription` → 17 `Order` criados, 0 pulados na primeira execução; reexecução confirmou 0 criados / 17 pulados).
 
-Os use cases de entregador (`list-available-orders`, `accept-order`, `release-order`, `update-orders`) e as entidades/ports de domínio (`src/core/entities/orders.ts`, `src/core/ports/orders-repository.ts`) ainda refletem o modelo antigo — a migração completa é o restante das tasks de `seller-order-fulfillment`.
+`src/core/entities/orders.ts` e `src/core/ports/orders-repository.ts` (port) já foram migrados para o modelo novo (`bakeryId`, `fulfillmentType`, `updateStatus`, `findAvailableForDelivery`, `claim`/`release` por `deliveryPersonId`). `src/core/usecases/orders/order-status-transitions.ts` já implementa as regras de transição do modelo novo (ADR-003), mas ainda não está chamado por nenhum use case.
+
+**⚠️ Estado atualmente quebrado (build falha):** os use cases de entregador (`list-available-orders`, `accept-order`, `release-order`, `update-orders`, `list-orders`) e os repositórios Prisma (`prisma-orders-repository.ts`, `prisma-subscribe-repository.ts`) ainda chamam o shape antigo dos ports (`SubscribeRepository.claim/release/findAvailable/getOrderByDay/updateOrder`, `OrdersRepository.create/update/findBySubscriptionId`) — métodos que não existem mais nas interfaces atuais. `npx tsc --noEmit` falha com ~20 erros nesses arquivos, então `npm run build` (e portanto o CI) está quebrado no `master` até essa camada ser migrada — o restante das tasks de `seller-order-fulfillment`.
 
 ## Autenticação e papéis (roles)
 
@@ -92,4 +94,5 @@ Não existe coluna `role` unificada no banco — o papel do usuário é **estrut
 - A role é definida na criação da credencial (`AuthGateway.createCredential`, implementado em `src/infra/gateways/supabase-auth-gateway.ts`) e fica salva **apenas** em `app_metadata.role` no Supabase Auth — não é persistida no Postgres.
 - No login (`LoginUseCase.findProfile`, `src/core/usecases/auth/login.ts`), a role vinda da sessão Supabase decide em qual repositório buscar o perfil (`User`, `Bakery` ou `DeliveryPerson`).
 - `authMiddleware` (`src/middlewares/auth.ts`) apenas valida o JWT e injeta `req.user` (objeto do Supabase, com `app_metadata`) — **não há guard de autorização por role** aplicado nas rotas hoje.
-- Hoje só `POST /api/users` (`CreateUserUseCase`) cria credencial Supabase com senha e aceita `role` no body. Os cadastros de `Bakery` (`create-bakery.ts`) e `DeliveryPerson` (`create-delivery.ts`) ainda **não** criam credencial Supabase nem pedem senha — contas `company`/`delivery` criadas por esses fluxos não conseguem fazer login até isso ser implementado.
+- `POST /api/users` (`CreateUserUseCase`) é o cadastro principal e único que cria credencial Supabase com senha, para os três roles: `customer`, `company` (cria também `Bakery` + `BakeryPerson`) e `delivery` (cria também `DeliveryPerson`). Não existe mais um `create-delivery.ts` separado — foi removido quando esse fluxo unificado em `CreateUserUseCase` foi implementado.
+- `create-bakery.ts` (`POST /api/bakery`, autenticada) tem outro propósito: permite que um usuário **já logado** (com credencial Supabase existente) se vincule como dono de uma padaria nova, sem senha nova. Falha com `ConflictError` se o usuário já estiver vinculado a uma padaria ou se o CNPJ já existir.
