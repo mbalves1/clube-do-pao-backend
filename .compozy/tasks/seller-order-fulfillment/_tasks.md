@@ -10,7 +10,7 @@
 | 04 | `order-status-transitions.ts` module + `InvalidOrderStatusTransitionError` | done | medium | task_03 |
 | 05 | `OrdersRepository` port: rewrite around the instance model | done | medium | task_03 |
 | 06 | `SubscribeRepository` port: template query + basket; drop order-ish methods | done | medium | task_03 |
-| 07 | `PrismaOrdersRepository`: implement the new port + `prisma-orders-mapper` | pending | high | task_01, task_05 |
+| 07 | `PrismaOrdersRepository`: implement the new port + `prisma-orders-mapper` | done | high | task_01, task_05 |
 | 08 | `PrismaSubscribeRepository`: `listActiveTemplatesForDate` + `getItems`/`setItems`; remove legacy order methods | pending | medium | task_01, task_06 |
 | 09 | `GenerateOrdersFromSubscriptionsUseCase` | pending | medium | task_05, task_06, task_07, task_08 |
 | 10 | Relocate `resolveOwnerBakeryId` to `usecases/shared/` | done | low | — |

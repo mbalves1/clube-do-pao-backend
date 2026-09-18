@@ -1,82 +1,133 @@
-import { OrderStatus } from '@prisma/client';
-import { Order } from '../../core/entities/orders';
+import { Order, OrderStatus } from '../../core/entities/orders';
 import {
-	CreateOrderData,
+	BakeryOrderFilters,
+	GenerateOrderInput,
 	OrdersRepository,
-	UpdateOrderData,
+	OrderStatusPatch,
 } from '../../core/ports/orders-repository';
 import { prisma } from '../database/prisma-client';
+import { toOrder } from '../mappers/prisma-orders-mapper';
 
-function mapOrder(order: any): Order {
-	return {
-		id: order.id,
-		subscriptionId: order.subscriptionId,
-		deliveryPersonId: order.deliveryPersonId ?? null,
-		serviceDate: order.serviceDate,
-		status: (order.status as Order['status']) ?? null,
-		acceptedAt: order.acceptedAt ?? null,
-		pickedUpAt: order.pickedUpAt ?? null,
-		deliveredAt: order.deliveredAt ?? null,
-		canceledAt: order.canceledAt ?? null,
-		createdAt: order.createdAt,
-		updatedAt: order.updatedAt,
-	};
-}
+const ITEMS_INCLUDE = { items: true } as const;
 
 export class PrismaOrdersRepository implements OrdersRepository {
-	async create(order: any, deliveryId: string): Promise<Order> {
+	async createFromSubscription(input: GenerateOrderInput): Promise<Order> {
 		const created = await prisma.order.create({
 			data: {
-				subscription: { connect: { id: order.id } },
-				bakery: { connect: { id: order.bakeryId } },
-				deliveryPerson: deliveryId
-					? { connect: { id: deliveryId } }
-					: undefined,
-				serviceDate: order.serviceDate,
-				status: (order.status as any) ?? OrderStatus.PENDING,
-				acceptedAt: new Date(),
-				pickedUpAt: order.pickedUpAt ?? null,
-				deliveredAt: order.deliveredAt ?? null,
-				canceledAt: order.canceledAt ?? null,
+				subscription: { connect: { id: input.subscriptionId } },
+				bakery: { connect: { id: input.bakeryId } },
+				serviceDate: input.serviceDate,
+				fulfillmentType: input.fulfillmentType,
+				items: {
+					create: input.items.map((item) => ({
+						itemId: item.itemId,
+						nameSnapshot: item.nameSnapshot,
+						priceCentsSnapshot: item.priceCentsSnapshot,
+						quantity: item.quantity,
+					})),
+				},
 			},
+			include: ITEMS_INCLUDE,
 		});
 
-		return mapOrder(created);
+		return toOrder(created);
 	}
 
-	async update(order: UpdateOrderData): Promise<Order> {
-		const updated = await prisma.order.update({
+	async existsForSubscriptionAndDate(
+		subscriptionId: number,
+		serviceDate: Date,
+	): Promise<boolean> {
+		const count = await prisma.order.count({
+			where: { subscriptionId, serviceDate },
+		});
+
+		return count > 0;
+	}
+
+	async findByIdWithItems(id: number): Promise<Order | null> {
+		const found = await prisma.order.findUnique({
+			where: { id },
+			include: ITEMS_INCLUDE,
+		});
+
+		return found ? toOrder(found) : null;
+	}
+
+	async listByBakery(
+		bakeryId: string,
+		filters: BakeryOrderFilters,
+	): Promise<Order[]> {
+		const found = await prisma.order.findMany({
 			where: {
-				id: order.id,
+				bakeryId,
+				status: filters.status,
+				serviceDate:
+					filters.serviceDateFrom || filters.serviceDateTo
+						? {
+								gte: filters.serviceDateFrom,
+								lte: filters.serviceDateTo,
+							}
+						: undefined,
 			},
-			data: {
-				subscriptionId: order.subscriptionId,
-				deliveryPersonId: order.deliveryPersonId ?? null,
-				serviceDate: order.serviceDate,
-				status: (order.status as any) ?? undefined,
-				acceptedAt: order.acceptedAt ?? null,
-				pickedUpAt: order.pickedUpAt ?? null,
-				deliveredAt: order.deliveredAt ?? null,
-				canceledAt: order.canceledAt ?? null,
-			},
+			include: ITEMS_INCLUDE,
+			orderBy: [{ serviceDate: 'asc' }, { createdAt: 'asc' }],
 		});
 
-		return mapOrder(updated);
+		return found.map(toOrder);
 	}
 
-	async findBySubscriptionId(subscriptionId: number): Promise<Order | null> {
-		const found = await prisma.order.findFirst({
-			where: { subscriptionId },
+	async findByDateRange(from: Date, to: Date): Promise<Order[]> {
+		const found = await prisma.order.findMany({
+			where: { serviceDate: { gte: from, lte: to } },
+			include: ITEMS_INCLUDE,
 		});
 
-		if (!found) return null;
-
-		return mapOrder(found);
+		return found.map(toOrder);
 	}
 
-	async find(): Promise<Order[]> {
-		const found = await prisma.order.findMany();
+	async findAvailableForDelivery(from: Date, to: Date): Promise<Order[]> {
+		const found = await prisma.order.findMany({
+			where: {
+				status: 'READY',
+				fulfillmentType: 'DELIVERY',
+				deliveryPersonId: null,
+				serviceDate: { gte: from, lte: to },
+			},
+			include: ITEMS_INCLUDE,
+		});
 
-		return found.map((o) => mapOrder(o));
+		return found.map(toOrder);
+	}
+
+	async updateStatus(
+		id: number,
+		status: OrderStatus,
+		patch: OrderStatusPatch,
+	): Promise<Order> {
+		const updated = await prisma.order.update({
+			where: { id },
+			data: { status, ...patch },
+			include: ITEMS_INCLUDE,
+		});
+
+		return toOrder(updated);
+	}
+
+	async claim(id: number, deliveryPersonId: string): Promise<boolean> {
+		const { count } = await prisma.order.updateMany({
+			where: { id, status: 'READY', deliveryPersonId: null },
+			data: { deliveryPersonId, status: 'ACCEPTED', acceptedAt: new Date() },
+		});
+
+		return count === 1;
+	}
+
+	async release(id: number, deliveryPersonId: string): Promise<boolean> {
+		const { count } = await prisma.order.updateMany({
+			where: { id, deliveryPersonId, status: 'ACCEPTED' },
+			data: { deliveryPersonId: null, status: 'READY', acceptedAt: null },
+		});
+
+		return count === 1;
 	}
 }
