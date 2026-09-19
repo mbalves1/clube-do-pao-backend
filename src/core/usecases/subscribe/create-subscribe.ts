@@ -1,4 +1,6 @@
+import { FulfillmentType } from '../../entities/orders';
 import { BakeryRepository } from '../../ports/bakery-repository';
+import { ItemRepository } from '../../ports/item-repository';
 import { SubscribeRepository } from '../../ports/subscribe-repository';
 import { UserRepository } from '../../ports/user-repository';
 
@@ -10,6 +12,8 @@ interface CreateSubscribeInput {
 	serviceEndAt: string;
 	notes: string;
 	daysWeek?: string[];
+	fulfillmentType?: FulfillmentType;
+	items?: { itemId: string; quantity: number }[];
 }
 
 export class CreateSubscribeUseCase {
@@ -17,6 +21,7 @@ export class CreateSubscribeUseCase {
 		private userRepository: UserRepository,
 		private bakeryRepository: BakeryRepository,
 		private subscribeRepository: SubscribeRepository,
+		private itemRepository: ItemRepository,
 	) {}
 
 	private weekMap: Record<string, number> = {
@@ -50,6 +55,19 @@ export class CreateSubscribeUseCase {
 			throw new Error('padaria nao encontrado');
 		}
 
+		const fulfillmentType = subscribe.fulfillmentType ?? 'DELIVERY';
+		const items = subscribe.items ?? [];
+
+		if (items.length > 0) {
+			const bakeryItems = await this.itemRepository.findByBakeryId(idBakery);
+			const bakeryItemIds = new Set(bakeryItems.map((item) => item.id));
+
+			const invalidItem = items.find((item) => !bakeryItemIds.has(item.itemId));
+			if (invalidItem) {
+				throw new Error('Item não pertence à padaria informada');
+			}
+		}
+
 		const startDate = this.parseDate(subscribe.serviceStartAt);
 		const endDate = this.parseDate(subscribe.serviceEndAt);
 
@@ -57,7 +75,7 @@ export class CreateSubscribeUseCase {
 			const currentDate = new Date(startDate);
 
 			while (currentDate <= endDate) {
-				await this.subscribeRepository.create({
+				const created = await this.subscribeRepository.create({
 					userId: idUser,
 					bakeryId: idBakery,
 					serviceDate: new Date(currentDate),
@@ -68,7 +86,12 @@ export class CreateSubscribeUseCase {
 					deliveryEndAt: subscribe.deliveryEndAt,
 					status: 'PENDING',
 					notes: subscribe.notes,
+					fulfillmentType,
 				});
+
+				if (items.length > 0) {
+					await this.subscribeRepository.setItems(created.id, items);
+				}
 
 				currentDate.setDate(currentDate.getDate() + 1);
 			}
@@ -89,7 +112,7 @@ export class CreateSubscribeUseCase {
 				);
 
 				if (selectedDay) {
-					await this.subscribeRepository.create({
+					const created = await this.subscribeRepository.create({
 						userId: idUser,
 						bakeryId: idBakery,
 						serviceDate: new Date(currentDate),
@@ -101,7 +124,12 @@ export class CreateSubscribeUseCase {
 						status: 'PENDING',
 						daysWeek: [selectedDay.name],
 						notes: subscribe.notes,
+						fulfillmentType,
 					});
+
+					if (items.length > 0) {
+						await this.subscribeRepository.setItems(created.id, items);
+					}
 				}
 
 				currentDate.setDate(currentDate.getDate() + 1);

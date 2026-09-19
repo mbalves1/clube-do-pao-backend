@@ -1,9 +1,10 @@
-import { AvailableOrder, SubscribeRepository } from '../../ports/subscribe-repository';
+import { Order } from '../../entities/orders';
+import { OrdersRepository } from '../../ports/orders-repository';
 
 export class ListAvailableOrdersUseCase {
-	constructor(private subscribeRepository: SubscribeRepository) {}
+	constructor(private ordersRepository: OrdersRepository) {}
 
-	async execute(): Promise<AvailableOrder[]> {
+	async execute(): Promise<Order[]> {
 		const today = new Date();
 
 		const startDate = new Date(today);
@@ -12,6 +13,6 @@ export class ListAvailableOrdersUseCase {
 		const endDate = new Date(startDate);
 		endDate.setUTCDate(endDate.getUTCDate() + 2);
 
-		return this.subscribeRepository.findAvailable(startDate, endDate);
+		return this.ordersRepository.findAvailableForDelivery(startDate, endDate);
 	}
 }

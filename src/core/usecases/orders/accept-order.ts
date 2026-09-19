@@ -1,12 +1,12 @@
 import { ConflictError } from '../../errors/ConflictError';
 import { NotFoundError } from '../../errors/NotFoundError';
 import { DeliveryUserRepository } from '../../ports/delivery-user-repository';
-import { SubscribeRepository } from '../../ports/subscribe-repository';
+import { OrdersRepository } from '../../ports/orders-repository';
 import { UserRepository } from '../../ports/user-repository';
 
 export class AcceptOrderUseCase {
 	constructor(
-		private subscribeRepository: SubscribeRepository,
+		private ordersRepository: OrdersRepository,
 		private deliveryUserRepository: DeliveryUserRepository,
 		private userRepository: UserRepository,
 	) {}
@@ -23,12 +23,12 @@ export class AcceptOrderUseCase {
 			throw new NotFoundError('Entregador não encontrado');
 		}
 
-		const order = await this.subscribeRepository.getSubscribeById(orderId);
+		const order = await this.ordersRepository.findByIdWithItems(orderId);
 		if (!order) {
 			throw new NotFoundError('Pedido não encontrado');
 		}
 
-		const claimed = await this.subscribeRepository.claim(orderId, courier.id);
+		const claimed = await this.ordersRepository.claim(orderId, courier.id);
 		if (!claimed) {
 			throw new ConflictError('Pedido já foi reivindicado');
 		}

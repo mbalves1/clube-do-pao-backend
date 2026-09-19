@@ -2,7 +2,7 @@ import { ConflictError } from '../../errors/ConflictError';
 import { ForbiddenError } from '../../errors/ForbiddenError';
 import { NotFoundError } from '../../errors/NotFoundError';
 import { DeliveryUserRepository } from '../../ports/delivery-user-repository';
-import { SubscribeRepository } from '../../ports/subscribe-repository';
+import { OrdersRepository } from '../../ports/orders-repository';
 import { UserRepository } from '../../ports/user-repository';
 
 export type ReleasedOrder = {
@@ -13,7 +13,7 @@ export type ReleasedOrder = {
 
 export class ReleaseOrderUseCase {
 	constructor(
-		private subscribeRepository: SubscribeRepository,
+		private ordersRepository: OrdersRepository,
 		private deliveryUserRepository: DeliveryUserRepository,
 		private userRepository: UserRepository,
 	) {}
@@ -33,7 +33,7 @@ export class ReleaseOrderUseCase {
 			throw new NotFoundError('Entregador não encontrado');
 		}
 
-		const order = await this.subscribeRepository.getSubscribeById(orderId);
+		const order = await this.ordersRepository.findByIdWithItems(orderId);
 		if (!order) {
 			throw new NotFoundError('Pedido não encontrado');
 		}
@@ -46,7 +46,7 @@ export class ReleaseOrderUseCase {
 			throw new ConflictError('Pedido não está mais aceito');
 		}
 
-		const released = await this.subscribeRepository.release(
+		const released = await this.ordersRepository.release(
 			orderId,
 			courier.id,
 		);

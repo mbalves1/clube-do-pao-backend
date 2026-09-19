@@ -3,6 +3,7 @@ import { ListAllSubscribeUseCase } from '../../core/usecases/subscribe/list-all-
 import { ListSubscribeUseCase } from '../../core/usecases/subscribe/list-subscribe';
 import { SubscribeController } from '../../infra/controllers/subscribe-controller';
 import { PrismaBakeryRepository } from '../../infra/repositories/prisma-bakery-repository';
+import { PrismaItemRepository } from '../../infra/repositories/prisma-item-repository';
 import { PrismaSubscribeRepository } from '../../infra/repositories/prisma-subscribe-repository';
 import { PrismaUserRepository } from '../../infra/repositories/prisma-user-repository';
 
@@ -10,10 +11,12 @@ export function makeSubscribeController() {
 	const subscribeRepository = new PrismaSubscribeRepository();
 	const userRepository = new PrismaUserRepository();
 	const bakeryRepository = new PrismaBakeryRepository();
+	const itemRepository = new PrismaItemRepository();
 	const createSubscribeUseCase = new CreateSubscribeUseCase(
 		userRepository,
 		bakeryRepository,
 		subscribeRepository,
+		itemRepository,
 	);
 	const getSubscribeUseCase = new ListSubscribeUseCase(subscribeRepository);
 	const getAllSubscribeUseCase = new ListAllSubscribeUseCase(

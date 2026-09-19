@@ -1,9 +1,10 @@
-import { SubscribeRepository } from '../../ports/subscribe-repository';
+import { Order } from '../../entities/orders';
+import { OrdersRepository } from '../../ports/orders-repository';
 
 export class ListOrdersUseCase {
-	constructor(private subscribeRepository: SubscribeRepository) {}
+	constructor(private ordersRepository: OrdersRepository) {}
 
-	async execute(): Promise<any> {
+	async execute(): Promise<Order[]> {
 		const today = new Date();
 
 		const startOfDay = new Date(today);
@@ -12,6 +13,6 @@ export class ListOrdersUseCase {
 		const endOfDay = new Date(startOfDay);
 		endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
 
-		return this.subscribeRepository.getOrderByDay(startOfDay, endOfDay);
+		return this.ordersRepository.findByDateRange(startOfDay, endOfDay);
 	}
 }

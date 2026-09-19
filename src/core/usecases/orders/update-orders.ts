@@ -1,14 +1,13 @@
 import { ForbiddenError } from '../../errors/ForbiddenError';
 import { NotFoundError } from '../../errors/NotFoundError';
-import { OrderStatus } from '../../entities/orders';
+import { Order, OrderStatus } from '../../entities/orders';
 import { DeliveryUserRepository } from '../../ports/delivery-user-repository';
-import { OrdersRepository } from '../../ports/orders-repository';
-import { SubscribeRepository } from '../../ports/subscribe-repository';
+import { OrderStatusPatch, OrdersRepository } from '../../ports/orders-repository';
 import { UserRepository } from '../../ports/user-repository';
+import { assertOrderTransition } from './order-status-transitions';
 
 export class UpdateOrdersUseCase {
 	constructor(
-		private subscribeRepository: SubscribeRepository,
 		private ordersRepository: OrdersRepository,
 		private deliveryUserRepository: DeliveryUserRepository,
 		private userRepository: UserRepository,
@@ -19,7 +18,7 @@ export class UpdateOrdersUseCase {
 		deliveryId: string,
 		status: OrderStatus,
 		callerSupabaseUserId: string,
-	): Promise<any> {
+	): Promise<Order> {
 		const user = await this.userRepository.findBySupabaseUserId(
 			callerSupabaseUserId,
 		);
@@ -36,37 +35,23 @@ export class UpdateOrdersUseCase {
 			throw new ForbiddenError('Você não tem permissão para esta ação');
 		}
 
-		const order = await this.subscribeRepository.getSubscribeById(orderId);
-
-		const orderAllocate =
-			await this.ordersRepository.findBySubscriptionId(orderId);
-
-		if (orderAllocate) {
-			await this.ordersRepository.update({
-				id: orderAllocate.id,
-				subscriptionId: orderId,
-				deliveryPersonId: deliveryId,
-				serviceDate: order.serviceDate,
-				status,
-			});
-			return await this.subscribeRepository.updateOrder(
-				orderId,
-				deliveryId,
-				status,
-			);
+		const order = await this.ordersRepository.findByIdWithItems(orderId);
+		if (!order) {
+			throw new NotFoundError('Pedido não encontrado');
 		}
 
-		await this.ordersRepository.create(
-			{
-				...order,
-				status,
-			},
-			deliveryId,
-		);
-		return await this.subscribeRepository.updateOrder(
-			orderId,
-			deliveryId,
-			status,
-		);
+		if (order.deliveryPersonId !== courier.id) {
+			throw new ForbiddenError('Você não tem permissão para esta ação');
+		}
+
+		assertOrderTransition(order.status, status, 'courier', order.fulfillmentType);
+
+		const now = new Date();
+		const patch: OrderStatusPatch = {
+			...(status === 'PICKED_UP' && { pickedUpAt: now }),
+			...(status === 'DELIVERED' && { deliveredAt: now }),
+		};
+
+		return this.ordersRepository.updateStatus(orderId, status, patch);
 	}
 }

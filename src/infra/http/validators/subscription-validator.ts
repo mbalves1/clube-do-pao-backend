@@ -13,5 +13,14 @@ export const createSubscriptionSchema = z.object({
 			.string()
 			.min(1, 'Range de horário do pedido obrigatório'),
 		deliveryEndAt: z.string().min(1, 'Range de horário do pedido obrigatório'),
+		fulfillmentType: z.enum(['PICKUP', 'DELIVERY']).optional(),
+		items: z
+			.array(
+				z.object({
+					itemId: z.string().min(1),
+					quantity: z.number().int().positive(),
+				}),
+			)
+			.optional(),
 	}),
 });
