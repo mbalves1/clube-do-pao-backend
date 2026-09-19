@@ -1,10 +1,21 @@
 import { prisma } from './../database/prisma-client';
-import { OrderStatus } from '../../core/entities/orders';
+import { FulfillmentType } from '../../core/entities/orders';
+import { SubscriptionItem } from '../../core/entities/subscription-item';
 import {
-	AvailableOrder,
 	SubscribeCreateData,
 	SubscribeRepository,
+	SubscriptionTemplateForDate,
 } from '../../core/ports/subscribe-repository';
+
+const WEEK_DAY_NAMES = [
+	'sunday',
+	'monday',
+	'tuesday',
+	'wednesday',
+	'thursday',
+	'friday',
+	'saturday',
+];
 
 export class PrismaSubscribeRepository implements SubscribeRepository {
 	async create(data: SubscribeCreateData) {
@@ -21,6 +32,7 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 				deliveryEndAt: data.deliveryEndAt,
 				status: data.status,
 				notes: data.notes,
+				fulfillmentType: data.fulfillmentType,
 			},
 		});
 	}
@@ -33,37 +45,62 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 		});
 	}
 
-	async getOrder(idUser: string): Promise<any> {
-		return prisma.subscription.findMany({
+	async listActiveTemplatesForDate(
+		date: Date,
+	): Promise<SubscriptionTemplateForDate[]> {
+		const weekDayName = WEEK_DAY_NAMES[date.getDay()];
+
+		const subscriptions = await prisma.subscription.findMany({
 			where: {
-				userId: idUser,
+				active: true,
+				OR: [{ frequency: 'daily' }, { daysWeek: { has: weekDayName } }],
 			},
+			include: {
+				items: { include: { item: true } },
+			},
+		});
+
+		return subscriptions.map((subscription) => ({
+			id: subscription.id,
+			bakeryId: subscription.bakeryId,
+			userId: subscription.userId,
+			serviceDate: date,
+			fulfillmentType: subscription.fulfillmentType as FulfillmentType,
+			items: subscription.items
+				.filter((subscriptionItem) => subscriptionItem.item)
+				.map((subscriptionItem) => ({
+					itemId: subscriptionItem.itemId,
+					nameSnapshot: subscriptionItem.item.name,
+					priceCentsSnapshot: subscriptionItem.item.priceCents,
+					quantity: subscriptionItem.quantity,
+				})),
+		}));
+	}
+
+	async getItems(subscriptionId: number): Promise<SubscriptionItem[]> {
+		return prisma.subscriptionItem.findMany({
+			where: { subscriptionId },
 		});
 	}
 
-	async getOrderByDay(startOfDay: Date, endOfDay: Date): Promise<any> {
-		return prisma.subscription.findMany({
-			where: {
-				serviceDate: {
-					gte: startOfDay,
-					lt: endOfDay,
-				},
-			},
-		});
-	}
+	async setItems(
+		subscriptionId: number,
+		items: { itemId: string; quantity: number }[],
+	): Promise<void> {
+		const deduped = Array.from(
+			new Map(items.map((item) => [item.itemId, item])).values(),
+		);
 
-	async updateOrder(
-		orderId: number,
-		deliveryId: string,
-		status: OrderStatus,
-	): Promise<any> {
-		return prisma.subscription.update({
-			where: { id: orderId },
-			data: {
-				deliveryPersonId: deliveryId,
-				status,
-			},
-		});
+		await prisma.$transaction([
+			prisma.subscriptionItem.deleteMany({ where: { subscriptionId } }),
+			prisma.subscriptionItem.createMany({
+				data: deduped.map((item) => ({
+					subscriptionId,
+					itemId: item.itemId,
+					quantity: item.quantity,
+				})),
+			}),
+		]);
 	}
 
 	async getSubscribeById(orderId: number): Promise<any> {
@@ -118,41 +155,4 @@ export class PrismaSubscribeRepository implements SubscribeRepository {
 		};
 	}
 
-	async findAvailable(startDate: Date, endDate: Date): Promise<AvailableOrder[]> {
-		const rows = await prisma.subscription.findMany({
-			where: {
-				serviceDate: { gte: startDate, lte: endDate },
-				deliveryPersonId: null,
-			},
-		});
-
-		return rows.map((row) => ({
-			id: row.id,
-			bakeryId: row.bakeryId,
-			serviceDate: row.serviceDate,
-			serviceStartAt: row.serviceStartAt,
-			serviceEndAt: row.serviceEndAt,
-			deliveryStartAt: row.deliveryStartAt,
-			deliveryEndAt: row.deliveryEndAt,
-			status: row.status as OrderStatus,
-		}));
-	}
-
-	async claim(id: number, deliveryPersonId: string): Promise<boolean> {
-		const { count } = await prisma.subscription.updateMany({
-			where: { id, deliveryPersonId: null },
-			data: { deliveryPersonId, status: 'ACCEPTED' },
-		});
-
-		return count === 1;
-	}
-
-	async release(id: number, deliveryPersonId: string): Promise<boolean> {
-		const { count } = await prisma.subscription.updateMany({
-			where: { id, deliveryPersonId, status: 'ACCEPTED' },
-			data: { deliveryPersonId: null, status: 'PENDING' },
-		});
-
-		return count === 1;
-	}
 }

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "PrismaSubscribeRepository: listActiveTemplatesForDate + getItems/setItems; remove legacy order methods"
 type: backend
 complexity: medium
@@ -36,10 +36,10 @@ Implements the task_06 port changes against Prisma: the active-templates-for-a-d
 </requirements>
 
 ## Subtasks
-- [ ] 8.1 Implement `listActiveTemplatesForDate` with the item snapshot join + weekday match.
-- [ ] 8.2 Implement `getItems` / `setItems` (transactional replace).
-- [ ] 8.3 Thread `fulfillmentType` into `create`.
-- [ ] 8.4 Delete the legacy order methods; `npm run build`.
+- [x] 8.1 Implement `listActiveTemplatesForDate` with the item snapshot join + weekday match.
+- [x] 8.2 Implement `getItems` / `setItems` (transactional replace).
+- [x] 8.3 Thread `fulfillmentType` into `create`.
+- [x] 8.4 Delete the legacy order methods; `npm run build`.
 
 ## Implementation Details
 Reuse the `weekMap` name→index approach from `create-subscribe.ts` for the weekday match; `daysWeek` stores day names. `prisma.$transaction([...])` for `setItems`. The existing `getAll` date-window helper is a reference for date filtering.
@@ -62,11 +62,11 @@ Reuse the `weekMap` name→index approach from `create-subscribe.ts` for the wee
 
 ## Tests
 - Manual verification (dev DB with 2+ active subscriptions, one with a Monday `daysWeek`, each with basket rows):
-  - [ ] `listActiveTemplatesForDate(<a Monday>)` returns the Monday subscription with its items shaped as snapshots; a non-matching weekday excludes it.
-  - [ ] An `active: false` subscription is never returned.
-  - [ ] A basket line pointing at a deleted item is silently omitted.
-  - [ ] `setItems` replaces the basket wholesale; `getItems` reflects it.
-  - [ ] Legacy methods are gone; `npm run build` + `prisma generate` pass.
+  - [x] `listActiveTemplatesForDate(<a Monday>)` returns the Monday subscription with its items shaped as snapshots; a non-matching weekday excludes it. Verified with a temp weekly `daysWeek: ['monday']` sub + a temp `daily` sub + a temp inactive `daysWeek: ['monday']` sub against 2026-09-21 (Monday) vs 2026-09-22 (Tuesday); Monday sub matched only on Monday, daily sub matched both, inactive sub matched neither. Item snapshot came back as `{itemId, nameSnapshot:"Pão francês", priceCentsSnapshot:150, quantity:5}`.
+  - [x] An `active: false` subscription is never returned. Confirmed (see above).
+  - [ ] A basket line pointing at a deleted item is silently omitted. **Not reproducible live**: `SubscriptionItem.item` has no `onDelete` override in `prisma/schema.prisma`, so Postgres enforces the default RESTRICT and a referenced `Item` cannot actually be hard-deleted today — this is a pre-existing schema property, out of this task's scope to change. The code defends against it (`.filter(subscriptionItem => subscriptionItem.item)` before mapping), satisfying the requirement text, but the scenario itself isn't currently reachable to exercise end-to-end. Flagging as a gap the same way task_07 flagged its DB-connectivity gap.
+  - [x] `setItems` replaces the basket wholesale; `getItems` reflects it. Verified: seeded 2 lines with the same `itemId` (qty 2 and 5) → 1 row persisted with qty 5 (dedupe-by-`itemId`, last write wins); then `setItems(id, [])` → `getItems` returned 0 rows.
+  - [x] Legacy methods are gone; `npm run build` + `prisma generate` pass. `npx prisma generate` succeeds; `npm run build` fails with exactly the same 10 pre-existing errors in the courier use cases (tasks 13–16), none touching `prisma-subscribe-repository.ts` or the factories — no new errors introduced.
 - Coverage target: N/A.
 
 ## Success Criteria

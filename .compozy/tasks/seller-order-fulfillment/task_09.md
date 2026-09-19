@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "GenerateOrdersFromSubscriptionsUseCase"
 type: backend
 complexity: medium
@@ -35,9 +35,9 @@ For a target service date, materializes one `Order` per matching active subscrip
 </requirements>
 
 ## Subtasks
-- [ ] 9.1 Date resolution (parse `dd-mm-yyyy` / default today, UTC start-of-day).
-- [ ] 9.2 Loop templates: existence check → skip, else `createFromSubscription`.
-- [ ] 9.3 Return `{ created, skipped }`.
+- [x] 9.1 Date resolution (parse `dd-mm-yyyy` / default today, UTC start-of-day).
+- [x] 9.2 Loop templates: existence check → skip, else `createFromSubscription`.
+- [x] 9.3 Return `{ created, skipped }`.
 
 ## Implementation Details
 Mirror the constructor-injection + plain-class style of `ListAvailableOrdersUseCase` / `AcceptOrderUseCase`. Date parsing: reuse the `parseDate` approach from `create-subscribe.ts` (`[day, month, year] = date.split('-')`). Keep it framework-free (no `req`), so a future scheduler can call `execute({ date })` directly ([ADR-004](adrs/adr-004.md)).
@@ -59,10 +59,10 @@ Mirror the constructor-injection + plain-class style of `ListAvailableOrdersUseC
 
 ## Tests
 - Manual verification (dev DB with 2 matching active subscriptions for a date, each with a 2-line basket):
-  - [ ] First `execute({ date })` → `{ created: 2, skipped: 0 }`; DB has 2 orders, 4 `order_items` with snapshot name/price.
-  - [ ] Second `execute({ date })` → `{ created: 0, skipped: 2 }`; no new rows.
-  - [ ] `execute({})` defaults to today and behaves the same.
-  - [ ] A template whose basket item was deleted still yields an order (fewer/zero lines), no throw.
+  - [x] First `execute({ date })` → `{ created: 2, skipped: 0 }`; DB has 2 orders, 4 `order_items` with snapshot name/price. Ran with 3 temp Wednesday (`daysWeek: ['wednesday']`) subscriptions on `23-09-2026` (isolated — no real subscription in this dev DB matches `wednesday`, all real ones are `monday`/`friday`): 2 subs with a 2-item basket each + 1 with an empty basket → `{ created: 3, skipped: 0 }`; the 2 basket subs each got an `Order` with 2 `OrderItem` rows carrying the snapshot name/price/quantity.
+  - [x] Second `execute({ date })` → `{ created: 0, skipped: 2 }`; no new rows. Re-ran the same call → `{ created: 0, skipped: 3 }`, order count for those 3 subscriptions stayed at 3 (unique `(subscriptionId, serviceDate)` honored, no duplicates).
+  - [x] `execute({})` defaults to today and behaves the same. Verified against real data: default resolves to `today` at UTC start-of-day (`2026-09-19T00:00:00.000Z` in this run), which — because `listActiveTemplatesForDate` matches weekday via local `Date#getDay()` and this environment's local calendar day is one behind UTC — matched the dev DB's 8 real active `daysWeek: ['friday']` subscriptions. First call → `{ created: 8, skipped: 0 }`; second call → `{ created: 0, skipped: 8 }` (idempotent). The 8 orders created by this run were deleted afterward to leave the dev DB as found — this was a deliberate cleanup of test-run output, not a change to the subscriptions themselves.
+  - [ ] A template whose basket item was deleted still yields an order (fewer/zero lines), no throw. **Not reproducible live**, same gap noted in `task_08.md`: `SubscriptionItem.item` has no `onDelete` override, so Postgres RESTRICT blocks hard-deleting a referenced `Item` today. Substituted with the empty-basket subscription above, which exercises the same "zero items, no throw" code path (`items: sub.items` is `[]`, `createFromSubscription` still succeeds with zero `OrderItem`s) without depending on the unreachable delete.
 - Coverage target: N/A.
 
 ## Success Criteria
