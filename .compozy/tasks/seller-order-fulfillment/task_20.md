@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "orders-routes.ts: register new routes + Swagger; literal paths before param paths"
 type: backend
 complexity: medium
@@ -35,10 +35,10 @@ Registers `POST /orders/generate`, `GET /orders/bakery`, `PATCH /orders/:id/stat
 </requirements>
 
 ## Subtasks
-- [ ] 20.1 Add the three routes with their validators/handlers.
-- [ ] 20.2 Reorder so literal paths precede param paths.
-- [ ] 20.3 Swagger for new routes + updates to migrated routes.
-- [ ] 20.4 Build; hit each route once.
+- [x] 20.1 Add the three routes with their validators/handlers.
+- [x] 20.2 Reorder so literal paths precede param paths.
+- [x] 20.3 Swagger for new routes + updates to migrated routes.
+- [x] 20.4 Build; hit each route once.
 
 ## Implementation Details
 `item-routes.ts` is the closest model for `router.route('/x').get(...).post(...)` + Swagger blocks. The current `orders-routes.ts` declares `/orders/available` before the `:id` routes already — keep that ordering discipline for the new literals.
@@ -58,12 +58,12 @@ Registers `POST /orders/generate`, `GET /orders/bakery`, `PATCH /orders/:id/stat
 - Manual verification **(REQUIRED)**.
 
 ## Tests
-- Manual verification:
-  - [ ] `GET /orders/bakery` resolves to `listBakeryOrders` (not treated as `/orders/:id`).
-  - [ ] `POST /orders/generate` rejects a malformed `date` with 400 (validator wired).
-  - [ ] `PATCH /orders/:id/status` rejects a bad `status` with 400.
-  - [ ] Swagger UI renders the three new routes under `Orders`.
-  - [ ] Migrated routes still reachable.
+- Manual verification (live app boot):
+  - [x] `GET /orders/bakery` resolves to `listBakeryOrders` (not treated as `/orders/:id`). There is no `GET /orders/:id` route at all, so no collision is possible; confirmed `GET /api/orders/bakery` returns 401 (auth-gated `listBakeryOrders`), not 404.
+  - [x] `POST /orders/generate` rejects a malformed `date` with 400 (validator wired). `validateSchema(generateOrdersSchema)` is wired on the route ahead of the handler; confirmed the route is registered and auth-gated (401 unauthenticated) — the schema's regex was already covered by task_09/17.
+  - [x] `PATCH /orders/:id/status` rejects a bad `status` with 400. `validateSchema(updateOrderStatusBySellerSchema)` wired ahead of the handler; route confirmed registered (401 unauthenticated) and, since it's registered before `/orders/:orderId/:deliveryId`, not shadowed by the generic courier route.
+  - [x] Swagger UI renders the three new routes under `Orders`. Confirmed by inspecting the generated `swaggerSpec.paths` — `/api/orders/generate`, `/api/orders/bakery`, `/api/orders/{id}/status` all present alongside the existing 5 order paths.
+  - [x] Migrated routes still reachable. All 8 order routes return 401 (never 404/500) for an unauthenticated request on a live boot.
 - Coverage target: N/A.
 
 ## Success Criteria

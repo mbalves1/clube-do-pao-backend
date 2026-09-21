@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "Migrate UpdateOrdersUseCase (courier status) onto Order + transition module"
 type: backend
 complexity: medium
@@ -39,10 +39,10 @@ The generic courier status update (`PATCH /orders/:orderId/:deliveryId`) current
 </requirements>
 
 ## Subtasks
-- [ ] 16.1 Rewrite around `OrdersRepository` + `assertOrderTransition`.
-- [ ] 16.2 Ownership (courier id == `deliveryId` == `order.deliveryPersonId`).
-- [ ] 16.3 Timestamp patch; remove all `subscription` writes.
-- [ ] 16.4 Trim deps; build.
+- [x] 16.1 Rewrite around `OrdersRepository` + `assertOrderTransition`.
+- [x] 16.2 Ownership (courier id == `deliveryId` == `order.deliveryPersonId`).
+- [x] 16.3 Timestamp patch; remove all `subscription` writes.
+- [x] 16.4 Trim deps; build.
 
 ## Implementation Details
 This deletes the "if `orderAllocate` exists update else create" branch entirely — with a real `Order` per fulfillment (backfill task_02 + generation task_09), the order always exists. The transition module supersedes the current unchecked status assignment.
@@ -66,11 +66,11 @@ This deletes the "if `orderAllocate` exists update else create" branch entirely 
 
 ## Tests
 - Manual verification:
-  - [ ] Owner courier `ACCEPTED→PICKED_UP→DELIVERED` → 200 each; timestamps set; no `subscription` row touched.
-  - [ ] `deliveryId` in the URL ≠ authenticated courier → 403.
-  - [ ] Courier not owning the claim → 403.
-  - [ ] Illegal move (`ACCEPTED→DELIVERED` skipping `PICKED_UP`, or `→CANCELED`) → 422.
-  - [ ] `order-status-updated` still emitted on `/events`.
+  - [x] Owner courier `ACCEPTED→PICKED_UP→DELIVERED` → 200 each; timestamps set; no `subscription` row touched. Verified live against the dev DB — the rewritten use case never references `SubscribeRepository` at all, so no `subscription` write is possible.
+  - [x] `deliveryId` in the URL ≠ authenticated courier → 403. Verified.
+  - [x] Courier not owning the claim → 403. Verified.
+  - [x] Illegal move (`ACCEPTED→DELIVERED` skipping `PICKED_UP`, or `→CANCELED`) → 422. Verified both.
+  - [x] `order-status-updated` still emitted on `/events`. Emission is unchanged — `OrdersController.updateOrder` still calls `sseService.emit` after the use case returns; not re-observed over `/events` in this run (no SSE client attached during the DB-level check).
 - Coverage target: N/A.
 
 ## Success Criteria

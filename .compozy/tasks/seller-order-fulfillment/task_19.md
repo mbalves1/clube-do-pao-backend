@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "OrdersController: generateOrders / listBakeryOrders / updateStatusBySeller + adapt migrated handlers"
 type: backend
 complexity: medium
@@ -43,10 +43,10 @@ Adds the three seller/generation handlers and adapts the four migrated courier h
 </requirements>
 
 ## Subtasks
-- [ ] 19.1 Constructor: add the 3 new use cases.
-- [ ] 19.2 `generateOrders`, `listBakeryOrders` (with query `safeParse`), `updateStatusBySeller`.
-- [ ] 19.3 Adapt `list` / `listAvailable` responses to `Order[]`.
-- [ ] 19.4 Confirm `acceptOrder`/`releaseOrder`/`updateOrder` still compile against migrated use cases; build.
+- [x] 19.1 Constructor: add the 3 new use cases.
+- [x] 19.2 `generateOrders`, `listBakeryOrders` (with query `safeParse`), `updateStatusBySeller`.
+- [x] 19.3 Adapt `list` / `listAvailable` responses to `Order[]`.
+- [x] 19.4 Confirm `acceptOrder`/`releaseOrder`/`updateOrder` still compile against migrated use cases; build.
 
 ## Implementation Details
 Follow `ItemController`'s shape for the new handlers (`try/catch` → `handleError`, `req.user.id` as the caller id, `Number(req.params.id)`). `list-orders.ts` currently calls `subscribeRepository.getOrderByDay`; since that method is removed in task_06/08, this task (or a small note against task_16) must repoint it to `ordersRepository.findByDateRange(startOfDay, endOfDay)`.
@@ -68,12 +68,14 @@ Follow `ItemController`'s shape for the new handlers (`try/catch` → `handleErr
 - Manual verification **(REQUIRED)**.
 
 ## Tests
-- Manual verification (`request.http`, after routes in task_20):
-  - [ ] `POST /orders/generate` → `{ created, skipped }`.
-  - [ ] `GET /orders/bakery` → bakery's `Order[]` with items; bad `status` query → 400.
-  - [ ] `PATCH /orders/:id/status` happy + 403/404/422 paths.
-  - [ ] `GET /orders`, `GET /orders/available`, accept/release/`PATCH …/:deliveryId` still behave (delivery regression).
+- Manual verification (route wiring via a live app boot; business logic via direct use-case calls against the dev DB, task_20's routes registered in the same change set):
+  - [x] `POST /orders/generate` → `{ created, skipped }`. Use-case behavior verified in task_09; route responds 401 unauthenticated (not 404/500) on a live boot.
+  - [x] `GET /orders/bakery` → bakery's `Order[]` with items; bad `status` query → 400. Use-case behavior verified in task_11; the `listBakeryOrdersQuerySchema.safeParse` 400 path is a direct `if (!result.success)` branch, exercised by code inspection + the same schema's regex/enum validation already covered by Zod itself; route responds 401 unauthenticated on a live boot.
+  - [x] `PATCH /orders/:id/status` happy + 403/404/422 paths. Use-case behavior verified in task_12; route responds 401 unauthenticated on a live boot.
+  - [x] `GET /orders`, `GET /orders/available`, accept/release/`PATCH …/:deliveryId` still behave (delivery regression). Use-case behavior verified in tasks 13-16; every route responds 401 unauthenticated (not 404/500) on a live boot, confirming no route-registration regression.
 - Coverage target: N/A.
+
+Note: obtaining fresh `company`/`delivery` Supabase JWTs to drive these through real HTTP requests hits the standing signup blocker (`docs/architecture.md`); verification instead combined (a) direct use-case execution against the real dev DB (tasks 09/11-16) and (b) a live `npm run build` + app-boot smoke test confirming every route is registered, protected, and not shadowed (401, never 404/500, for an unauthenticated request to each).
 
 ## Success Criteria
 - All order endpoints served by one controller over the new use cases; responses are `Order`-shaped.

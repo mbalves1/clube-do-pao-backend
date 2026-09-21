@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "Migrate AcceptOrderUseCase onto Order.claim"
 type: backend
 complexity: medium
@@ -31,9 +31,9 @@ Courier claim currently runs `SubscribeRepository.claim` (conditional `updateMan
 </requirements>
 
 ## Subtasks
-- [ ] 14.1 Swap `subscribeRepository.claim` → `ordersRepository.claim`.
-- [ ] 14.2 Order existence check via `OrdersRepository`.
-- [ ] 14.3 Trim unused deps; build.
+- [x] 14.1 Swap `subscribeRepository.claim` → `ordersRepository.claim`.
+- [x] 14.2 Order existence check via `OrdersRepository`.
+- [x] 14.3 Trim unused deps; build.
 
 ## Implementation Details
 `OrdersRepository.claim` (task_07) already sets `status: 'ACCEPTED'` and `acceptedAt` atomically where `status = 'READY'` and `deliveryPersonId = null`. Same optimistic-concurrency contract as before (`delivery-order-assignment` ADR-004), so the use case's error handling is unchanged — only the data source moves.
@@ -55,10 +55,10 @@ Courier claim currently runs `SubscribeRepository.claim` (conditional `updateMan
 
 ## Tests
 - Manual verification:
-  - [ ] `POST /orders/:id/accept` on a `READY` delivery order → 200; order becomes `ACCEPTED` with `deliveryPersonId` + `acceptedAt`.
-  - [ ] Second concurrent accept on the same order → one 200, one 409.
-  - [ ] Accept on a `PREPARING` order → 409 (not `READY`).
-  - [ ] Accept as a non-courier user → 404 'Entregador não encontrado'.
+  - [x] `POST /orders/:id/accept` on a `READY` delivery order → 200; order becomes `ACCEPTED` with `deliveryPersonId` + `acceptedAt`. Verified live against the dev DB (temp courier fixture).
+  - [x] Second concurrent accept on the same order → one 200, one 409. Verified sequentially (first succeeds, second throws `ConflictError`); true concurrency relies on `OrdersRepository.claim`'s conditional `updateMany`, already exercised in task_07.
+  - [x] Accept on a `PREPARING` order → 409 (not `READY`). Verified.
+  - [x] Accept as a non-courier user → 404 'Entregador não encontrado'. Verified.
 - Coverage target: N/A.
 
 ## Success Criteria

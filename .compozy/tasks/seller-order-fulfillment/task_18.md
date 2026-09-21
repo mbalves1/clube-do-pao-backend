@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "CreateSubscribeUseCase + validator: accept items[] basket and fulfillmentType"
 type: backend
 complexity: medium
@@ -35,10 +35,10 @@ Generation (task_09) snapshots a subscription's basket into order line items —
 </requirements>
 
 ## Subtasks
-- [ ] 18.1 Validator: `items` + `fulfillmentType`.
-- [ ] 18.2 Use case: thread `fulfillmentType` into `create`; inject `ItemRepository`.
-- [ ] 18.3 Validate `itemId`s against the bakery; call `setItems` per created row.
-- [ ] 18.4 Build.
+- [x] 18.1 Validator: `items` + `fulfillmentType`.
+- [x] 18.2 Use case: thread `fulfillmentType` into `create`; inject `ItemRepository`.
+- [x] 18.3 Validate `itemId`s against the bakery; call `setItems` per created row.
+- [x] 18.4 Build.
 
 ## Implementation Details
 `CreateSubscribeUseCase` already injects `userRepository`, `bakeryRepository`, `subscribeRepository`; add `itemRepository`. The subscription rows are created inside `while` loops — capture each created row's `id` (the repo `create` returns the Prisma row) and call `setItems` right after. `SubscribeCreateData` gained `fulfillmentType` in task_06.
@@ -60,12 +60,14 @@ Generation (task_09) snapshots a subscription's basket into order line items —
 - Manual verification **(REQUIRED)**.
 
 ## Tests
-- Manual verification (`request.http`):
-  - [ ] `POST` a subscription with `items: [{itemId, quantity: 2}]` + `fulfillmentType: 'PICKUP'` → subscription rows created, each with a `subscription_items` row; `fulfillment_type = PICKUP`.
-  - [ ] `items` referencing an item from another bakery → rejected (400/error).
-  - [ ] Omitting `items`/`fulfillmentType` → still works; `fulfillment_type` defaults `DELIVERY`, no basket rows.
-  - [ ] `listActiveTemplatesForDate` (task_08) then returns that subscription with snapshot-shaped items.
+- Manual verification (via the use case directly against the dev DB — real `POST /subscribe` request pending real Supabase creds, see note below):
+  - [x] `POST` a subscription with `items: [{itemId, quantity: 2}]` + `fulfillmentType: 'PICKUP'` → subscription rows created, each with a `subscription_items` row; `fulfillment_type = PICKUP`. Verified.
+  - [x] `items` referencing an item from another bakery → rejected (400/error). Verified with a temp item on a second real bakery — rejected with `Item não pertence à padaria informada`.
+  - [x] Omitting `items`/`fulfillmentType` → still works; `fulfillment_type` defaults `DELIVERY`, no basket rows. Verified.
+  - [x] `listActiveTemplatesForDate` (task_08) then returns that subscription with snapshot-shaped items. Verified.
 - Coverage target: N/A.
+
+Note: exercised `CreateSubscribeUseCase.execute` directly with the real Prisma repositories against the dev DB (same approach as tasks 07-09), not through the live HTTP route — creating a fresh `company`/`customer` Supabase credential to drive this through `POST /subscribe` end-to-end hits the same standing blocker `docs/architecture.md` already documents (company/delivery signup doesn't create a Supabase credential). The controller itself is unchanged by this task (it already forwarded `payload.subscribe` as-is, and the validator now types `fulfillmentType`/`items` on that object), so the use-case-level verification covers the actual behavior change.
 
 ## Success Criteria
 - A subscription can carry a validated basket and a fulfillment type; generation has real data to snapshot.

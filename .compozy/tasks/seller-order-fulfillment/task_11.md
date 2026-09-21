@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "ListBakeryOrdersUseCase"
 type: backend
 complexity: low
@@ -33,9 +33,9 @@ Returns the orders for the authenticated bakery, with line items, optionally fil
 </requirements>
 
 ## Subtasks
-- [ ] 11.1 Create the use case; wire `resolveOwnerBakeryId`.
-- [ ] 11.2 Date → range translation; pass status through.
-- [ ] 11.3 `npm run build`.
+- [x] 11.1 Create the use case; wire `resolveOwnerBakeryId`.
+- [x] 11.2 Date → range translation; pass status through.
+- [x] 11.3 `npm run build`.
 
 ## Implementation Details
 Structurally identical to `src/core/usecases/item/list-items.ts` plus filter handling. Date parsing reuses the `dd-mm-yyyy` split used elsewhere. No validation here — the controller validates query params (task_17/task_19).
@@ -58,10 +58,10 @@ Structurally identical to `src/core/usecases/item/list-items.ts` plus filter han
 
 ## Tests
 - Manual verification (via `request.http` once the route exists, or a scratch call):
-  - [ ] As a `company` user with orders → returns only that bakery's orders, each with `items`.
-  - [ ] `status=PREPARING` filter → only preparing orders.
-  - [ ] `date=<dd-mm-yyyy>` filter → only that day's orders.
-  - [ ] As a user with no `BakeryPerson` → `ForbiddenError` (403) propagates.
+  - [x] As a `company` user with orders → returns only that bakery's orders, each with `items`. Verified directly against the real dev DB (real `BakeryPerson`/bakery fixture) with temp `Order` fixtures.
+  - [x] `status=PREPARING` filter → only preparing orders. Verified.
+  - [x] `date=<dd-mm-yyyy>` filter → only that day's orders. Verified.
+  - [x] As a user with no `BakeryPerson` → `ForbiddenError` (403) propagates. Verified with a temp courier user (has `User`, no `BakeryPerson`).
 - Coverage target: N/A.
 
 ## Success Criteria

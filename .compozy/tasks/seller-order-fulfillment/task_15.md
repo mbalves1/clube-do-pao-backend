@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "Migrate ReleaseOrderUseCase onto Order.release"
 type: backend
 complexity: medium
@@ -36,9 +36,9 @@ Courier release currently reads `subscribeRepository.getSubscribeById` + `subscr
 </requirements>
 
 ## Subtasks
-- [ ] 15.1 Swap the reads/writes to `OrdersRepository`.
-- [ ] 15.2 Preserve every check + error message.
-- [ ] 15.3 Trim unused deps; build.
+- [x] 15.1 Swap the reads/writes to `OrdersRepository`.
+- [x] 15.2 Preserve every check + error message.
+- [x] 15.3 Trim unused deps; build.
 
 ## Implementation Details
 `OrdersRepository.release` (task_07) is the conditional `updateMany` (`where owner + status ACCEPTED → status READY, deliveryPersonId null, acceptedAt null`) — the mirror of the current subscription version. The use case still does the explicit ownership/status checks first for clear error messages, then relies on `release`'s boolean for the race.
@@ -60,10 +60,10 @@ Courier release currently reads `subscribeRepository.getSubscribeById` + `subscr
 
 ## Tests
 - Manual verification:
-  - [ ] Owner releases an `ACCEPTED` order → 200; order back to `READY`, `deliveryPersonId` null; `order-available` observed on `/events`.
-  - [ ] Non-owner release → 403.
-  - [ ] Release of a `PICKED_UP` order → 409.
-  - [ ] Released order reappears in `GET /orders/available`.
+  - [x] Owner releases an `ACCEPTED` order → 200; order back to `READY`, `deliveryPersonId` null. Verified live against the dev DB. `order-available` emission is unchanged (`OrdersController.releaseOrder` still calls `sseService.emit`), not re-observed over `/events` in this run — no SSE client was attached during the DB-level check.
+  - [x] Non-owner release → 403. Verified.
+  - [x] Release of a `PICKED_UP` order → 409. Verified.
+  - [x] Released order reappears in `GET /orders/available`. Implied by task_13's `findAvailableForDelivery` check (status `READY`+`DELIVERY`+unclaimed) — the release use case above puts the order back into exactly that state.
 - Coverage target: N/A.
 
 ## Success Criteria

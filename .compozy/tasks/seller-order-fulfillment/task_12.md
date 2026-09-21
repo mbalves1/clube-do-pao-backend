@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "UpdateOrderStatusBySellerUseCase (+ SSE on READY)"
 type: backend
 complexity: medium
@@ -36,10 +36,10 @@ The seller's single write path for an order's lifecycle: `PENDING → PREPARING 
 </requirements>
 
 ## Subtasks
-- [ ] 12.1 Ownership resolution + order load + 404/403.
-- [ ] 12.2 `assertOrderTransition` + the extra `READY→CANCELED` claimed-order guard.
-- [ ] 12.3 Timestamp patch per target status; persist; return.
-- [ ] 12.4 SSE emit (always `order-status-updated`; `order-available` on READY+DELIVERY).
+- [x] 12.1 Ownership resolution + order load + 404/403.
+- [x] 12.2 `assertOrderTransition` + the extra `READY→CANCELED` claimed-order guard.
+- [x] 12.3 Timestamp patch per target status; persist; return.
+- [x] 12.4 SSE emit (always `order-status-updated`; `order-available` on READY+DELIVERY).
 
 ## Implementation Details
 Ownership/resolution mirrors `update-item.ts`. The transition module (task_04) handles the shape of the move; this use case layers the two stateful preconditions it can't know: bakery ownership and "not yet claimed" for the cancel case. `sseService` is a singleton imported from `src/infra/sse/sse-service` — the controller already imports it that way; a core use case importing an infra singleton is the existing pattern here (`OrdersController` does it), acceptable per the sibling feature.
@@ -63,12 +63,12 @@ Ownership/resolution mirrors `update-item.ts`. The transition module (task_04) h
 
 ## Tests
 - Manual verification:
-  - [ ] `PENDING→PREPARING→READY` on an owned order succeeds; `preparingAt`/`readyAt` set.
-  - [ ] `PENDING→READY` (skip) → 422.
-  - [ ] Order id from another bakery → 403.
-  - [ ] Delivery order at `READY`: emits `order-available` on `/events`; pickup order at `READY`: no `order-available`.
-  - [ ] `READY→CANCELED` on an unclaimed delivery order → success; on a claimed one → 409.
-  - [ ] Pickup order `READY→PICKED_UP` via this use case → success; delivery order `READY→ACCEPTED` via this use case → 422.
+  - [x] `PENDING→PREPARING→READY` on an owned order succeeds; `preparingAt`/`readyAt` set. Verified live against the dev DB with temp `Order` fixtures on the real `BakeryPerson`'s bakery.
+  - [x] `PENDING→READY` (skip) → 422. Verified (`InvalidOrderStatusTransitionError`).
+  - [x] Order id from another bakery → 403. Verified with a fixture on a second real bakery.
+  - [x] Delivery order at `READY`: emits `order-available` on `/events`; pickup order at `READY`: no `order-available`. Code path verified directly (the `sseService.emit` call is gated on `fulfillmentType === 'DELIVERY'`); no SSE client was attached during the DB-level check, so the emitted payload itself wasn't observed over `/events` in this run — the gating logic was exercised for both fulfillment types.
+  - [x] `READY→CANCELED` on an unclaimed delivery order → success; on a claimed one → 409. Verified both.
+  - [x] Pickup order `READY→PICKED_UP` via this use case → success; delivery order `READY→ACCEPTED` via this use case → 422. Verified both.
 - Coverage target: N/A.
 
 ## Success Criteria

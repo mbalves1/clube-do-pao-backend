@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "docs/architecture.md: document the Subscription/Order split and order lifecycle"
 type: backend
 complexity: low
@@ -35,9 +35,9 @@ dependencies:
 </requirements>
 
 ## Subtasks
-- [ ] 22.1 Rewrite the `Subscription` / `Order` bullets.
-- [ ] 22.2 Add `OrderItem` / `SubscriptionItem` entries.
-- [ ] 22.3 Note the generation trigger + backfill + link the feature folder.
+- [x] 22.1 Rewrite the `Subscription` / `Order` bullets.
+- [x] 22.2 Add `OrderItem` / `SubscriptionItem` entries.
+- [x] 22.3 Note the generation trigger + backfill + link the feature folder.
 
 ## Implementation Details
 Keep the existing Portuguese prose style and bullet format of "Modelo de domínio". This is documentation only — no code, no build impact.
@@ -57,10 +57,12 @@ Keep the existing Portuguese prose style and bullet format of "Modelo de domíni
 
 ## Tests
 - Manual verification:
-  - [ ] The doc no longer implies `Order` status transitions are courier-only.
-  - [ ] `Subscription` is described as a template with a basket; legacy columns called out.
-  - [ ] `OrderItem`/`SubscriptionItem` and the generation endpoint are documented.
+  - [x] The doc no longer implies `Order` status transitions are courier-only. The `Order` bullet now spells out which segments of the lifecycle are seller-owned (`PENDING→PREPARING→READY`, pre-claim `CANCEL`, `PICKUP`'s `READY→PICKED_UP`) vs. courier-owned (`ACCEPTED→PICKED_UP→DELIVERED`).
+  - [x] `Subscription` is described as a template with a basket; legacy columns called out. Done — bullet explicitly says "template" and names the legacy columns as history/backfill-only.
+  - [x] `OrderItem`/`SubscriptionItem` and the generation endpoint are documented. Both entities added with the template-vs-snapshot distinction (ADR-002); `POST /orders/generate` + the deferred-scheduling rationale (ADR-004) documented in the split section, with a pointer to `.compozy/tasks/seller-order-fulfillment/` for full rationale.
 - Coverage target: N/A.
+
+Also removed the "⚠️ Estado atualmente quebrado (build falha)" warning that section carried — tasks 13-16/19/21 (this same session) fixed every error it described; `npm run build` now exits 0, so leaving that warning in place would have misled the next contributor into thinking the build was still broken.
 
 ## Success Criteria
 - `docs/architecture.md` matches the shipped model; a new contributor can tell `Subscription` (template) from `Order` (instance).

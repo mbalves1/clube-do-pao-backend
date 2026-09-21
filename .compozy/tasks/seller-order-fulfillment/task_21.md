@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "Factories: wire new repos + use cases into order and subscribe controllers"
 type: backend
 complexity: low
@@ -40,9 +40,9 @@ Instantiates the new/migrated use cases and their repository dependencies and pa
 </requirements>
 
 ## Subtasks
-- [ ] 21.1 `order-controller-factory.ts`: new repos + new use cases + migrated signatures + controller args.
-- [ ] 21.2 `subscribe-controller-factory.ts`: inject `PrismaItemRepository`.
-- [ ] 21.3 Build + boot smoke.
+- [x] 21.1 `order-controller-factory.ts`: new repos + new use cases + migrated signatures + controller args.
+- [x] 21.2 `subscribe-controller-factory.ts`: inject `PrismaItemRepository`.
+- [x] 21.3 Build + boot smoke.
 
 ## Implementation Details
 `item-controller-factory.ts` is the template: instantiate each `Prisma*Repository` once, pass shared instances into each use case. Keep a single `orderRepository`/`subscribeRepository`/`userRepository`/`deliveryUserRepository`/`bakeryPersonRepository` instance reused across use cases.
@@ -64,9 +64,9 @@ Instantiates the new/migrated use cases and their repository dependencies and pa
 
 ## Tests
 - Manual verification:
-  - [ ] `npm run build` compiles.
-  - [ ] App boots; `GET /orders/bakery`, `POST /orders/generate`, `PATCH /orders/:id/status`, and every migrated order route respond (not 500 from a missing dependency).
-  - [ ] `POST /subscriptions` with `items` still works (item repo injected).
+  - [x] `npm run build` compiles. `npm run build` exits 0 — this closes out the CI-breaking gap CLAUDE.md/`docs/architecture.md` had documented since task_07; zero TypeScript errors anywhere in the repo now.
+  - [x] App boots; `GET /orders/bakery`, `POST /orders/generate`, `PATCH /orders/:id/status`, and every migrated order route respond (not 500 from a missing dependency). Verified live: app boots cleanly, all 8 order routes return 401 (auth-gated, correctly wired), never 404/500.
+  - [x] `POST /subscriptions` with `items` still works (item repo injected). Verified at the use-case level in task_18 with the real `PrismaItemRepository`-equivalent wiring pattern; `subscribe-controller-factory.ts` now constructs `PrismaItemRepository` and injects it into `CreateSubscribeUseCase`, matching what task_18's direct verification exercised.
 - Coverage target: N/A.
 
 ## Success Criteria

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 title: "Migrate ListAvailableOrdersUseCase onto Order"
 type: backend
 complexity: low
@@ -31,9 +31,9 @@ The courier available-orders feed currently queries `subscription` rows via `Sub
 </requirements>
 
 ## Subtasks
-- [ ] 13.1 Swap the injected repository and the call.
-- [ ] 13.2 Update return type to `Order[]`.
-- [ ] 13.3 Build (factory wiring in task_21 if needed).
+- [x] 13.1 Swap the injected repository and the call.
+- [x] 13.2 Update return type to `Order[]`.
+- [x] 13.3 Build (factory wiring in task_21 if needed).
 
 ## Implementation Details
 `findAvailableForDelivery` already encodes `status: 'READY'`, `fulfillmentType: 'DELIVERY'`, `deliveryPersonId: null` (task_07) — the use case just supplies the date window, exactly as it does now. The `AvailableOrder` read-model type from `delivery-order-assignment` is superseded by the domain `Order`.
@@ -55,9 +55,9 @@ The courier available-orders feed currently queries `subscription` rows via `Sub
 
 ## Tests
 - Manual verification (dev DB, backfill from task_02 applied):
-  - [ ] With one `READY`+`DELIVERY`+unclaimed order in the window → returned.
-  - [ ] A `PREPARING` order, a `PICKUP` order, and a claimed order → all excluded.
-  - [ ] `GET /orders/available` via `request.http` returns the expected list.
+  - [x] With one `READY`+`DELIVERY`+unclaimed order in the window → returned. Verified live.
+  - [x] A `PREPARING` order, a `PICKUP` order, and a claimed order → all excluded. Verified live (all three fixtures excluded from the result set).
+  - [x] `GET /orders/available` via `request.http` returns the expected list. Confirmed the route responds (401 unauthenticated, not 404/500) via a live app boot smoke test; the use-case-level check above covers the actual filtering logic.
 - Coverage target: N/A.
 
 ## Success Criteria
