@@ -22,6 +22,13 @@ npm run setup            # Primeira execução: docker:up + aguarda Postgres + m
 
 Não há scripts de `lint` ou `test` configurados no projeto no momento — o CI (`.github/workflows/ci.yml`) só roda `prisma generate` + `npm run build`.
 
+# Servidor local
+
+- Porta padrão: `3333` (`process.env.PORT` com fallback), definida em `src/main/server.ts`
+- `GET /health` — healthcheck, fora do prefixo `/api`
+- `GET /docs` — Swagger UI (spec gerada via `swagger-jsdoc` em `src/infra/http/swagger.ts`)
+- Todas as rotas de recurso ficam sob `/api` (montadas em `src/main/app.ts`)
+
 # Notas de deploy (Vercel)
 
 - O entry point é `src/index.ts` (exporta o app Express)

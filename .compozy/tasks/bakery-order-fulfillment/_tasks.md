@@ -8,7 +8,7 @@ Backbone: `Order` como fonte de verdade (ADR-001).
 
 | # | Title | Status | Complexity | Dependencies |
 |---|-------|--------|------------|--------------|
-| 01 | `OrderStatus` enum (`PREPARING`/`READY`) + `Order`/`Bakery` schema + migration | pending | medium | — |
+| 01 | `OrderStatus` enum (`PREPARING`/`READY`) + `Order`/`Bakery` schema + migration | completed | medium | — |
 | 02 | `orders.ts` entity + tipos de domínio alinhados ao enum | pending | low | — |
 | 03 | `order-status-machine.ts` — função pura de transições (ator explícito) | pending | medium | task_02 |
 | 04 | Mover `resolveOwnerBakeryId` para `usecases/shared/` e repontar Item | pending | low | — |

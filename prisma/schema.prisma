@@ -139,6 +139,7 @@ model Order {
   items            OrderItem[]
 
   @@unique([subscriptionId, serviceDate])
+  @@index([bakeryId, status])
   @@map("orders")
 }
 
