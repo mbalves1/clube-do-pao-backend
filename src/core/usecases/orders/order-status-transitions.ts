@@ -1,4 +1,5 @@
 import { FulfillmentType, OrderStatus } from '../../entities/orders';
+import { ForbiddenError } from '../../errors/ForbiddenError';
 import { InvalidOrderStatusTransitionError } from '../../errors/InvalidOrderStatusTransitionError';
 
 export type OrderActor = 'seller' | 'courier';
@@ -35,21 +36,47 @@ const TRANSITIONS: TransitionRule[] = [
 	{ actor: 'courier', fulfillmentType: 'DELIVERY', from: 'PICKED_UP', to: 'DELIVERED' },
 ];
 
-export function assertOrderTransition(
+function isLegalFor(
 	from: OrderStatus,
 	to: OrderStatus,
 	actor: OrderActor,
 	fulfillmentType: FulfillmentType,
-): void {
-	const isLegal = TRANSITIONS.some(
+): boolean {
+	return TRANSITIONS.some(
 		(rule) =>
 			rule.actor === actor &&
 			(rule.fulfillmentType === 'ANY' || rule.fulfillmentType === fulfillmentType) &&
 			rule.from === from &&
 			rule.to === to,
 	);
+}
 
-	if (!isLegal) {
-		throw new InvalidOrderStatusTransitionError();
+export function canTransition(
+	from: OrderStatus,
+	to: OrderStatus,
+	actor: OrderActor,
+	fulfillmentType: FulfillmentType,
+): boolean {
+	return isLegalFor(from, to, actor, fulfillmentType);
+}
+
+/**
+ * Throws `ForbiddenError` (403) when the move is legal only for the other
+ * actor, and `InvalidOrderStatusTransitionError` (409) when it is legal for
+ * nobody.
+ */
+export function assertOrderTransition(
+	from: OrderStatus,
+	to: OrderStatus,
+	actor: OrderActor,
+	fulfillmentType: FulfillmentType,
+): void {
+	if (isLegalFor(from, to, actor, fulfillmentType)) return;
+
+	const otherActor: OrderActor = actor === 'seller' ? 'courier' : 'seller';
+	if (isLegalFor(from, to, otherActor, fulfillmentType)) {
+		throw new ForbiddenError('Esta transição de status não é permitida para o seu papel');
 	}
+
+	throw new InvalidOrderStatusTransitionError();
 }

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "orders.ts entity + tipos de domínio alinhados ao enum"
 type: backend
 complexity: low
@@ -28,8 +28,8 @@ Alinha a entidade de domínio `Order` ao novo enum: união `OrderStatus` correta
 </requirements>
 
 ## Subtasks
-- [ ] 2.1 Ajustar união `OrderStatus` e o tipo `Order`.
-- [ ] 2.2 `grep -rn "'ACTIVE'" src/` e `grep -rn "entities/orders" src/` — corrigir quem quebrar.
+- [x] 2.1 Ajustar união `OrderStatus` e o tipo `Order`. (já alinhados pela feature `seller-order-fulfillment` — união sem `'ACTIVE'`, `bakeryId`/`preparingAt`/`readyAt` presentes; removido só o alias `Orders`, sem consumidores.)
+- [x] 2.2 `grep -rn "'ACTIVE'" src/` e `grep -rn "entities/orders" src/` — corrigir quem quebrar. (`'ACTIVE'` só em `subscribe-repository.ts`, contexto de assinatura — mantido; nenhum import de `Orders`.)
 
 ## Implementation Details
 Ver TechSpec seção "Domínio → entities/orders.ts". Consumidores atuais da união: `subscribe-repository.ts` (port), `order-validator.ts`, use cases de orders. O `'ACTIVE'` só é usado hoje em `SubscribeCreateData` (contexto de assinatura, não de pedido) — não mexer lá.
@@ -48,9 +48,12 @@ Ver TechSpec seção "Domínio → entities/orders.ts". Consumidores atuais da u
 
 ## Tests
 - Verificação manual:
-  - [ ] `npm run build` compila sem erro após o ajuste (corrigindo eventuais usos de `'ACTIVE'` no contexto de pedido).
-  - [ ] `grep -rn "ACTIVE" src/core/entities/orders.ts` não retorna nada.
+  - [x] `npm run build` compila sem erro após o ajuste (corrigindo eventuais usos de `'ACTIVE'` no contexto de pedido).
+  - [x] `grep -rn "ACTIVE" src/core/entities/orders.ts` não retorna nada.
 - Sem framework de teste automatizado no projeto.
+
+### Nota — `status` não-nulo
+O requisito "manter `status?: OrderStatus | null`" descrevia o shape antigo. Hoje `Order.status` é `OrderStatus` (não-nulo), o que bate com o schema Prisma (`status OrderStatus @default(PENDING)`, coluna NOT NULL). Mantido como está — torná-lo opcional seria uma regressão de tipagem.
 
 ## Success Criteria
 - União `OrderStatus` idêntica ao enum Prisma da task_01.

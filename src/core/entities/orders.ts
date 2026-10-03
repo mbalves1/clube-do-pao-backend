@@ -29,5 +29,3 @@ export type Order = {
 	createdAt: Date;
 	updatedAt: Date;
 };
-
-export type Orders = Order;

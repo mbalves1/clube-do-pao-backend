@@ -9,8 +9,8 @@ Backbone: `Order` como fonte de verdade (ADR-001).
 | # | Title | Status | Complexity | Dependencies |
 |---|-------|--------|------------|--------------|
 | 01 | `OrderStatus` enum (`PREPARING`/`READY`) + `Order`/`Bakery` schema + migration | completed | medium | — |
-| 02 | `orders.ts` entity + tipos de domínio alinhados ao enum | pending | low | — |
-| 03 | `order-status-machine.ts` — função pura de transições (ator explícito) | pending | medium | task_02 |
+| 02 | `orders.ts` entity + tipos de domínio alinhados ao enum | completed | low | — |
+| 03 | `order-status-machine.ts` — função pura de transições (ator explícito) | completed | medium | task_02 |
 | 04 | Mover `resolveOwnerBakeryId` para `usecases/shared/` e repontar Item | pending | low | — |
 | 05 | `OrdersRepository` port estendido (feed, pool, claim/release, updateStatus) | pending | low | task_02 |
 | 06 | `PrismaOrdersRepository` — implementar o port novo (updateMany guardado) | pending | medium | task_01, task_05 |

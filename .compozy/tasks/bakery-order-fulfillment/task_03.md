@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "order-status-machine.ts — função pura de transições"
 type: backend
 complexity: medium
@@ -34,9 +34,9 @@ Cria a fonte única de verdade das transições de status do pedido (ADR-003). F
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Definir a estrutura de dados da matriz (mapa `from → { to → actor }` ou lista de tuplas).
-- [ ] 3.2 Implementar `canTransition` e `assertTransition`.
-- [ ] 3.3 Importar `ConflictError`/`ForbiddenError` direto dos arquivos (sem barrel).
+- [x] 3.1 Definir a estrutura de dados da matriz (mapa `from → { to → actor }` ou lista de tuplas).
+- [x] 3.2 Implementar `canTransition` e `assertTransition`.
+- [x] 3.3 Importar `ConflictError`/`ForbiddenError` direto dos arquivos (sem barrel).
 
 ## Implementation Details
 Ver TechSpec "usecases/orders/order-status-machine.ts" e ADR-003. Manter a função sem estado — recebe `from`/`to`/`actor` e responde. A guarda de concorrência do `claim` continua no repositório (task_06); esta máquina só diz se a transição é *legal*.
@@ -58,14 +58,24 @@ Ver TechSpec "usecases/orders/order-status-machine.ts" e ADR-003. Manter a funç
 
 ## Tests
 - Verificação manual (script pontual chamando a função, ou REPL `ts-node`):
-  - [ ] `canTransition('PENDING','PREPARING','company')` → `true`; `(...'delivery')` → `false`.
-  - [ ] `canTransition('READY','ACCEPTED','delivery')` → `true`; `(...'company')` → `false`.
-  - [ ] `canTransition('PREPARING','READY','company')` → `true`.
-  - [ ] `canTransition('ACCEPTED','PICKED_UP','delivery')` → `true`; `('PICKED_UP','ACCEPTED', *)` → `false`.
-  - [ ] `canTransition('READY','CANCELED','company')` → `true`; `('ACCEPTED','CANCELED', *)` → `false`.
-  - [ ] `assertTransition('PENDING','READY','company')` → lança `ConflictError`.
-  - [ ] `assertTransition('READY','ACCEPTED','company')` → lança `ForbiddenError`.
+  - [x] `canTransition('PENDING','PREPARING','company')` → `true`; `(...'delivery')` → `false`.
+  - [x] `canTransition('READY','ACCEPTED','delivery')` → `true`; `(...'company')` → `false`.
+  - [x] `canTransition('PREPARING','READY','company')` → `true`.
+  - [x] `canTransition('ACCEPTED','PICKED_UP','delivery')` → `true`; `('PICKED_UP','ACCEPTED', *)` → `false`.
+  - [x] `canTransition('READY','CANCELED','company')` → `true`; `('ACCEPTED','CANCELED', *)` → `false`.
+  - [x] `assertTransition('PENDING','READY','company')` → lança `ConflictError`.
+  - [x] `assertTransition('READY','ACCEPTED','company')` → lança `ForbiddenError`.
 - Cobertura alvo: matriz completa do PRD exercitada.
+
+### Nota — implementado evoluindo a máquina existente (decisão do usuário, 2026-10-03)
+A fonte única de transições já existia desde a feature `seller-order-fulfillment`: `src/core/usecases/orders/order-status-transitions.ts` (`assertOrderTransition`, usada por `update-orders.ts` e `update-order-status-by-seller.ts`). Criar `order-status-machine.ts` em paralelo duplicaria a matriz, contra a ADR-003, e perderia regras já em produção. Por isso, em vez de um arquivo novo:
+- **Mantidos:** nome do arquivo, atores `'seller' | 'courier'` (equivalem a `company`/`delivery`), parâmetro `fulfillmentType` e a transição `READY→PICKED_UP` do lojista em pedidos `PICKUP` (documentada em `docs/architecture.md`; não consta da tabela do PRD desta feature).
+- **Adicionados:** `canTransition(from, to, actor, fulfillmentType)`, e em `assertOrderTransition` a distinção pedida: `ForbiddenError` (403) quando a transição só vale para o outro ator, `InvalidOrderStatusTransitionError` (409) quando não vale para ninguém.
+- `InvalidOrderStatusTransitionError` agora estende `ConflictError` (antes 422), e o Swagger de `PATCH /orders/:id/status` e `PATCH /orders/:orderId/:deliveryId` passou de 422 para 409/403.
+
+Verificação: `npm run build` exit 0, mais um script sobre `dist/` cobrindo as 196 combinações (2 `fulfillmentType` × 2 atores × 7×7 status) comparadas com a matriz esperada: 0 falhas (15× 403, 166× 409, o resto permitido). Os casos da lista de testes acima foram conferidos com os nomes de ator equivalentes (`company`→`seller`, `delivery`→`courier`, `fulfillmentType` `DELIVERY`).
+
+Para as tasks 10/12/13/14: consumir `assertOrderTransition` de `order-status-transitions.ts`, não `order-status-machine.ts`.
 
 ## Success Criteria
 - Toda transição do PRD retorna `true` para o ator certo e `false` para o outro.

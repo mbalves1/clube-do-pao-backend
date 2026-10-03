@@ -238,13 +238,11 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 	 *       400:
 	 *         description: Dados inválidos
 	 *       403:
-	 *         description: Você não tem permissão para esta ação
+	 *         description: Você não tem permissão para esta ação (padaria de outro lojista, ou transição exclusiva do entregador)
 	 *       404:
 	 *         description: Pedido não encontrado
 	 *       409:
-	 *         description: Pedido já foi reivindicado por um entregador
-	 *       422:
-	 *         description: Transição de status inválida
+	 *         description: Transição de status inválida, ou pedido já reivindicado por um entregador
 	 *       500:
 	 *         description: Erro interno do servidor
 	 */
@@ -294,10 +292,10 @@ export function makeOrdersRoutes(ordersController: OrdersController) {
 	 *       400:
 	 *         description: Dados inválidos
 	 *       403:
-	 *         description: Você não é o entregador responsável por este pedido
+	 *         description: Você não é o entregador responsável por este pedido, ou a transição é exclusiva do lojista
 	 *       404:
 	 *         description: Pedido não encontrado
-	 *       422:
+	 *       409:
 	 *         description: Transição de status inválida
 	 *       500:
 	 *         description: Erro interno do servidor
