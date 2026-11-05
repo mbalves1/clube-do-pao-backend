@@ -24,8 +24,10 @@ Contém as regras de negócio. **Não pode importar nada de `infra/` ou de frame
 ```
 AppError(message, statusCode)     ← base
 BadRequestError(message)          ← 400
-ConflictError(message)            ← 409
+ForbiddenError(message)           ← 403
 NotFoundError(message)            ← 404
+ConflictError(message)            ← 409
+InvalidOrderStatusTransitionError(message) ← 409 (estende ConflictError)
 UnprocessableEntityError(message) ← 422
 ```
 

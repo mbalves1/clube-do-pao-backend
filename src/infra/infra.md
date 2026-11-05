@@ -8,6 +8,7 @@ Implementa os contratos definidos no core usando frameworks e ferramentas extern
 |-------|-----------------|
 | `controllers/` | Recebe `req`/`res`, chama use cases, retorna resposta HTTP |
 | `repositories/` | Implementa os ports do core usando Prisma |
+| `gateways/` | Implementa gateways do core usando serviços externos (ex. Supabase Auth) |
 | `http/routes/` | Um arquivo por recurso — monta Router Express e aplica middlewares |
 | `http/validators/` | Schemas Zod para validar body/params de entrada |
 | `mappers/` | Converte resultado do Prisma → entidade de domínio quando há diferença de shape |
@@ -24,7 +25,7 @@ Implementa os contratos definidos no core usando frameworks e ferramentas extern
 ## Controllers
 
 - Não contêm lógica de negócio — apenas orquestram chamada ao use case
-- Validam o body com Zod antes de chamar o use case
+- Emitem eventos SSE depois que o use case conclui — o core não conhece o `sseService`
 - Capturam `AppError` e retornam `error.statusCode` — erros desconhecidos retornam 500
 - Rotas protegidas acessam `req.user` (injetado pelo `authMiddleware`)
 
@@ -38,11 +39,11 @@ Implementa os contratos definidos no core usando frameworks e ferramentas extern
 
 ```ts
 export const createXxxSchema = z.object({ ... });
-export type CreateXxxDTO = z.infer<typeof createXxxSchema>;
 ```
 
 - Um schema por operação (create, update)
-- `parse()` no controller — lança `ZodError` que é capturado pelo `formatBadRequest`
+- Body: `validateSchema(schema)` na rota, padrão de `items`, `orders` e `bakery`. Os módulos `auth`, `user` e `subscribe` ainda usam `parse()` no controller
+- Query string: `safeParse(req.query)` no controller, com `formatBadRequest` para a resposta 400
 
 ## SSE
 

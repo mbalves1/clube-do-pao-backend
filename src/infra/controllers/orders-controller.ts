@@ -184,6 +184,17 @@ export class OrdersController {
 				Number(req.params.id),
 				req.body.status,
 			);
+			sseService.emit('order-status-updated', {
+				orderId: order.id,
+				status: order.status,
+			});
+			if (order.status === 'READY' && order.fulfillmentType === 'DELIVERY') {
+				sseService.emit('order-available', {
+					id: order.id,
+					bakeryId: order.bakeryId,
+					serviceDate: order.serviceDate,
+				});
+			}
 			return res.status(200).json(order);
 		} catch (error) {
 			if (error instanceof AppError) {

@@ -5,7 +5,6 @@ import { NotFoundError } from '../../errors/NotFoundError';
 import { BakeryPersonRepository } from '../../ports/bakery-person-repository';
 import { OrderStatusPatch, OrdersRepository } from '../../ports/orders-repository';
 import { UserRepository } from '../../ports/user-repository';
-import { sseService } from '../../../infra/sse/sse-service';
 import { resolveOwnerBakeryId } from '../shared/resolve-owner-bakery-id';
 import { assertOrderTransition } from './order-status-transitions';
 
@@ -60,22 +59,6 @@ export class UpdateOrderStatusBySellerUseCase {
 			...(targetStatus === 'PICKED_UP' && { pickedUpAt: now }),
 		};
 
-		const updated = await this.ordersRepository.updateStatus(
-			orderId,
-			targetStatus,
-			patch,
-		);
-
-		sseService.emit('order-status-updated', { orderId, status: targetStatus });
-
-		if (targetStatus === 'READY' && order.fulfillmentType === 'DELIVERY') {
-			sseService.emit('order-available', {
-				id: orderId,
-				bakeryId: order.bakeryId,
-				serviceDate: order.serviceDate,
-			});
-		}
-
-		return updated;
+		return this.ordersRepository.updateStatus(orderId, targetStatus, patch);
 	}
 }

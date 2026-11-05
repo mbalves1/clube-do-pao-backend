@@ -51,7 +51,7 @@ Siga sempre esta ordem (de dentro para fora):
 
 ## Padrões obrigatórios
 
-- **Core não importa nada de `infra/`** — a dependência sempre flui de fora para dentro
+- **Core não importa nada de `infra/`** — a dependência sempre flui de fora para dentro (verificado no CI por `npm run check:architecture`)
 - **Factories** são o único lugar onde repositórios, use cases e controllers são instanciados juntos
 - **Rotas protegidas** usam `authMiddleware` e acessam `req.user` para obter o usuário autenticado
 - **Erros de domínio** estendem `AppError` (`src/core/errors/`) — controllers fazem catch e retornam o status correto

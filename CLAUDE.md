@@ -7,3 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 @docs/stack.md
 @docs/architecture.md
 @docs/infra.md
+@src/core/core.md
+@src/infra/infra.md
+@src/main/main.md

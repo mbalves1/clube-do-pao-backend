@@ -7,6 +7,7 @@
 	"scripts": {
 		"dev": "ts-node-dev --respawn --transpile-only --env-file .env src/main/server.ts",
 		"build": "prisma generate && tsc",
+		"check:architecture": "node scripts/check-core-imports.js",
 		"postinstall": "prisma generate",
 		"start": "node dist/main/server.js",
 		"prisma:generate": "prisma generate",
