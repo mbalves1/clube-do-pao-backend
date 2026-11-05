@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Mover resolveOwnerBakeryId para usecases/shared/ e repontar Item"
 type: backend
 complexity: low
@@ -27,9 +27,9 @@ dependencies: []
 </requirements>
 
 ## Subtasks
-- [ ] 4.1 Criar `src/core/usecases/shared/` e mover o arquivo.
-- [ ] 4.2 Repontar os 4 imports do Item.
-- [ ] 4.3 `npm run build`.
+- [x] 4.1 Criar `src/core/usecases/shared/` e mover o arquivo.
+- [x] 4.2 Repontar os 4 imports do Item.
+- [x] 4.3 `npm run build`.
 
 ## Implementation Details
 Ver TechSpec "usecases/shared/resolve-owner-bakery-id.ts". É um move + update de import; nenhum novo parâmetro. Manter o comentário do topo do arquivo (referência ao mesmo lookup do `GET /auth/me`).
@@ -50,10 +50,18 @@ Ver TechSpec "usecases/shared/resolve-owner-bakery-id.ts". É um move + update d
 
 ## Tests
 - Verificação manual:
-  - [ ] `npm run build` compila.
-  - [ ] Exercitar `GET /items` e `POST /items` autenticado como `company` → continua 200/201.
-  - [ ] `GET /items` autenticado como usuário sem `BakeryPerson` → 403 "Usuário não está vinculado a uma padaria" (mensagem inalterada).
+  - [x] `npm run build` compila.
+  - [ ] *(não executado — banco inacessível, ver nota)* Exercitar `GET /items` e `POST /items` autenticado como `company` → continua 200/201.
+  - [ ] *(não executado — banco inacessível, ver nota)* `GET /items` autenticado como usuário sem `BakeryPerson` → 403 "Usuário não está vinculado a uma padaria" (mensagem inalterada).
 - Sem framework de teste automatizado no projeto.
+
+### Nota — já feito pela `seller-order-fulfillment` (verificado em 2026-10-03)
+O move aconteceu no commit `3f327cf`: `src/core/usecases/item/resolve-owner-bakery-id.ts` foi removido e recriado em `src/core/usecases/shared/`. Os 4 use cases de Item (e também `list-bakery-orders.ts` e `update-order-status-by-seller.ts`) já importam de `../shared/resolve-owner-bakery-id`. Nesta task não houve mudança de código. Evidências:
+- `git diff 3f327cf^:src/core/usecases/item/resolve-owner-bakery-id.ts HEAD:src/core/usecases/shared/resolve-owner-bakery-id.ts` sai vazio: o conteúdo é byte a byte idêntico ao original, com as mesmas mensagens `NotFoundError`/`ForbiddenError` e o mesmo comentário do topo.
+- `grep -rn "resolve-owner-bakery-id" src/` só mostra imports de `../shared/`, e o caminho antigo não existe mais.
+- `npm run build` exit 0.
+
+**Limitação:** os dois checks em runtime (`GET`/`POST /items` como `company`, e 403 para usuário sem `BakeryPerson`) não rodaram. O banco de dev (`db.cduaqnxixtfsijstimxb.supabase.co:5432`) estava inacessível de dentro e de fora do sandbox, então um script que chamava os use cases reais via `dist/` falhou na conexão. Como o código é idêntico, o comportamento é o mesmo do original. Vale rodar esses dois checks quando o banco voltar.
 
 ## Success Criteria
 - Nenhuma referência ao caminho antigo; Item funciona igual.
