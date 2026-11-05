@@ -1,3 +1,8 @@
+---
+paths:
+  - "src/core/**"
+---
+
 # Camada Core
 
 Contém as regras de negócio. **Não pode importar nada de `infra/` ou de frameworks externos.**

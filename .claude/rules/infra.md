@@ -1,3 +1,8 @@
+---
+paths:
+  - "src/infra/**"
+---
+
 # Camada Infra
 
 Implementa os contratos definidos no core usando frameworks e ferramentas externas.

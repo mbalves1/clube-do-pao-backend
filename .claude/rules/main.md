@@ -1,3 +1,9 @@
+---
+paths:
+  - "src/main/**"
+  - "src/index.ts"
+---
+
 # Camada Main
 
 Ponto de entrada da aplicação. É o único lugar que conhece todas as camadas e faz o wiring entre elas.
