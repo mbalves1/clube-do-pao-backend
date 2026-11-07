@@ -50,6 +50,17 @@ export class CreateXxxUseCase {
 }
 ```
 
+## Autorização por dono (lojista)
+
+Não há guard de role nas rotas, então a autorização fica no use case. Todo use case que age em nome de um `company`:
+
+1. Recebe o `callerSupabaseUserId` (o controller passa `req.user.id`)
+2. Resolve a padaria com `resolveOwnerBakeryId(callerSupabaseUserId, userRepository, bakeryPersonRepository)` de `usecases/shared/resolve-owner-bakery-id.ts`. Isso lança `NotFoundError` se o usuário não existe e `ForbiddenError` se ele não está vinculado a uma padaria
+3. Busca o recurso: `NotFoundError` se não existe, `ForbiddenError` se `recurso.bakeryId !== bakeryId`
+4. Só então age
+
+Não duplique esse lookup inline. Referência: `item/delete-item.ts`, `orders/update-order-status-by-seller.ts`.
+
 ## O que nunca deve aparecer aqui
 
 - Imports de `@prisma/client`, `express`, `@supabase/supabase-js`

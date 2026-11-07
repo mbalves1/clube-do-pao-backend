@@ -51,11 +51,9 @@ Siga sempre esta ordem (de dentro para fora):
 
 ## Padrões obrigatórios
 
-- **Core não importa nada de `infra/`** — a dependência sempre flui de fora para dentro (verificado no CI por `npm run check:architecture`)
-- **Factories** são o único lugar onde repositórios, use cases e controllers são instanciados juntos
-- **Rotas protegidas** usam `authMiddleware` e acessam `req.user` para obter o usuário autenticado
-- **Erros de domínio** estendem `AppError` (`src/core/errors/`) — controllers fazem catch e retornam o status correto
-- **Prisma client** é singleton lazy em `src/infra/database/prisma-client.ts` — nunca instanciar `PrismaClient` diretamente
+A dependência sempre flui de fora para dentro: **o core não importa nada de `infra/`** (verificado no CI por `npm run check:architecture`).
+
+As regras detalhadas de cada camada ficam em `.claude/rules/` e são carregadas só quando se mexe nos arquivos correspondentes: `core.md`, `infra.md`, `main.md`, `middlewares.md` e `prisma.md`.
 
 ## Modelo de domínio
 
@@ -77,7 +75,7 @@ O schema Prisma reflete a separação template/instância descrita na [ADR-001](
 
 **Geração:** `POST /orders/generate` (autenticado, sem guard de papel nesta fase) materializa um `Order` por template ativo cujo dia da semana/frequência bate com a data informada (padrão: hoje), copiando a cesta em `OrderItem[]` (ADR-002) e pulando templates que já têm `Order` para aquela data. É um gatilho explícito por escolha — geração agendada (cron) foi deliberadamente adiada para uma fase 2, depois que essa lógica rodar contra assinaturas reais por uma semana completa (ver [ADR-004](../.compozy/tasks/seller-order-fulfillment/adrs/adr-004.md)).
 
-**Backfill one-off:** `prisma/scripts/backfill-orders.ts` (`npm run backfill:orders`) criou um `Order` por `subscription` existente que ainda não tinha um, copiando `serviceDate`/`bakeryId`/`deliveryPersonId` e mapeando `subscription.status` → `OrderStatus` (`ACCEPTED`/`PICKED_UP`/`DELIVERED`/`CANCELED` mantidos, qualquer outro valor → `PENDING`); `fulfillmentType` fixo em `DELIVERY` (não há dado histórico de pickup) e sem `OrderItem`. Usa `createMany({ skipDuplicates: true })` sobre o unique de `Order`, então é seguro rodar mais de uma vez. Já rodado no banco de dev em 2026-09-12 (17 `subscription` → 17 `Order` criados).
+**Backfill one-off:** `prisma/scripts/backfill-orders.ts` (`npm run backfill:orders`) criou os `Order` das `Subscription` antigas. Já rodado em dev em 2026-09-12. Detalhes em `.claude/rules/prisma.md`.
 
 Rationale completo, ADRs e o histórico task-a-task da migração: [`.compozy/tasks/seller-order-fulfillment/`](../.compozy/tasks/seller-order-fulfillment/).
 

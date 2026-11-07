@@ -24,7 +24,7 @@ Implementa os contratos definidos no core usando frameworks e ferramentas extern
 
 - Implementam a interface do port correspondente em `core/ports/`
 - Retornam sempre a entidade de domínio (nunca o tipo raw do Prisma)
-- Usam o singleton `prisma` de `../database/prisma-client`
+- Usam o singleton `prisma` de `../database/prisma-client`. Nunca `new PrismaClient()`
 - Fazem a conversão campo a campo no retorno (não use `as` para forçar tipos)
 
 ## Controllers
